@@ -36,9 +36,11 @@ Goal: make a narrow, reviewable change (bug fix, small feature, dev tooling).
 
 1. Inspect relevant files first (read, do not guess).
 2. Restate the narrow goal in one sentence.
-3. Make the smallest change that achieves the goal.
-4. Run targeted verification (tests, lint, a single endpoint).
-5. Summarise what changed, what you verified, and any assumptions.
+3. Create a branch and keep changes focused.
+4. Make the smallest change that achieves the goal.
+5. Run targeted verification (tests, lint, a single endpoint).
+6. Open a pull request (do not assume direct pushes to `master`).
+7. Summarise what changed, what you verified, and any assumptions.
 
 ## Workflow B: documentation improvement
 
@@ -77,4 +79,3 @@ Goal: adjust templates, governance, or community health docs.
 2. Avoid inflated language and “policy theatre”.
 3. Do not introduce new commitments (response times, processes) unless maintainers agree.
 4. Keep text practical and enforceable.
-

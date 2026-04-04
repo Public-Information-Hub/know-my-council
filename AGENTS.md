@@ -27,6 +27,7 @@ AI agents and AI-assisted contributors must:
 - **Do not casually rewrite sensitive docs**: be conservative with governance, evidence, disclaimer, and security text.
 - **Keep docs useful**: avoid vague fluff and marketing language.
 - **Be explicit about verification**: do not claim tests passed, checks ran, or services worked unless you actually verified it.
+- **Do not assume direct pushes to `master`**: do work on a branch and open a pull request. Do not auto-merge.
 
 ## Civic, data, and evidence-sensitive work
 

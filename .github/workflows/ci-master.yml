@@ -1,16 +1,14 @@
-name: CI Sanity
+name: CI (Master)
 
 on:
   push:
-    branches: ["master"]
-  pull_request:
     branches: ["master"]
 
 permissions:
   contents: read
 
 jobs:
-  lint-and-tests:
+  mainline:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -95,7 +93,7 @@ jobs:
           SESSION_DRIVER: array
           MAIL_MAILER: array
 
-      - name: Backend tests (sqlite in-memory)
+      - name: Backend tests (SQLite in-memory)
         run: php artisan test
         working-directory: backend
         env:

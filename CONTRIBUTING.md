@@ -101,6 +101,7 @@ See: [docs/community-and-editorial-model.md](docs/community-and-editorial-model.
 ## Branch and PR expectations
 
 - Create a branch from `master`.
+- Do not push directly to `master` as part of normal development. Use pull requests.
 - Use clear branch names (e.g. `docs/evidence-principles`, `infra/minio-init`).
 - Open a PR early if you want feedback.
 

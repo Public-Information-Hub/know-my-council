@@ -11,6 +11,7 @@ This document is for contributors using tools such as ChatGPT, Codex, Claude, Co
 - AI assistance is permitted.
 - You remain fully responsible for the submission.
 - Keep PRs small and reviewable.
+- Work on a branch and submit changes via a pull request (do not assume direct pushes to `master`).
 - Do not submit “AI dumps”: large, unfocused changes without clear intent or verification.
 - Do not invent sources, facts, or implemented functionality.
 

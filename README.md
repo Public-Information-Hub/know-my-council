@@ -60,6 +60,10 @@ If you have a source-led lead to investigate, use the Investigation template and
 
 AI-assisted contributions are welcome if they meet our standards for truthfulness, evidence discipline, and reviewability. Keep changes scoped, verify outputs, and avoid invented facts or sources.
 
+### Branch and PR workflow
+
+Normal development happens on branches and is merged into `master` via pull requests. We recommend protecting `master` in GitHub settings (see [docs/github-branch-and-ci-settings.md](docs/github-branch-and-ci-settings.md)).
+
 ## Local development
 
 Local dev runs apps on the host and infrastructure services in Docker.
