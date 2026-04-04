@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/health', function (Request $request) {
+    return response()->json([
+        'status' => 'ok',
+        'service' => 'knowmycouncil-api',
+        'timestamp' => now()->toIso8601String(),
+    ]);
+});
+
+Route::get('/version', function () {
+    return response()->json([
+        'name' => config('app.name'),
+        'version' => config('knowmycouncil.version'),
+        'commit' => config('knowmycouncil.commit_sha'),
+        'environment' => config('app.env'),
+    ]);
+});
+

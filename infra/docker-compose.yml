@@ -1,0 +1,89 @@
+name: knowmycouncil
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: knowmycouncil-postgres
+    environment:
+      POSTGRES_DB: knowmycouncil
+      POSTGRES_USER: knowmycouncil
+      POSTGRES_PASSWORD: knowmycouncil
+    ports:
+      - "5432:5432"
+    volumes:
+      - kmc_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    container_name: knowmycouncil-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - kmc_redisdata:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    container_name: knowmycouncil-meilisearch
+    environment:
+      MEILI_MASTER_KEY: local-meili-master-key
+    ports:
+      - "7700:7700"
+    volumes:
+      - kmc_meilidata:/meili_data
+
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    container_name: knowmycouncil-minio
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniosecret
+    command: ["server", "/data", "--console-address", ":9001"]
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - kmc_miniodata:/data
+
+  minio-init:
+    image: minio/mc:RELEASE.2024-12-18T17-11-54Z
+    container_name: knowmycouncil-minio-init
+    depends_on:
+      - minio
+    entrypoint: ["/bin/sh", "-lc"]
+    command: |
+      set -eu
+      until mc alias set kmc http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" >/dev/null 2>&1; do
+        echo "Waiting for MinIO..."
+        sleep 1
+      done
+      mc mb --ignore-existing kmc/knowmycouncil
+      mc anonymous set download kmc/knowmycouncil
+      echo "MinIO bucket ready: knowmycouncil"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniosecret
+    restart: "no"
+
+  mailpit:
+    image: axllent/mailpit:v1.20
+    container_name: knowmycouncil-mailpit
+    ports:
+      - "8025:8025" # Web UI
+      - "1025:1025" # SMTP
+
+volumes:
+  kmc_pgdata:
+  kmc_redisdata:
+  kmc_meilidata:
+  kmc_miniodata:

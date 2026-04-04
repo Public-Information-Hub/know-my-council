@@ -1,0 +1,30 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Backend (Laravel)
+/backend/.env
+/backend/vendor/
+/backend/storage/*.key
+/backend/storage/framework/
+/backend/storage/logs/
+/backend/bootstrap/cache/
+/backend/.phpunit.result.cache
+/backend/database/*.sqlite
+/backend/.pint.cache
+
+# Frontend (Nuxt)
+/frontend/.env
+/frontend/node_modules/
+/frontend/.nuxt/
+/frontend/.output/
+/frontend/dist/
+/frontend/.cache/
+/frontend/.eslintcache
+
+# Logs
+*.log
+
+# Infra
+**/.docker/

@@ -1,0 +1,22 @@
+{
+  "name": "frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "nuxt": "^3.21.2"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^0.7.6",
+    "eslint": "^9.24.0",
+    "typescript": "^5.8.3"
+  }
+}
