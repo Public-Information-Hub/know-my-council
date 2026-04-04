@@ -94,6 +94,14 @@ make frontend-dev
 
 The status page calls the Laravel API configured in `NUXT_PUBLIC_API_BASE_URL`.
 
+Typecheck and lint:
+
+```bash
+cd frontend
+npm run typecheck
+npm run lint
+```
+
 ## Common issues
 
 - If ports are already in use (5432/6379/7700/9000/9001/8025/1025/8000/3000), stop the conflicting service or adjust ports in `infra/docker-compose.yml` and your `.env` files.

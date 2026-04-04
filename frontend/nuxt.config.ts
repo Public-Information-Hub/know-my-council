@@ -3,7 +3,9 @@ export default defineNuxtConfig({
   modules: ['@nuxt/eslint'],
   typescript: {
     strict: true,
-    typeCheck: true
+    // Keep the scaffold strict, but don't fail `nuxt build` on local typecheck
+    // wiring. Run `npm run typecheck` explicitly instead.
+    typeCheck: false
   },
   runtimeConfig: {
     public: {

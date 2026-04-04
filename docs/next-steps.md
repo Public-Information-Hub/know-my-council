@@ -1,0 +1,34 @@
+# Next steps
+
+This repository is intentionally only the initial scaffold. The next sensible build phases are:
+
+## 1) Canonical data model
+
+- Define canonical identifiers and entity boundaries (council, supplier, contract, spend line, document).
+- Establish naming and normalisation rules (e.g. supplier canonicalisation and aliases).
+- Add provenance and audit primitives (import run, source file, row lineage).
+
+## 2) Ingestion pipeline
+
+- Introduce an import runner (queued jobs + retry strategy + idempotency).
+- Store raw source files in object storage (MinIO locally) and record metadata in PostgreSQL.
+- Parse and validate into staging tables before updating canonical tables.
+
+## 3) Read models
+
+- Design denormalised read models for the public site (fast queries, predictable pagination).
+- Consider materialised views or explicit read tables for common pages.
+- Add caching where it is obviously beneficial (per-page fragments, hot endpoints).
+
+## 4) Search indexing
+
+- Decide what becomes searchable (suppliers, contracts, spend descriptions, documents).
+- Define index schemas and update strategies (incremental updates from canonical tables).
+- Use queued jobs to keep Meilisearch in sync.
+
+## 5) Public council/supplier pages
+
+- Council profile pages: identity, datasets available, latest imports, spend summaries.
+- Supplier profile pages: aggregated spend, contracts, related councils, and search facets.
+- Build with stable URLs and SEO in mind (Nuxt SSR when appropriate).
+

@@ -80,6 +80,8 @@ Useful endpoints:
 - `GET http://127.0.0.1:8000/api/health`
 - `GET http://127.0.0.1:8000/api/version`
 
+The web root (`GET /`) returns a small JSON payload and links you to the API endpoints.
+
 ### 4) Run the frontend (Nuxt 3)
 
 ```bash
@@ -112,6 +114,7 @@ make urls
 - `CACHE_STORE=redis`
 - `SESSION_DRIVER=redis`
 - `QUEUE_CONNECTION=redis`
+- `REDIS_CLIENT=predis` (portable default; does not require the `phpredis` extension)
 
 - `SCOUT_DRIVER=meilisearch`
 - `MEILISEARCH_HOST=http://127.0.0.1:7700`
@@ -144,6 +147,8 @@ The codebase is organised to support a clean separation between:
 - Read/query layer (denormalised views, search indices, public-facing endpoints)
 
 See [docs/architecture.md](docs/architecture.md) and [docs/local-development.md](docs/local-development.md).
+
+For the next sensible build phases, see [docs/next-steps.md](docs/next-steps.md).
 
 ## Notes
 
