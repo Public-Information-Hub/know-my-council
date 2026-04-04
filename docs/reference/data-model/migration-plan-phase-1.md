@@ -114,7 +114,7 @@ Optional but recommended in Phase 1 if it is needed immediately for linking:
 
 - `state_transitions`
   - Purpose: append-only workflow/publication state history for stateful records.
-  - Phase 1 notes: even with limited workflow in Phase 1, state transitions prevent “mystery changes”.
+  - Phase 1 notes: must support multiple state fields (at minimum `public_state` and `import_runs.run_state`) so import lifecycle changes are not forced into publication-state vocabulary. Even with limited workflow in Phase 1, state transitions prevent “mystery changes”.
 
 ## 4. Tables Deferred to Phase 2+
 

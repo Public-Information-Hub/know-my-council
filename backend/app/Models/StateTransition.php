@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'subject_type',
-    'subject_id',
+    'target_type',
+    'target_id',
+    'state_field',
     'from_state',
     'to_state',
     'reason_code',
@@ -52,4 +53,3 @@ class StateTransition extends Model
         ];
     }
 }
-

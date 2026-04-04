@@ -23,6 +23,10 @@ class IngestCouncilSpendCsvCommand extends Command
         {--storage-disk= : Filesystem disk to store the raw source file on; defaults to FILESYSTEM_DISK}
         {--visibility=restricted : Source file visibility (public|restricted|private)}
         {--delimiter=, : CSV delimiter}
+        {--supplier-header= : Override supplier column header (case-insensitive match)}
+        {--amount-header= : Override amount column header (case-insensitive match)}
+        {--date-header= : Override transaction date column header (case-insensitive match)}
+        {--description-header= : Override description column header (case-insensitive match)}
         {--dry-run : Parse and validate but do not write to the database or object storage}';
 
     protected $description = 'Ingest a council "spend over £500" style CSV into Phase 1 tables with provenance.';
@@ -45,6 +49,10 @@ class IngestCouncilSpendCsvCommand extends Command
                 'storage_disk' => $this->option('storage-disk'),
                 'visibility' => $this->option('visibility'),
                 'delimiter' => $this->option('delimiter'),
+                'supplier_header' => $this->option('supplier-header'),
+                'amount_header' => $this->option('amount-header'),
+                'date_header' => $this->option('date-header'),
+                'description_header' => $this->option('description-header'),
                 'dry_run' => (bool) $this->option('dry-run'),
             ],
         );
@@ -77,4 +85,3 @@ class IngestCouncilSpendCsvCommand extends Command
         return self::FAILURE;
     }
 }
-

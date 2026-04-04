@@ -21,15 +21,16 @@ class SpendCsvColumnMap
      * encounter real council variations.
      *
      * @param array<int, string|null> $headers
+     * @param array{supplier_header?:string|null,amount_header?:string|null,date_header?:string|null,description_header?:string|null} $overrides
      */
-    public static function fromHeaders(array $headers): self
+    public static function fromHeaders(array $headers, array $overrides = []): self
     {
         $normalised = [];
         foreach ($headers as $i => $header) {
             $normalised[$i] = self::normaliseHeader($header);
         }
 
-        $supplier = self::firstIndexOf($normalised, [
+        $supplier = self::overrideIndex($normalised, $overrides['supplier_header'] ?? null) ?? self::firstIndexOf($normalised, [
             'supplier',
             'supplier name',
             'supplier_name',
@@ -39,7 +40,7 @@ class SpendCsvColumnMap
             'payee_name',
         ]);
 
-        $amount = self::firstIndexOf($normalised, [
+        $amount = self::overrideIndex($normalised, $overrides['amount_header'] ?? null) ?? self::firstIndexOf($normalised, [
             'amount',
             'net amount',
             'net_amount',
@@ -50,7 +51,7 @@ class SpendCsvColumnMap
             'amount_gbp',
         ]);
 
-        $date = self::firstIndexOf($normalised, [
+        $date = self::overrideIndex($normalised, $overrides['date_header'] ?? null) ?? self::firstIndexOf($normalised, [
             'date',
             'transaction date',
             'transaction_date',
@@ -60,7 +61,7 @@ class SpendCsvColumnMap
             'invoice_date',
         ]);
 
-        $description = self::firstIndexOf($normalised, [
+        $description = self::overrideIndex($normalised, $overrides['description_header'] ?? null) ?? self::firstIndexOf($normalised, [
             'description',
             'details',
             'narrative',
@@ -86,6 +87,26 @@ class SpendCsvColumnMap
                 if ($header === $candidate) {
                     return $i;
                 }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<int, string> $headers
+     */
+    private static function overrideIndex(array $headers, ?string $overrideHeader): ?int
+    {
+        $overrideHeader = is_string($overrideHeader) ? trim($overrideHeader) : null;
+        if ($overrideHeader === null || $overrideHeader === '') {
+            return null;
+        }
+
+        $needle = self::normaliseHeader($overrideHeader);
+        foreach ($headers as $i => $header) {
+            if ($header === $needle) {
+                return $i;
             }
         }
 

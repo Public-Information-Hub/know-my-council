@@ -278,6 +278,19 @@ Do not attempt to predefine every action string. Instead, standardise families a
 | `investigation.` | Investigation creation, linking, outcomes. |
 | `system.` | Maintenance, migrations, internal ops actions. |
 
+#### State fields (`state_transitions.state_field`)
+
+`state_transitions.state_field` identifies which state column changed on the target entity.
+
+Phase 1 allowed values:
+
+| Value | Meaning |
+|---|---|
+| `public_state` | Publication/workflow state for publishable records. |
+| `run_state` | Import run lifecycle for `import_runs.run_state`. |
+
+Implementation approach: check constraint (Phase 1), expected to expand as more stateful workflows are introduced.
+
 ### Data / Imports
 
 #### Import run statuses (`import_runs.run_state`)
@@ -376,4 +389,3 @@ Recommendation:
   - update documentation and constraints together
   - prefer adding values over renaming existing ones; renames break history and forensic reconstruction
   - if a value becomes obsolete, keep it valid but treat it as deprecated in docs and UI
-

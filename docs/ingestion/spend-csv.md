@@ -56,6 +56,10 @@ Useful options:
 - `--idempotency-key=...` Prevent accidental duplicates. If an earlier run for the same import key succeeded with the same key, the command reports `skipped`.
 - `--storage-disk=minio` Disk used to store the raw CSV (defaults to `FILESYSTEM_DISK`).
 - `--visibility=restricted` One of `public|restricted|private` for the `source_files` row.
+- `--supplier-header=...` Override the supplier column header (case-insensitive match).
+- `--amount-header=...` Override the amount column header (case-insensitive match).
+- `--date-header=...` Override the date column header (case-insensitive match).
+- `--description-header=...` Override the description column header (case-insensitive match).
 - `--dry-run` Parse/validate only; does not write to the database or object storage.
 
 ## What it creates (high level)
@@ -67,6 +71,7 @@ Useful options:
 - `source_files` row (points at the raw CSV stored on the configured filesystem disk)
 - `spend_records` rows (normalised records)
 - `audit_logs` entries for import run start and completion/failure
+- `state_transitions` entries for `import_runs.run_state` transitions (queued -> running -> succeeded/failed)
 
 ## Provenance and traceability
 
@@ -87,6 +92,6 @@ No fuzzy matching is used in Phase 1.
 ## Known limitations (Phase 1)
 
 - The header mapper supports a small set of common column names. When you find a real council variation, extend `SpendCsvColumnMap` with a minimal, reviewable change.
+- If a council uses unusual header names, use the `--*-header` overrides before changing code.
 - Amount and date parsing is deliberately conservative. Rows with missing/invalid amount/date are skipped and counted as warnings.
 - Currency is currently fixed to `GBP`.
-

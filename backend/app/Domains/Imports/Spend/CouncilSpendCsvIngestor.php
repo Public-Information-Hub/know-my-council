@@ -9,6 +9,7 @@ use App\Models\Dataset;
 use App\Models\DatasetVersion;
 use App\Models\Import;
 use App\Models\ImportRun;
+use App\Models\StateTransition;
 use App\Models\SourceFile;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Storage;
@@ -43,6 +44,13 @@ class CouncilSpendCsvIngestor
         $datasetKey = (string) ($options['dataset_key'] ?: "council:{$councilSlug}:spend_over_500_csv");
         $importKey = "spend_over_500_csv:{$councilSlug}";
 
+        $headerOverrides = [
+            'supplier_header' => $options['supplier_header'] ?? null,
+            'amount_header' => $options['amount_header'] ?? null,
+            'date_header' => $options['date_header'] ?? null,
+            'description_header' => $options['description_header'] ?? null,
+        ];
+
         if (!is_file($localFilePath)) {
             return new CouncilSpendCsvIngestorResult(
                 status: CouncilSpendCsvIngestorResult::STATUS_FAILED,
@@ -62,6 +70,7 @@ class CouncilSpendCsvIngestor
             [$rowsSeen, $rowsWouldInsert, $warningCount, $errorSummary] = $this->parseCsvOnly(
                 localFilePath: $localFilePath,
                 delimiter: $delimiter,
+                headerOverrides: $headerOverrides,
             );
 
             return new CouncilSpendCsvIngestorResult(
@@ -188,24 +197,33 @@ class CouncilSpendCsvIngestor
             'started_at' => CarbonImmutable::now(),
         ]);
 
-        $this->audit(
-            actorImportRunId: $importRun->id,
-            actionFamily: 'import',
-            actionType: 'import_run.started',
-            targetType: 'import_runs',
-            targetId: $importRun->id,
-            after: [
-                'run_state' => 'running',
-                'dataset_version_id' => $datasetVersion->id,
-            ],
-        );
-
-        try {
-            [$bucket, $key, $sha256, $contentType, $byteSize] = $this->storeRawFile(
-                disk: $storageDisk,
-                importRunId: $importRun->id,
-                localFilePath: $localFilePath,
+            $this->audit(
+                actorImportRunId: $importRun->id,
+                actionFamily: 'import',
+                actionType: 'import_run.started',
+                targetType: 'import_runs',
+                targetId: $importRun->id,
+                after: [
+                    'run_state' => 'running',
+                    'dataset_version_id' => $datasetVersion->id,
+                ],
             );
+
+            $this->stateTransition(
+                actorImportRunId: $importRun->id,
+                targetType: 'import_runs',
+                targetId: $importRun->id,
+                stateField: 'run_state',
+                from: 'queued',
+                to: 'running',
+            );
+
+            try {
+                [$bucket, $key, $sha256, $contentType, $byteSize] = $this->storeRawFile(
+                    disk: $storageDisk,
+                    importRunId: $importRun->id,
+                    localFilePath: $localFilePath,
+                );
 
             $sourceFile = SourceFile::query()->create([
                 'dataset_version_id' => $datasetVersion->id,
@@ -231,6 +249,7 @@ class CouncilSpendCsvIngestor
                 importRunId: $importRun->id,
                 localFilePath: $localFilePath,
                 delimiter: $delimiter,
+                headerOverrides: $headerOverrides,
             );
 
             $finalState = $errorSummary === null ? 'succeeded' : 'failed';
@@ -258,6 +277,15 @@ class CouncilSpendCsvIngestor
                     'warning_count' => $warningCount,
                     'row_error_samples' => $rowErrorSamples,
                 ],
+            );
+
+            $this->stateTransition(
+                actorImportRunId: $importRun->id,
+                targetType: 'import_runs',
+                targetId: $importRun->id,
+                stateField: 'run_state',
+                from: 'running',
+                to: $finalState,
             );
 
             return new CouncilSpendCsvIngestorResult(
@@ -289,6 +317,17 @@ class CouncilSpendCsvIngestor
                     'run_state' => 'failed',
                     'error' => $e->getMessage(),
                 ],
+            );
+
+            $this->stateTransition(
+                actorImportRunId: $importRun->id,
+                targetType: 'import_runs',
+                targetId: $importRun->id,
+                stateField: 'run_state',
+                from: 'running',
+                to: 'failed',
+                reasonCode: 'exception',
+                reasonNote: $e->getMessage(),
             );
 
             return new CouncilSpendCsvIngestorResult(
@@ -388,7 +427,7 @@ class CouncilSpendCsvIngestor
      *
      * @return array{0:int,1:int,2:int,3:?string}
      */
-    private function parseCsvOnly(string $localFilePath, string $delimiter): array
+    private function parseCsvOnly(string $localFilePath, string $delimiter, array $headerOverrides): array
     {
         $rowsSeen = 0;
         $rowsWouldInsert = 0;
@@ -406,7 +445,7 @@ class CouncilSpendCsvIngestor
                 return [0, 0, 0, 'CSV header row is missing or unreadable.'];
             }
 
-            $columnMap = SpendCsvColumnMap::fromHeaders($headers);
+            $columnMap = SpendCsvColumnMap::fromHeaders($headers, $headerOverrides);
 
             while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
                 $rowsSeen++;
@@ -448,7 +487,8 @@ class CouncilSpendCsvIngestor
         string $datasetVersionId,
         string $importRunId,
         string $localFilePath,
-        string $delimiter
+        string $delimiter,
+        array $headerOverrides
     ): array {
         $rowsSeen = 0;
         $rowsInserted = 0;
@@ -467,7 +507,7 @@ class CouncilSpendCsvIngestor
                 return [0, 0, 0, 'CSV header row is missing or unreadable.', []];
             }
 
-            $columnMap = SpendCsvColumnMap::fromHeaders($headers);
+            $columnMap = SpendCsvColumnMap::fromHeaders($headers, $headerOverrides);
 
             $now = CarbonImmutable::now();
             $batch = [];
@@ -573,6 +613,32 @@ class CouncilSpendCsvIngestor
             'correlation_id' => $actorImportRunId,
             'workflow_type' => 'import_run',
             'workflow_id' => $actorImportRunId,
+        ]);
+    }
+
+    private function stateTransition(
+        string $actorImportRunId,
+        string $targetType,
+        string $targetId,
+        string $stateField,
+        ?string $from,
+        string $to,
+        ?string $reasonCode = null,
+        ?string $reasonNote = null,
+    ): void {
+        StateTransition::query()->create([
+            'target_type' => $targetType,
+            'target_id' => $targetId,
+            'state_field' => $stateField,
+            'from_state' => $from,
+            'to_state' => $to,
+            'reason_code' => $reasonCode,
+            'reason_note' => $reasonNote,
+            'actor_type' => 'import',
+            'actor_import_run_id' => $actorImportRunId,
+            'workflow_type' => 'import_run',
+            'workflow_id' => $actorImportRunId,
+            'changed_at' => CarbonImmutable::now(),
         ]);
     }
 
