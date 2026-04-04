@@ -78,6 +78,13 @@ API endpoints:
 - `GET /api/health`
 - `GET /api/version`
 
+## Phase 1 ingestion (backend)
+
+Phase 1 includes one practical ingestion path for council "spend over £500" CSV files.
+
+- Docs: [docs/ingestion/spend-csv.md](ingestion/spend-csv.md)
+- Command: `php artisan kmc:ingest:council-spend-csv <council_slug> <path-to-file.csv>`
+
 ## Debugging and coverage (backend)
 
 - Xdebug setup and usage: [docs/xdebug-and-coverage.md](xdebug-and-coverage.md)
