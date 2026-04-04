@@ -16,7 +16,6 @@ body:
       description: What user problem does this solve?
     validations:
       required: true
-
   - type: textarea
     id: proposed
     attributes:
@@ -42,4 +41,3 @@ body:
         - Unsure
     validations:
       required: true
-

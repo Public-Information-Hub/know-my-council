@@ -79,8 +79,8 @@ services:
     image: axllent/mailpit:v1.20
     container_name: knowmycouncil-mailpit
     ports:
-      - "8025:8025" # Web UI
-      - "1025:1025" # SMTP
+      - "8025:8025"  # Web UI
+      - "1025:1025"  # SMTP
 
 volumes:
   kmc_pgdata:

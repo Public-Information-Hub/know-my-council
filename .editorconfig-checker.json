@@ -1,10 +1,9 @@
 {
   "exclude": [
-    "backend/vendor/**",
-    "frontend/node_modules/**",
-    "frontend/.nuxt/**",
-    "backend/storage/**",
-    "backend/bootstrap/cache/**"
+    "^backend/vendor/",
+    "^frontend/node_modules/",
+    "^frontend/\\.nuxt/",
+    "^backend/storage/",
+    "^backend/bootstrap/cache/"
   ]
 }
-

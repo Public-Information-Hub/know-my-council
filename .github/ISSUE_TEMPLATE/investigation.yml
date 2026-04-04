@@ -53,4 +53,3 @@ body:
       options:
         - label: I understand this is not legal advice and not a reporting channel for active security issues.
           required: true
-

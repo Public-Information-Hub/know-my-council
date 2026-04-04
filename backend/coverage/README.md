@@ -35,7 +35,6 @@ Or open `backend/coverage/html/index.html` in your browser.
 ## Notes
 
 - Coverage requires a PHP coverage driver:
-  - Prefer **PCOV** for coverage (faster), or
-  - Use **Xdebug** when you also want interactive step debugging.
+    - Prefer **PCOV** for coverage (faster), or
+    - Use **Xdebug** when you also want interactive step debugging.
 - For step debugging, see `docs/xdebug-and-coverage.md`.
-
