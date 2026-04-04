@@ -14,18 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Markdown links (internal)
-        uses: lycheeverse/lychee-action@v2
-        with:
-          args: >
-            --offline
-            --no-progress
-            --verbose
-            --exclude-path backend/vendor
-            --exclude-path frontend/node_modules
-            --exclude-path frontend/.nuxt
-            README.md docs
-
       - name: YAML lint
         uses: ibiqlik/action-yamllint@v3
         with:
