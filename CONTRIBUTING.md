@@ -105,6 +105,8 @@ See: [docs/community-and-editorial-model.md](docs/community-and-editorial-model.
 - Use clear branch names (e.g. `docs/evidence-principles`, `infra/minio-init`).
 - Open a PR early if you want feedback.
 
+Maintainers: recommended GitHub branch protection and CI settings are documented in [docs/github-branch-and-ci-settings.md](docs/github-branch-and-ci-settings.md).
+
 PRs should include:
 
 - what changed and why
