@@ -445,7 +445,24 @@ This section uses a deliberately separate publication model. It does not collaps
 
 - specialised domain tables continue to hold canonical facts
 - specialised content tables hold assertions, analysis, and editorial material
-- a shared `content_items` envelope provides review, visibility, and presentation controls for publishable items
+- a shared `content_items` envelope provides review, visibility, and presentation controls only where a content-style publication wrapper is actually needed
+
+### Recommended publication boundary
+
+Use two patterns, not one:
+
+- Pattern A: keep the record in its domain table and store `public_state`/`visibility` on that table.
+- Pattern B: use a dedicated content entity plus `content_items` for publication/review control.
+
+For this project, the default should be:
+
+- Factual data records (`spend_records`, `contracts`, `council_versions`, organisation resolution history): Pattern A.
+- Evidence records: dedicated `evidence` table plus `content_items` because evidence is both provenance-bearing and publishable.
+- User assertions: Pattern B.
+- Analysis records: Pattern B.
+- Editorial/journalism content: Pattern B.
+
+Do not create a `content_items` row for every factual row by default. A spend line or contract record should remain a domain record first. Only add a content wrapper when there is a genuine publication workflow or presentation need that is separate from the factual row itself.
 
 #### `content_types`
 
@@ -459,7 +476,7 @@ This section uses a deliberately separate publication model. It does not collaps
 - Purpose: Publication/review envelope for any publishable item across the platform.
 - Key fields: `id`, `content_type_id`, `subject_type`, `subject_id`, `title`, `summary`, `submitted_by_user_id`, `owned_by_team_id`, `public_state`, `visibility`, `published_at`, `is_ai_assisted`.
 - Relationships: belongs to `content_types`, `users`, and `teams`; polymorphically points to a subject row such as `evidence`, `assertions`, `analysis_records`, `editorial_articles`, `investigations`, `foi_requests`, or a factual domain record intended for direct public rendering.
-- Important constraints: `content_items` controls presentation and workflow, not domain truth; publication requires state transitions and review appropriate to the type.
+- Important constraints: `content_items` controls presentation and workflow, not domain truth; it should not become a mirror of every canonical row in the database; publication requires state transitions and review appropriate to the type.
 
 #### `content_reviews`
 
@@ -496,30 +513,35 @@ This section uses a deliberately separate publication model. It does not collaps
   - Public: yes, once `published` and visibility is `public`.
   - Review required: yes for publication and significant correction.
   - Source linkage: via `dataset_versions`, `import_runs`, `evidence_links`, and `source_files`.
+  - Recommended storage pattern: remain in domain tables with `public_state`; do not default to `content_items`.
 
 - Evidence:
   - Authoritative: authoritative as supporting material, not as interpretation.
   - Public: yes if reviewed and safe to publish.
   - Review required: yes.
   - Source linkage: mandatory.
+  - Recommended storage pattern: `evidence` plus `content_items`.
 
 - User assertions:
   - Authoritative: no.
   - Public: optional, review-gated, and clearly labelled.
   - Review required: yes.
   - Source linkage: optional at submission time, but expected to mature into evidence or remain non-authoritative.
+  - Recommended storage pattern: `assertions` plus `content_items`.
 
 - Analysis:
   - Authoritative: no.
   - Public: yes after review and labelling.
   - Review required: yes, including AI review where relevant.
   - Source linkage: mandatory to evidence and/or factual inputs.
+  - Recommended storage pattern: `analysis_records` plus `content_items`.
 
 - Editorial/journalism:
   - Authoritative: no.
   - Public: yes after review.
   - Review required: yes.
   - Source linkage: mandatory to evidence or published factual records.
+  - Recommended storage pattern: `editorial_articles` plus `content_items`.
 
 ## 3. Cross-cutting Rules
 
@@ -539,9 +561,66 @@ This section uses a deliberately separate publication model. It does not collaps
 
 ### Internal immutable IDs
 
-- All core tables use immutable internal IDs (`UUID` or `ULID`; exact choice is an implementation decision).
+- All core tables use immutable internal IDs.
 - External identifiers are attributes, not primary keys.
 - Public URLs should prefer stable internal IDs or slugs derived from them, not external codes.
+
+Recommended default for this project:
+
+- Prefer `UUID` stored in PostgreSQL’s native `uuid` type.
+- If the implementation team wants time-ordered generation, prefer UUIDv7 generation while still using the native `uuid` column type.
+
+UUID vs ULID for this project:
+
+- `UUID`:
+  - strongest PostgreSQL fit because the database has a native `uuid` type
+  - simpler indexing, storage, and operational tooling
+  - well-supported in Laravel and adjacent tooling
+  - less human-readable than ULID, but human readability is not the main requirement for core keys
+
+- `ULID`:
+  - better human readability and lexical sortability
+  - fits Laravel well
+  - weaker PostgreSQL fit because it is typically stored as `char(26)`/text rather than a native type
+  - adds avoidable storage and operational awkwardness for a model with many high-volume tables
+
+Recommendation:
+
+- Use `UUID` as the project default.
+- Do not optimise for visually readable IDs in the canonical schema; use slugs, references, and admin tooling for human-facing workflows instead.
+
+### Enum, check constraint, and lookup table strategy
+
+Use three different mechanisms on purpose:
+
+- **PostgreSQL enums:** use sparingly, only for low-churn technical states that are unlikely to need metadata or frequent policy changes.
+- **Check constraints on text columns:** default choice for shared workflow/state vocabularies where the allowed set is small but may still evolve over time.
+- **Lookup/reference tables:** use where the value set carries metadata, public meaning, or configurable behaviour.
+
+Concrete guidance for this project:
+
+- Workflow/publication states such as `draft`, `submitted`, `under_review`, `approved`, `published`, `disputed`, `rejected`, `archived`:
+  - store as text with check constraints
+  - record history in `state_transitions`
+
+- Visibility states such as `public`, `restricted`, `private`:
+  - store as text with check constraints
+
+- Verification levels and trust levels:
+  - store as text with check constraints on `users`, `permissions`, and related tables
+  - keep the vocabulary small and policy-driven unless a later implementation genuinely needs metadata-rich levels
+
+- Content types:
+  - use the `content_types` lookup table
+  - this table already carries metadata such as `is_authoritative`, `default_visibility`, and `allows_ai_assist`
+
+- Roles and permissions:
+  - use lookup/reference tables because they are operational configuration, not mere enum labels
+
+Project recommendation:
+
+- Do not use PostgreSQL enums for policy-facing vocabularies such as workflow state, visibility, trust level, verification level, or content type.
+- Prefer check-constrained text for small shared vocabularies and lookup tables where the value set has metadata or will be administered.
 
 ### Publication and review states
 
@@ -576,11 +655,52 @@ This section uses a deliberately separate publication model. It does not collaps
 
 ### Use explicit foreign keys first
 
-- Core domain tables should use explicit foreign keys whenever the target type is known.
-- Laravel-style polymorphic links are appropriate only for cross-cutting tables such as `content_items`, `evidence_links`, `comments`, `flags`, `state_transitions`, `audit_logs`, `moderation_case_items`, and `investigation_items`.
-- Avoid using polymorphic relations to hide weak domain modelling.
+- Core identity and factual relationships should use strict foreign keys whenever the target type is known at design time.
+- Do not replace a known domain relationship with a polymorphic pair just because it is convenient in Laravel.
 
-## 4. Important Notes and Modelling Cautions
+Use strict foreign keys for records such as:
+
+- `spend_records.council_id`, `spend_records.council_version_id`, `spend_records.organisation_id`
+- `contracts.council_id`, `contracts.dataset_version_id`
+- `contract_suppliers.contract_id`, `contract_suppliers.organisation_id`
+- `foi_requests.council_id`
+- `dataset_versions.dataset_id`
+
+Use polymorphic references only for genuinely cross-cutting workflow and annotation features, where the whole point of the table is to attach the same behaviour to many unrelated subject types:
+
+- `evidence_links`
+- `comments`
+- `flags`
+- `state_transitions`
+- `audit_logs`
+- `moderation_case_items`
+- `investigation_items`
+- `content_items`
+
+Contributor rule of thumb:
+
+- if the table describes core truth about a domain entity, use strict foreign keys
+- if the table annotates, reviews, flags, comments on, or publishes many different subject types, polymorphic links are acceptable
+
+Avoid using polymorphic relations to hide weak domain modelling or to postpone important schema decisions.
+
+## 4. Implementation Decision Points
+
+These decisions should be locked before writing migrations:
+
+- **ID type:** use native PostgreSQL `uuid` columns by default; only switch to ULID if there is a concrete implementation need that outweighs PostgreSQL simplicity.
+- **State vocabulary storage:** use check-constrained text for workflow/publication/visibility/trust/verification states; avoid PostgreSQL enums for policy-facing vocabularies.
+- **Lookup-table boundary:** keep metadata-rich vocabularies in tables (`content_types`, `roles`, `permissions`, taxonomies), not in enums.
+- **FK vs polymorphic boundary:** use strict foreign keys for domain truth; reserve polymorphic references for cross-cutting workflow/annotation tables.
+- **Publication-layer boundary:** do not wrap every factual row in `content_items`; keep factual records in domain tables and use `content_items` for evidence, assertions, analysis, editorial, and other genuinely publishable content entities.
+
+## 5. Important Notes and Modelling Cautions
+
+### UK-wide taxonomy validation
+
+- The model is intentionally jurisdiction-aware.
+- Before writing migrations, implementation should validate authority and geography taxonomy choices against devolved-nation realities and publishing practices.
+- This is a schema validation task, not a reason to weaken the temporal or provenance model.
 
 - Do not destructively overwrite raw artefacts or raw observations. If a council republishes a file or a correction changes a normalised interpretation, add a new version or correction event.
 - Do not treat derived outputs as canonical fact. Read models, search documents, AI-assisted analysis, and ranking outputs are rebuildable projections.
@@ -589,4 +709,3 @@ This section uses a deliberately separate publication model. It does not collaps
 - AI outputs must never be treated as raw fact or as evidence. They are assistive analysis and must remain labelled, reviewable, and linked to source inputs.
 - Joins between historic and current entities must be explicit and time-aware. A current council or organisation identity must not be backfilled into historic records without an explicit mapping basis and provenance.
 - The current product focus is council transparency, but the model is intentionally UK-wide in scope. Before implementation, the authority classification and geography taxonomy should be checked against devolved nation-specific publishing patterns so the schema does not accidentally hard-code England-only assumptions.
-
