@@ -5,9 +5,7 @@ Date: 2026-04-04
 
 ## Context
 
-KnowMyCouncil is intended to be a public-facing civic transparency platform. Trustworthiness and contributor-friendliness matter from day one.
-
-Early projects often delay governance and community health until “later”, which increases risk when outside contributors arrive. For a public-interest project, the repository should be clear about conduct, contribution expectations, security reporting, and evidence discipline.
+KnowMyCouncil is a public-interest civic transparency project. Trustworthiness, evidence discipline, and contributor-friendliness matter from day one.
 
 ## Decision
 
@@ -24,3 +22,8 @@ Establish a serious open-source foundation in the repository, including:
 - Maintainers have a clearer baseline for review, moderation, and triage.
 - The project signals credibility without claiming maturity it does not yet have.
 
+## Links
+
+- `README.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`

@@ -5,9 +5,7 @@ Date: 2026-04-04
 
 ## Context
 
-KnowMyCouncil is intended to be a long-lived civic transparency project. The repository needs a place to accumulate stable architectural and domain context over time.
-
-Without a deliberate structure, important decisions and modelling guidance tend to be scattered across issues, PRs, and ad-hoc documents. That makes the project harder to maintain, harder to review, and riskier for AI-assisted contribution.
+KnowMyCouncil needs a durable place to capture architectural, domain, and modelling guidance so it does not fragment across issues, PRs, and ad-hoc documents.
 
 ## Decision
 
@@ -24,6 +22,9 @@ Add a top-level `docs/reference/README.md` describing how to use the system and 
 ## Consequences
 
 - Contributors have a clear place to capture stable reference material and decision rationale.
-- Maintainers can ask for changes that affect core modelling to update reference docs and/or add ADRs.
-- The docs surface an explicit separation between canonical reference, dated decisions, and contextual timeline notes.
+- Maintainers can require architecture/modelling changes to update reference docs and/or add ADRs.
+- Canonical reference, dated decisions, and contextual timeline notes are explicitly separated.
 
+## Links
+
+- `docs/reference/README.md`

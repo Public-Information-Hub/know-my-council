@@ -6,6 +6,10 @@ KnowMyCouncil is intended to be a read-heavy public transparency platform focuse
 
 This document describes the intended platform shape at a high level. It does not claim that all components are implemented today.
 
+For the introductory architecture overview in `docs/`, see:
+
+- [../../architecture.md](../../architecture.md)
+
 ## Major components
 
 - **Backend:** Laravel for the API, administrative tooling (future), ingestion coordination (future), queues, and integrations.
@@ -31,46 +35,16 @@ The platform is expected to evolve with a deliberate separation between:
 
 This separation reduces the risk that operational complexity (imports, retries, parsing variance) leaks into public query performance or user-facing data guarantees.
 
-## Roles of the core services
+## Service responsibilities (short)
 
-### PostgreSQL
+These are the intended responsibilities at a high level:
 
-PostgreSQL is the primary system of record.
+- **PostgreSQL:** primary system of record for canonical entities, provenance/audit, and (later) read-optimised projections.
+- **Redis:** cache and queue backend for operational work (imports, indexing, document processing).
+- **Meilisearch:** user-facing search index for fast search/ranking and (where appropriate) filtering/facets.
+- **Object storage (MinIO locally):** source artefacts and document storage with provenance.
 
-Expected responsibilities over time include:
-
-- canonical entities (authorities, suppliers, contracts, spends, documents)
-- provenance and audit trails (import runs, source references, transformations)
-- “truth” records vs curated/normalised outputs (clearly separated)
-- read-optimised projections (denormalised tables or materialised views where appropriate)
-
-### Redis
-
-Redis is an operational component:
-
-- caching for read-heavy traffic
-- queue backend for background jobs (imports, indexing, document processing)
-- session storage for future administrative features
-
-### Meilisearch
-
-Meilisearch is a separate search layer:
-
-- fast user-facing search and ranking
-- filtering and faceting where appropriate
-- decoupled from PostgreSQL schema complexity
-
-Search indexing should be reproducible and traceable (index inputs, index versioning, and re-index workflows).
-
-### MinIO / object storage
-
-Object storage is for source artefacts and documents:
-
-- original files (for retention and reproducibility)
-- extracted text or intermediate artefacts (where useful)
-- derived render outputs (if/when required)
-
-Locally, MinIO mirrors an S3-style API without requiring a cloud account.
+Search and derived views must remain reproducible and traceable back to inputs.
 
 ## Open-source and public-interest considerations
 
@@ -80,4 +54,3 @@ The architecture should remain:
 - **safe for volunteers:** manageable dependency surface area and predictable maintenance costs
 - **credible:** no over-claiming of accuracy or completeness; uncertainty is allowed and should be explicit
 - **non-partisan:** engineering should support evidence-led conclusions, not narrative
-

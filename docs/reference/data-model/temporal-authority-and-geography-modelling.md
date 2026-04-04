@@ -1,90 +1,77 @@
 # Temporal Authority and Geography Modelling (intended approach)
 
-English local government changes over time. Councils may reorganise, merge, split, rename, or change boundaries. External codes change. Datasets are published with inconsistent naming. A transparency platform that ignores time will eventually mislead people.
+English local government changes over time. Councils reorganise, merge, split, rename, and change boundaries. External identifiers evolve. Datasets are published inconsistently and often reflect the publisher’s organisational view at the time.
 
-This document sets out the intended modelling approach for:
+A civic transparency platform that models only “current state” will eventually mislead people. This document describes an intended modelling approach that remains:
 
-- authority reorganisations (mergers, splits, renames)
-- boundary changes and geographic comparability
-- changing external identifiers/codes
-- historic vs current comparisons
-- stable internal IDs and temporal validity
-- lineage relationships between “entities over time”
+- accurate to what was published at the time
+- usable for comparisons and navigation today
+- explicit about uncertainty and assumptions
 
-This is modelling guidance. It does not define a final schema.
+This is reference guidance. It is not a final schema.
 
-## Principles
+Related decision:
 
-### 1. Stable internal IDs, temporal attributes
+- [../decisions/ADR-0004-temporal-authority-and-geography-model.md](../decisions/ADR-0004-temporal-authority-and-geography-model.md)
 
-We should avoid using external codes as primary keys.
+## Goals and non-goals
 
-Instead:
+Goals:
 
-- assign a stable internal identifier for an “authority concept”
-- model time-bounded “versions” or “representations” of that concept
-- attach names, types, external identifiers, and boundary definitions to time-bounded records
+- preserve as-published authority identity observations with provenance
+- support temporal validity (effective dates) for names, codes, and boundaries
+- represent reorganisations and lineage explicitly (merge/split/rename/abolition/creation)
+- enable reproducible derived “comparison” views without overwriting historical truth
 
-This allows us to answer both:
+Non-goals (for now):
 
-- “what did the data say at the time?”
-- “how does this compare to today’s administrative reality?”
+- choose a definitive taxonomy for every authority type
+- define the full database schema
+- promise specific external code systems as canonical
 
-### 2. Separate raw historical truth from normalised comparison views
+## Core principles (invariants)
 
-For public trust, we must preserve raw imported truth:
+1. **Stable internal IDs, external IDs as attributes**
+External identifiers are inputs and references, not primary keys.
 
-- what a council published
-- with what name/code at the time
-- with what boundary basis (if known)
-- with an immutable source reference
+2. **Time is explicit**
+If something can change over time, the model should be able to represent that change without overwriting history.
 
-Normalised or comparative views (for example, “group historic spend under current authority grouping”) are useful, but must be explicitly labelled as *derived* and reproducible.
+3. **Lineage is first-class**
+Reorganisations are relationships/events that must be represented explicitly and evidence-backed where possible.
 
-### 3. Temporal validity is explicit
+4. **Raw vs normalised vs derived are separated**
+As-published observations are preserved. Normalisation and derived comparison views are optional layers that must be reproducible and labelled.
 
-Wherever we store authority identity, names, codes, boundaries, or membership:
+5. **Comparability is disclosed**
+Comparisons across time must disclose the basis used (administrative continuity, geographic continuity, or an analytical basis).
 
-- use explicit validity periods (effective from/to)
-- allow unknown end dates
-- avoid implying permanence when the data is time-scoped
+## Modelling primitives (conceptual, not schema)
 
-### 4. Lineage is first-class
+To keep future work consistent, it helps to name the conceptual building blocks:
 
-Reorganisations are not just renames.
+- **Authority (concept):** a stable internal identity used as the anchor for continuity.
+- **Authority version:** a time-bounded representation of the authority as observed/defined in a period (name, classification, etc.).
+- **Identifier assignment:** a link between an authority (or authority version) and an external identifier/code, with provenance and (where needed) validity dates.
+- **Authority relationship / lineage edge:** a time-scoped relationship describing reorganisation (for example “A merged into B effective 20XX-YY-ZZ”), with evidence.
+- **Geography (concept):** a named area used for interpretation/aggregation that may or may not be the same as an authority.
+- **Boundary definition (versioned artefact):** a specific boundary representation for a geography at a point in time (if/when stored), with provenance.
+- **Mapping basis:** a named rule set for normalisation/comparison (for example “as published”, “as of 2026-04-04”, “analytical geography X”).
 
-We need to represent relationships such as:
+These primitives help us avoid an anti-pattern where “authority” is treated as a single row that gets updated in place as the world changes.
 
-- predecessor -> successor (merge)
-- predecessor -> successors (split)
-- successor <- predecessors (merge inputs)
+## Authority identity and time
 
-Lineage relationships should be time-scoped and include evidence/provenance (which source supports this mapping).
+### Authority concept vs authority version
 
-### 5. Geographic comparability is not free
+Treat “authority” as the continuity anchor and “authority version” as the time-scoped representation.
 
-Boundary changes can break comparisons.
-
-We should distinguish between:
-
-- the authority identity and its legal/administrative continuity
-- the geographic footprint at a particular time
-- analysis geographies used for aggregation (which may not match administrative boundaries)
-
-Any “compare across time” feature must say which geography basis it is using.
-
-## Authority modelling guidance
-
-### Authority vs authority version (conceptual split)
-
-Treat “authority” as a stable internal concept that can have many time-bounded versions.
-
-An authority version is the thing that carries:
+Authority versions are the thing that carry:
 
 - a specific name/spelling used in a period
 - a type/classification (where useful)
-- external identifiers/codes as-of that period
-- links to geographic boundary definitions (if/when stored)
+- external identifiers/codes as observed in that period
+- links to geography/boundary definitions (where relevant and known)
 
 This supports:
 
@@ -94,103 +81,143 @@ This supports:
 
 ### External identifiers and codes
 
-Councils and datasets may reference external identifiers (for example, government statistical geography codes, register IDs, legacy codes, dataset-specific IDs).
+External identifiers should be:
 
-Treat these as:
+- stored with provenance (where did we get this code?)
+- treated as time-scoped if they can change, be retired, or be corrected
+- allowed to have multiple assignments over time
 
-- attributes with provenance
-- time-bounded where necessary
-- potentially many-to-one over time (codes can be retired, reissued, or corrected)
+Practical rule: never assume an external code is globally stable forever without evidence.
 
-Never assume a code is globally stable forever without evidence.
+## Reorganisations and lineage
 
-### Reorganisations (merge/split/abolition/creation)
+Reorganisation modelling should capture the *relationship/event*, not only the end state.
 
-Represent reorganisations with explicit lineage edges.
+We need to represent relationships such as:
+
+- predecessor -> successor (merge or replacement)
+- predecessor -> successors (split)
+- successor <- predecessors (merge inputs)
 
 Guidance:
 
-- model the event/relationship, not just the end state
-- record dates (or date ranges) and the source for the mapping
-- allow partial mappings where only some of the evidence is known
+- record effective dates (or best-known ranges)
+- store evidence/provenance for each lineage statement
+- allow partial or uncertain mappings where the evidence is incomplete
 
-Avoid “clever” implicit inference. If the relationship is uncertain, represent it as uncertain and explain why.
+Avoid implicit inference that quietly “fixes” the world. If we are not sure, we should represent uncertainty rather than smoothing it away.
 
-### Historic vs current comparisons
+## Geography and boundaries
 
-We will likely need at least two separate ways of grouping data:
+### Geography is not always “authority”
 
-- **as-published grouping:** attach records to the authority version that existed at the time the source data describes
-- **normalised comparison grouping:** map historic records onto a chosen comparison basis (for example “current authority grouping” or a specific “as-of” date)
-
-The mapping from as-published to normalised basis must be:
-
-- explicit
-- reproducible
-- evidence-backed where possible
-
-## Geography modelling guidance
-
-### What “geography” means here
-
-“Geography” covers spatial definitions used for:
+“Geography” covers spatial definitions used to interpret or aggregate information:
 
 - administrative boundaries (authority areas at a time)
-- analytical geographies (for example, aggregations or reporting areas)
-- dataset-specific areas (where suppliers or spend are reported at different levels)
+- analytical geographies (used for comparison/reporting)
+- dataset-specific areas or organisational units used by a publisher
 
-We should be careful not to conflate:
+We must not conflate:
 
-- administrative authority continuity
-- boundary continuity
-- analytical comparability
+- authority continuity (legal/administrative identity)
+- boundary continuity (geographic footprint)
+- analytical comparability (chosen basis for comparison)
 
-### Boundary changes
+### Boundary change without reorganisation
 
-Boundary definitions can change even when an authority continues.
+An authority can continue while its boundary changes. Our model needs to represent:
 
-When/if the project stores boundaries:
+- that the authority concept remains continuous
+- that the geography/boundary definition changed
+- that comparisons across the change may not be “like-for-like”
 
-- treat boundary definitions as versioned artefacts
-- time-scope the association between an authority version and a boundary definition
-- record provenance (where the geometry came from, what revision, what date)
+If/when boundary geometry is stored, treat it as versioned artefacts with provenance, and time-scope the association to authority versions.
 
-Even without geometry storage, we should still model boundary change *events* where relevant to interpreting comparisons.
+## “As published” vs “comparison” views
 
-### Dataset geography basis
+We will likely need at least two distinct ways of grouping/serving records:
 
-Different datasets may be published against different geography bases. For example:
+- **As published (truth layer):** records are attached to the authority version and identifiers observed in the source material at the relevant time.
+- **Comparison view (derived layer):** records are mapped onto a chosen basis (for example “as-of date”, or “current grouping”), explicitly and reproducibly.
 
-- a spend dataset might follow a finance system’s organisation units, not legal boundaries
-- a supplier register might be national, not authority-scoped
-- documents may refer to regions, wards, or service areas
+Rules:
 
-Each dataset import should record:
+- derived comparison views must be labelled as derived
+- the mapping basis must be named and reproducible
+- the mapping should be evidence-backed where possible and must record assumptions
 
-- the authority identity it claims to refer to (as published)
-- the geography basis if known (or “unknown”)
-- any assumptions made during normalisation
+## Practical examples (how the model should behave)
 
-## Provenance and auditability requirements
+These examples are intentionally abstract (no real-world claims).
 
-At minimum, future modelling should allow:
+### Example A: rename only
 
-- linking a record to a source artefact (file/URL/capture) with timestamp
-- recording import run metadata (tool/version, date, warnings)
-- storing transformation steps for derived/normalised outputs
+An authority changes its name but remains administratively continuous.
 
-Where an authority mapping or reorganisation is encoded, it should be possible to answer:
+Expected behaviour:
 
-- “which sources support this mapping?”
-- “what assumptions were made?”
-- “what changed over time?”
+- the authority concept remains the same
+- a new authority version becomes effective from the rename date
+- as-published records before/after show the correct name at the time
+- a comparison view can group both versions under the same authority concept
 
-## Practical consequences for future implementation
+### Example B: merge
 
-This modelling direction implies:
+Authorities A and B are replaced by a new authority C.
 
-- we will need tables (or equivalent) representing stable concepts and time-bounded versions
-- we will need explicit lineage relationships between authority concepts/versions
-- we will need clear labelling of “as published” vs “normalised/derived” views
-- we should design public UI to disclose the basis used for comparisons (including uncertainty)
+Expected behaviour:
 
+- authority concepts for A and B remain as historic anchors
+- C is introduced as a new authority concept (or an explicitly chosen continuity anchor if evidence supports it)
+- lineage edges record A -> C and B -> C with effective date and provenance
+- derived views that map historic records into C must be explicit about the mapping basis
+
+### Example C: split
+
+Authority A is replaced by A1 and A2.
+
+Expected behaviour:
+
+- A remains as a historic anchor
+- lineage edges record A -> A1 and A -> A2
+- if we support allocating historic records, any allocation rule must be explicit and reproducible (and may be “unknown”)
+
+### Example D: boundary change
+
+Authority continues but its boundary changes.
+
+Expected behaviour:
+
+- the authority concept remains continuous
+- boundary definitions are versioned and time-scoped
+- any “compare across time” feature discloses boundary basis and potential non-comparability
+
+## Import pipeline implications (future)
+
+Even before we have a full canonical model, imports should preserve raw observations:
+
+- as-published authority name string(s)
+- any as-published codes/identifiers found in the dataset
+- publication date or relevant period (where available)
+- the source artefact reference (URL/file capture) and when it was captured
+- any assumptions used to link to a normalised authority identity (if performed)
+
+Never discard raw observations “because we have a normalised version”. Raw observations are the audit trail.
+
+## Public API and UI implications (future)
+
+To avoid misleading outputs, endpoints and pages that compare across time will need to:
+
+- disclose the comparison basis (“as published” vs “normalised as-of date”)
+- allow an `as_of` date conceptually (even if not implemented immediately)
+- represent “unknown/uncertain” mappings without forcing a tidy answer
+
+## Minimum auditability requirements
+
+Where an authority mapping or lineage statement exists, we should be able to answer:
+
+- which sources support it?
+- what assumptions were made?
+- what changed over time?
+
+This is both a technical requirement and a trust requirement for a civic transparency project.

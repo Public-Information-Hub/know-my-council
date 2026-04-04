@@ -5,14 +5,12 @@ Date: 2026-04-04
 
 ## Context
 
-Many contributors will use AI assistance for code, documentation, and project materials. AI can improve productivity, but it can also introduce:
+Many contributors will use AI assistance. That can help, but it also introduces recurring risks:
 
 - invented facts and sources
 - over-claiming of implementation status
 - bloated or mixed-concern changes that are hard to review
 - accidental shifts in governance language or evidence standards
-
-For a civic transparency project, these failure modes undermine trust and maintainability.
 
 ## Decision
 
@@ -29,3 +27,7 @@ Allow AI-assisted contributions, but set explicit repository standards:
 - Maintainers have a shared baseline for review expectations.
 - Contributors can use AI tools without the project becoming “AI-first” or losing evidence discipline.
 
+## Links
+
+- `AGENTS.md`
+- `docs/ai-contributing.md`

@@ -9,7 +9,8 @@ These documents should:
 - describe temporal modelling and identifier strategy
 - support long-term comparability (especially across council reorganisations)
 
+If a domain doc defines what a concept means (for example “supplier”), data model docs define the cross-cutting rules for representing it over time and across datasets.
+
 Start with:
 
 - [temporal-authority-and-geography-modelling.md](temporal-authority-and-geography-modelling.md)
-

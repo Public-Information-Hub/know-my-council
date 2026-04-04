@@ -33,3 +33,6 @@ The initial canonical guidance lives in:
 - Public UI and APIs will need to disclose which basis is used for comparisons (including uncertainty).
 - Import pipelines should preserve as-published identifiers and names as observations, even when normalisation exists.
 
+## Links
+
+- `docs/reference/data-model/temporal-authority-and-geography-modelling.md`

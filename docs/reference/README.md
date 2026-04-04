@@ -23,6 +23,14 @@ If something is temporary, speculative, or best handled as discussion, keep it i
 - `decisions/`: lightweight ADR-style decision records (dated, explicit, and reviewable).
 - `timelines/`: short chronological context notes (used sparingly; not a changelog).
 
+## Where to put things (quick guide)
+
+- A term definition or naming guidance: `domain/`
+- Modelling invariants and cross-domain rules (IDs, time, provenance): `data-model/`
+- System boundaries and integration shape: `architecture/`
+- “We chose X over Y” with consequences: `decisions/` (ADR)
+- “Here is what happened in early setup and why it matters”: `timelines/`
+
 ## Canonical vs chronological
 
 - Reference docs (`architecture/`, `data-model/`, `domain/`) should aim to be canonical and current. Update them when the project’s intended direction changes.
@@ -36,6 +44,17 @@ If something is temporary, speculative, or best handled as discussion, keep it i
 - Use en_GB English.
 - Link to supporting material where helpful (issues, PRs, external standards) but do not assume they will always remain available; capture the important reasoning in the doc.
 
+## Keeping this scalable
+
+This system is intended to grow without becoming noisy.
+
+Guidelines:
+
+- Prefer a few “root” docs per section that other docs can link to.
+- Create new files when there is a genuinely distinct, stable topic (not just a paragraph).
+- Avoid repeating the same explanations across many docs. Link instead.
+- If guidance is frequently changing, it may belong in issues/PR discussion, not in reference docs.
+
 ## How to avoid a junk drawer
 
 Do not add:
@@ -44,4 +63,3 @@ Do not add:
 - “vision” prose without concrete modelling or decision content
 - speculative roadmaps (use `ROADMAP.md` instead)
 - implementation instructions (use `docs/local-development.md` or task-specific docs instead)
-

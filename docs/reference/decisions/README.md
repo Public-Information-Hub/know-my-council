@@ -20,9 +20,19 @@ Each ADR should include:
 - Context
 - Decision
 - Consequences
+ - Links (optional but recommended: to reference docs, issues, PRs)
 
 ## Editing ADRs
 
 - After an ADR is **accepted**, do not rewrite history. If the decision changes, add a new ADR and mark the old one as `superseded`.
 - Keep ADRs concise and practical.
+
+## When to write an ADR
+
+Write an ADR when a choice will otherwise be re-litigated or inconsistently applied, such as:
+
+- identifier strategy and temporal modelling rules
+- separation between truth/ingestion and read/query layers
+- evidence/provenance boundaries
+- contributor workflow changes that affect implementation
 
