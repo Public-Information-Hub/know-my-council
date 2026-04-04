@@ -73,3 +73,7 @@ If you are configuring or operating an AI agent, read:
 
 - [AGENTS.md](../AGENTS.md)
 
+Additional maintainer/contributor guidance:
+
+- [docs/ai-workflows.md](ai-workflows.md)
+- [docs/ai-task-templates.md](ai-task-templates.md)

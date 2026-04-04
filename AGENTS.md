@@ -1,4 +1,4 @@
-# Guidance for AI agents and AI-assisted contributors
+# Guidance for AI agents and AI-assisted contributors (canonical)
 
 KnowMyCouncil is a public-interest civic transparency project focused on English councils. The work in this repository should be evidence-led, non-partisan, source-driven, and easy to review.
 
@@ -23,6 +23,8 @@ AI agents and AI-assisted contributors must:
 - **Avoid casual dependencies**: do not add new dependencies without a clear need and explicit discussion of trade-offs.
 - **Avoid unfocused refactors**: do not generate broad, low-signal rewrites just to “clean up”.
 - **Preserve placeholders**: do not remove placeholders unless replacing them with real, verified values.
+- **Do not add fluffy institutional wording**: avoid corporate polish and inflated claims about maturity, governance, or impact.
+- **Do not casually rewrite sensitive docs**: be conservative with governance, evidence, disclaimer, and security text.
 - **Keep docs useful**: avoid vague fluff and marketing language.
 - **Be explicit about verification**: do not claim tests passed, checks ran, or services worked unless you actually verified it.
 
@@ -54,6 +56,7 @@ When work touches public data, evidence, investigations, FOI/EIR, or reputationa
 - Prefer minimal changes that are easy to test and revert.
 - Add or update tests when it is practical and meaningful.
 - If verification is incomplete (e.g. Docker not running, missing extensions), say so plainly.
+- Do not bundle unrelated changes into one PR without a clear reason.
 
 ## Output expectations (for PRs and change proposals)
 
@@ -70,6 +73,7 @@ If AI assistance was used materially, disclose it and confirm you reviewed the o
 ## Related guidance
 
 - Human-facing AI guidance: [docs/ai-contributing.md](docs/ai-contributing.md)
+- Maintainer and contributor workflows: [docs/ai-workflows.md](docs/ai-workflows.md)
+- Prompt templates: [docs/ai-task-templates.md](docs/ai-task-templates.md)
 - Contribution workflow: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Evidence principles: [docs/data-and-evidence-principles.md](docs/data-and-evidence-principles.md)
-
