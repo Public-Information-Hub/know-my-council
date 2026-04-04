@@ -17,4 +17,4 @@ jobs:
       - name: EditorConfig check
         uses: editorconfig-checker/action-editorconfig-checker@v2
         with:
-          version: "3.6.1"
+          version: "v3.6.1"
