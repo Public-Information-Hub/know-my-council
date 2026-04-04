@@ -16,7 +16,7 @@
     "nuxt": "^3.21.2"
   },
   "devDependencies": {
-    "@nuxt/eslint": "^0.7.6",
+    "@nuxt/eslint": "^1.15.2",
     "@types/node": "^22.15.17",
     "eslint": "^9.24.0",
     "typescript": "^5.8.3",
