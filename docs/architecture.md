@@ -2,6 +2,10 @@
 
 KnowMyCouncil is intended to be a read-heavy public transparency platform.
 
+For a more durable architecture reference (intended direction), see:
+
+- [reference/architecture/platform-shape.md](reference/architecture/platform-shape.md)
+
 In practice this means:
 
 - The majority of traffic is expected to be anonymous reads (pages and API queries).

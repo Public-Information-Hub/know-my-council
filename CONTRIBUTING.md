@@ -12,6 +12,10 @@ This guide aims to make contributions predictable, source-led, and safe.
 - **Prefer small PRs:** smaller changes are easier to review, safer to merge, and easier to revert.
 - **Discuss bigger changes first:** if you want to change architecture, data models, or governance, open an issue and describe the proposal before implementing it.
 
+For durable modelling and architectural context, see the reference system:
+
+- [docs/reference/README.md](docs/reference/README.md)
+
 ## AI-assisted contributions
 
 AI-assisted contribution is allowed.

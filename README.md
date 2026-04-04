@@ -66,6 +66,7 @@ Local dev runs apps on the host and infrastructure services in Docker.
 
 - [docs/local-development.md](docs/local-development.md)
 - [docs/architecture.md](docs/architecture.md)
+- Reference system (architecture, domain, ADRs): [docs/reference/README.md](docs/reference/README.md)
 - [docs/next-steps.md](docs/next-steps.md)
 - Backend debugging and coverage: [docs/xdebug-and-coverage.md](docs/xdebug-and-coverage.md)
 
