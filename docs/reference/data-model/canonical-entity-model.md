@@ -142,7 +142,7 @@ If these are mixed, the platform loses neutrality, traceability, and legal defen
 
 #### `organisation_resolution_events`
 
-- Purpose: Record merges, splits, and manual resolution decisions affecting organisation identity.
+- Purpose: Record merges, splits, and manual resolution decisions affecting organisation identity. This is the organisation-level merge/split event history.
 - Key fields: `id`, `event_type`, `source_organisation_id`, `target_organisation_id`, `resolved_by_user_id`, `resolution_basis`, `supersedes_event_id`, `resolved_at`.
 - Relationships: belongs to `organisations` as source and target; belongs to `users`; referenced by `audit_logs`.
 - Important constraints: resolution decisions must be reversible and auditable; automatic suggestions must not directly create published merges without review.
@@ -400,16 +400,16 @@ If these are mixed, the platform loses neutrality, traceability, and legal defen
 #### `audit_logs`
 
 - Purpose: Append-only record of state-changing actions across the platform.
-- Key fields: `id`, `actor_user_id`, `action_type`, `target_type`, `target_id`, `before_json`, `after_json`, `context_json`, `correlation_id`, `created_at`.
-- Relationships: belongs to `users`; polymorphically targets many records; may link conceptually to `import_runs`, `projection_runs`, or `moderation_cases`.
-- Important constraints: append-only; sensitive internal context may exist and must respect visibility rules; audit rows are not a replacement for domain history tables.
+- Key fields: `id`, `actor_type`, `actor_user_id`, `actor_system_key`, `actor_import_run_id`, `actor_job_key`, `actor_api_key_id`, `actor_ai_process_key`, `action_type`, `target_type`, `target_id`, `before_json`, `after_json`, `context_json`, `request_id`, `correlation_id`, `workflow_type`, `workflow_id`, `created_at`.
+- Relationships: belongs to `users` (nullable); may belong to `import_runs` (nullable); polymorphically targets many records; may link conceptually to `projection_runs`, `moderation_cases`, or review workflows.
+- Important constraints: append-only; actor modelling must support user, system, import, job, API, and AI-assisted contexts; sensitive internal context may exist and must respect visibility rules; audit rows are not a replacement for domain history tables or provenance records.
 
 #### `state_transitions`
 
 - Purpose: Generic state history for records using the shared publication/workflow vocabulary.
-- Key fields: `id`, `subject_type`, `subject_id`, `from_state`, `to_state`, `reason_code`, `reason_note`, `acted_by_user_id`, `changed_at`.
-- Relationships: belongs to `users`; polymorphically targets `content_items`, `submissions`, `investigations`, `foi_requests`, `correction_proposals`, and other stateful records.
-- Important constraints: current state may be denormalised on the subject record, but transition history is authoritative for audit.
+- Key fields: `id`, `subject_type`, `subject_id`, `from_state`, `to_state`, `reason_code`, `reason_note`, `actor_type`, `acted_by_user_id`, `actor_import_run_id`, `actor_job_key`, `workflow_type`, `workflow_id`, `changed_at`.
+- Relationships: belongs to `users` (nullable); may belong to `import_runs` (nullable); polymorphically targets `content_items`, `submissions`, `investigations`, `foi_requests`, `correction_proposals`, `moderation_cases`, and other stateful records.
+- Important constraints: current state may be denormalised on the subject record, but transition history is authoritative for workflow reconstruction; state history is distinct from both action audit and record snapshot history.
 
 #### `comments`
 
@@ -430,7 +430,7 @@ If these are mixed, the platform loses neutrality, traceability, and legal defen
 - Purpose: Structured case for moderation, dispute, takedown, or legal-risk handling.
 - Key fields: `id`, `case_type`, `severity`, `opened_by_user_id`, `assigned_to_user_id`, `case_state`, `visibility`, `summary`, `resolution_note`, `opened_at`, `closed_at`.
 - Relationships: belongs to `users` as opener and assignee; has many `moderation_case_items`; may link to `flags`, `comments`, `audit_logs`.
-- Important constraints: case notes often contain restricted/internal information; moderation resolution must remain traceable and reversible where possible.
+- Important constraints: case notes often contain restricted/internal information; moderation resolution must remain traceable and reversible where possible; significant case changes should be reconstructable later via state transitions plus a dedicated history pattern where needed.
 
 #### `moderation_case_items`
 
@@ -559,6 +559,71 @@ Do not create a `content_items` row for every factual row by default. A spend li
 - Evidence is the human/compliance-readable bridge from source artefacts to claims and records.
 - Derived runs should be traced through `projection_runs`, never confused with raw or canonical truth.
 
+### Auditing and forensic traceability
+
+The model uses four separate traceability layers. They solve different problems and should not be collapsed into one generic mechanism.
+
+1. **Action audit**
+   - use `audit_logs`
+   - answers: who or what acted, against what, when, and in which workflow context
+
+2. **State transition history**
+   - use `state_transitions`
+   - answers: how did a record move between workflow/publication/moderation states
+
+3. **Record/entity history**
+   - use dedicated event/history tables where the exact prior and new entity state may need reconstruction
+   - examples already in this model include `organisation_resolution_events`, `authority_lineage`, `foi_request_events`
+   - additional entity-specific history tables should be added where simple audit entries are not enough
+
+4. **Provenance linkage**
+   - use `source_files`, `source_file_links`, evidence linkage, dataset/import references, FOI response links, and review context
+   - answers: where did the fact, claim, or publication basis come from
+
+Important distinction:
+
+- `audit_logs` are not provenance
+- `state_transitions` are not full record history
+- entity history/versioning is not the same as operational logging
+- `updated_at` is not audit
+- application logs are useful for operations, but they are not an audit trail
+
+### Practical history guidance
+
+Use full version/history support for entities where meaning can materially change and later reconstruction is likely to matter.
+
+Usually full history support:
+
+- `organisations` and organisation resolution/mapping decisions
+- `contracts`
+- `datasets` and `dataset_versions`
+- `evidence`
+- `investigations`
+- `foi_requests` and `foi_responses`
+- `moderation_cases`
+- `identity_verifications`
+- publishable `assertions`, `analysis_records`, and `editorial_articles`
+
+Audit log plus provenance may be enough:
+
+- `comments`
+- `flags`
+- some `team_members`, `user_roles`, and `user_permissions` changes where the assignment event itself is the main thing that matters
+
+Append-only rather than edited in place:
+
+- raw imported observations
+- `source_files`
+- `import_runs`
+- `foi_request_events`
+- `state_transitions`
+- `audit_logs`
+
+Implementation pattern:
+
+- where a table needs exact before/after reconstruction beyond workflow state, prefer dedicated history tables named with an explicit pattern such as `organisation_histories`, `contract_histories`, `dataset_version_histories`, `evidence_histories`, `investigation_histories`, `foi_request_histories`, `foi_response_histories`, `moderation_case_histories`, or `content_item_histories`
+- do not add history tables to every entity by reflex; add them where disputes, corrections, moderation, publishing, or identity resolution make exact reconstruction valuable
+
 ### Internal immutable IDs
 
 - All core tables use immutable internal IDs.
@@ -645,6 +710,7 @@ Project recommendation:
 - `users` holds public pseudonymous identity.
 - `user_identities` and `identity_verifications` hold private accountability signals.
 - Permissions should be evaluated against both capabilities and verification/trust levels.
+- Actor/context fields in `audit_logs` and `state_transitions` should support user, system, import, job, API, and AI-assisted or system-generated contexts where reconstruction requires it.
 
 ### Neutrality-safe separation of facts from interpretation
 
@@ -702,7 +768,8 @@ These decisions should be locked before writing migrations:
 - Before writing migrations, implementation should validate authority and geography taxonomy choices against devolved-nation realities and publishing practices.
 - This is a schema validation task, not a reason to weaken the temporal or provenance model.
 
-- Do not destructively overwrite raw artefacts or raw observations. If a council republishes a file or a correction changes a normalised interpretation, add a new version or correction event.
+- Do not destructively overwrite raw artefacts or raw observations. If a council republishes a file or a correction changes a normalised interpretation, add a new version, a new import run, or an explicit correction event.
+- Raw imported records should generally be append-only. Corrections belong in linked normalised records, new import runs, or explicit correction workflows, not in-place edits to raw source data.
 - Do not treat derived outputs as canonical fact. Read models, search documents, AI-assisted analysis, and ranking outputs are rebuildable projections.
 - Review states matter because this platform is public-facing. Unreviewed submissions, assertions, and sensitive material must not leak into public pages or APIs.
 - Content separation matters because neutrality is a system design problem, not only an editorial style problem. Assertions, analysis, and editorial content can be valuable, but they must not sit in the same conceptual bucket as canonical facts.
