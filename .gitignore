@@ -13,6 +13,9 @@
 /backend/.phpunit.result.cache
 /backend/database/*.sqlite
 /backend/.pint.cache
+/backend/auth.json
+/backend/.env.backup
+/backend/.env.production
 
 # Frontend (Nuxt)
 /frontend/.env
