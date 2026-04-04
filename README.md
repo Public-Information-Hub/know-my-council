@@ -77,7 +77,11 @@ Local dev runs apps on the host and infrastructure services in Docker.
 
 ## Licence
 
-This project is licensed under the **MIT Licence** (see [LICENSE](LICENSE)). MIT is a widely understood permissive licence that supports broad collaboration and reuse.
+Code in this repository is licensed under the **MIT Licence** (see [LICENSE](LICENSE)).
+
+Data, datasets, and published content are not automatically covered by the code licence. Source data may be governed by third-party terms (for example, some UK public sector sources publish under the Open Government Licence), and terms can vary by council and source.
+
+See: [docs/licensing-and-data.md](docs/licensing-and-data.md).
 
 ## Security
 
