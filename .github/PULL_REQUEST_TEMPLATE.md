@@ -39,3 +39,9 @@ Attach screenshots for visible changes.
 
 List any follow-up work or issues this PR should create.
 
+## AI assistance (if used)
+
+- [ ] AI assistance was not used materially
+- [ ] AI assistance was used materially and I reviewed all generated output
+- [ ] Any factual/policy/governance/evidence-sensitive statements were checked manually
+- [ ] Anything unverified is explicitly noted in this PR

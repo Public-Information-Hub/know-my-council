@@ -46,6 +46,7 @@ We welcome contributions from developers, civic technologists, journalists, rese
 Start here:
 
 - [CONTRIBUTING.md](CONTRIBUTING.md)
+- AI-assisted contributing: [docs/ai-contributing.md](docs/ai-contributing.md)
 - [docs/github-labels.md](docs/github-labels.md)
 
 Community standards:
@@ -54,6 +55,10 @@ Community standards:
 - [GOVERNANCE.md](GOVERNANCE.md)
 
 If you have a source-led lead to investigate, use the Investigation template and include primary sources.
+
+### AI assistance
+
+AI-assisted contributions are welcome if they meet our standards for truthfulness, evidence discipline, and reviewability. Keep changes scoped, verify outputs, and avoid invented facts or sources.
 
 ## Local development
 

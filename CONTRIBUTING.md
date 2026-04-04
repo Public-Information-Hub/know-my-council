@@ -12,6 +12,22 @@ This guide aims to make contributions predictable, source-led, and safe.
 - **Prefer small PRs:** smaller changes are easier to review, safer to merge, and easier to revert.
 - **Discuss bigger changes first:** if you want to change architecture, data models, or governance, open an issue and describe the proposal before implementing it.
 
+## AI-assisted contributions
+
+AI-assisted contribution is allowed.
+
+However:
+
+- The contributor remains responsible for the submission.
+- All generated output must be reviewed and verified.
+- Evidence-sensitive changes (data, sources, FOI/EIR, moderation/trust, governance, security) require extra care.
+- Low-quality, unverifiable, or bloated AI-generated changes may be rejected.
+
+Read:
+
+- [docs/ai-contributing.md](docs/ai-contributing.md)
+- [AGENTS.md](AGENTS.md)
+
 ## Ways to contribute
 
 KnowMyCouncil expects different contribution types. Choose the one that matches your intent:
@@ -120,4 +136,3 @@ Start with an issue labelled "needs discussion" and link any prior art or simila
 ## License and contributor terms
 
 By contributing, you agree that your contributions will be licensed under the repository's [LICENSE](LICENSE).
-
