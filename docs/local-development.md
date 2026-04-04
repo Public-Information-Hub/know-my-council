@@ -22,6 +22,10 @@ This keeps the dev loop fast while still matching production-style dependencies.
 - Node.js + npm
 - Docker Desktop (or Docker Engine + Compose)
 
+Backend note:
+
+- The backend currently requires PHP 8.4+ (see `backend/composer.json`).
+
 ## Start/stop infra
 
 Start infra:
