@@ -1,0 +1,15 @@
+# NOTE: Update these owners after creating the team(s) in GitHub.
+# Using a team is preferred over individual accounts for continuity.
+
+* @Public-Information-Hub/know-my-council-maintainers
+
+# Backend
+/backend/ @Public-Information-Hub/know-my-council-backend
+
+# Frontend
+/frontend/ @Public-Information-Hub/know-my-council-frontend
+
+# Docs and governance
+/docs/ @Public-Information-Hub/know-my-council-maintainers
+/*.md @Public-Information-Hub/know-my-council-maintainers
+

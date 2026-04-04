@@ -1,0 +1,45 @@
+name: Feature request
+description: Suggest an improvement to KnowMyCouncil.
+title: "[Feature]: "
+labels: ["enhancement", "needs discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature requests are welcome, but we prefer evidence-led, scoped proposals.
+        If this affects data provenance, editorial workflows, or governance, please say so explicitly.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What user problem does this solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed solution
+      description: What should the platform do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you considered?
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Evidence / governance impact
+      options:
+        - No (purely technical/UI)
+        - Yes (affects data provenance or reproducibility)
+        - Yes (affects editorial / community workflows)
+        - Unsure
+    validations:
+      required: true
+

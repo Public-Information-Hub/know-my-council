@@ -1,0 +1,24 @@
+name: Issue Template Sanity
+
+on:
+  pull_request:
+    paths:
+      - ".github/ISSUE_TEMPLATE/**"
+  push:
+    branches: ["master"]
+    paths:
+      - ".github/ISSUE_TEMPLATE/**"
+
+permissions:
+  contents: read
+
+jobs:
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ibiqlik/action-yamllint@v3
+        with:
+          strict: true
+          file_or_dir: .github/ISSUE_TEMPLATE
+

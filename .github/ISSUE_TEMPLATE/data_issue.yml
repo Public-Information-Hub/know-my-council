@@ -1,0 +1,58 @@
+name: Data issue
+description: Missing data, broken source links, suspected incorrect records, or transparency gaps for a council.
+title: "[Data]: "
+labels: ["data issue", "source needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for source-backed data problems.
+        If this is a security issue, do not use this template. See SECURITY.md.
+
+  - type: input
+    id: council
+    attributes:
+      label: Council
+      description: Which English council does this relate to?
+      placeholder: "Example Borough Council"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Missing dataset
+        - Broken source link
+        - Suspected incorrect record
+        - Inconsistent naming / canonicalisation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: sources
+    attributes:
+      label: Primary sources
+      description: Link to the council page(s), official dataset(s), or documents.
+      placeholder: |
+        - https://...
+        - https://...
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: What is wrong or missing?
+      description: Be specific. Include dates and exact filenames where possible.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should good look like?
+      description: Describe the desired correction or expected availability.
+

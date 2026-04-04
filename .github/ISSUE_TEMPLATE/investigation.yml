@@ -1,0 +1,56 @@
+name: Investigation / lead
+description: A source-led concern or pattern worth researching (spend, suppliers, contracts, assets, pay).
+title: "[Investigation]: "
+labels: ["investigation", "needs discussion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This template is for leads and patterns to research.
+        Please avoid defamatory language. Stick to what sources say and what you can reproduce.
+
+  - type: input
+    id: council
+    attributes:
+      label: Council (if applicable)
+      placeholder: "Example Borough Council"
+
+  - type: input
+    id: supplier
+    attributes:
+      label: Supplier / organisation (if applicable)
+      placeholder: "Supplier Ltd"
+
+  - type: textarea
+    id: lead
+    attributes:
+      label: Summary of the lead
+      description: What pattern or concern do you think exists?
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / sources
+      description: Link primary sources and describe what they show.
+      placeholder: |
+        - Source link: https://...
+        - What it shows: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: questions
+    attributes:
+      label: Questions to answer
+      description: What should an investigator try to confirm or disprove?
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Boundaries
+      options:
+        - label: I understand this is not legal advice and not a reporting channel for active security issues.
+          required: true
+

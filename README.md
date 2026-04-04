@@ -1,156 +1,79 @@
 # KnowMyCouncil
 
-KnowMyCouncil is a production-minded starting point for a read-heavy public transparency platform focused on English local councils.
+KnowMyCouncil is an open civic transparency platform focused on English councils. The goal is to help the public inspect, understand, and challenge how councils use money and exercise power.
 
-This repository is intentionally an initial scaffold only. It provides a clean local development foundation and a structure that can scale into ingestion pipelines, canonical "truth" storage, and optimised read/query models.
+This repository is public-interest infrastructure: evidence-led, non-partisan, source-driven, and designed to be community-contributed.
 
-## Stack
+## Why it exists
 
-- Backend: Laravel (API + future admin)
-- Frontend: Nuxt 3 (public site + future admin UI)
-- Database: PostgreSQL
-- Cache/session/queue: Redis
-- Search: Meilisearch
-- Object storage: MinIO (S3-compatible)
-- Local mail testing: Mailpit
-- Local infrastructure: Docker Compose (services only; app code runs on the host)
+Council information is often:
 
-## Repository structure
+- spread across many websites and PDF pages
+- published inconsistently council-to-council
+- hard to search, compare, or reproduce
+- missing unless obtained via FOI/EIR
 
-- `backend/` Laravel application
-- `frontend/` Nuxt 3 application
-- `infra/` Docker Compose for local dev services
-- `docs/` Project documentation
-- `scripts/` Convenience scripts
+KnowMyCouncil aims to make the underlying evidence easier to find and verify, while keeping a clear link back to primary sources.
 
-## Quickstart (local development)
+## Current status
 
-### 1) Start infrastructure services
+This repo is at an early stage. It currently contains:
 
-From the repo root:
+- a monorepo scaffold (`backend/`, `frontend/`, `infra/`)
+- local development infrastructure (PostgreSQL, Redis, Meilisearch, MinIO, Mailpit)
+- basic health/version endpoints and smoke-test commands
+- documentation for intended evidence and community standards
 
-```bash
-make infra-up
-```
+It does **not** yet include full business features or a production deployment.
 
-This starts:
+## Evidence and source standards
 
-- PostgreSQL on `localhost:5432`
-- Redis on `localhost:6379`
-- Meilisearch on `http://127.0.0.1:7700`
-- MinIO on `http://127.0.0.1:9000` (console `http://127.0.0.1:9001`)
-- Mailpit UI on `http://127.0.0.1:8025` (SMTP `127.0.0.1:1025`)
+This project aims to be trustworthy. That means:
 
-MinIO is initialised with a bucket called `knowmycouncil`.
+- factual claims should be supported by primary sources where possible
+- provenance should be recorded (where the data came from, when, and how it was transformed)
+- derived outputs must be reproducible and clearly distinguished from raw sources
 
-### 2) Configure environment files
+See:
 
-Backend:
+- [docs/data-and-evidence-principles.md](docs/data-and-evidence-principles.md)
+- [docs/community-and-editorial-model.md](docs/community-and-editorial-model.md)
 
-```bash
-cp backend/.env.example backend/.env
-```
+## Contributing
 
-Frontend:
+We welcome contributions from developers, civic technologists, journalists, researchers, and members of the public.
 
-```bash
-cp frontend/.env.example frontend/.env
-```
+Start here:
 
-### 3) Run the backend (Laravel)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [docs/github-labels.md](docs/github-labels.md)
 
-```bash
-make backend-dev
-```
+Community standards:
 
-In a separate terminal, run a queue worker:
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [GOVERNANCE.md](GOVERNANCE.md)
 
-```bash
-make backend-queue
-```
+If you have a source-led lead to investigate, use the Investigation template and include primary sources.
 
-Migrations:
+## Local development
 
-```bash
-make backend-migrate
-```
+Local dev runs apps on the host and infrastructure services in Docker.
 
-Useful endpoints:
+- [docs/local-development.md](docs/local-development.md)
+- [docs/architecture.md](docs/architecture.md)
+- [docs/next-steps.md](docs/next-steps.md)
 
-- `GET http://127.0.0.1:8000/api/health`
-- `GET http://127.0.0.1:8000/api/version`
+## Licence
 
-The web root (`GET /`) returns a small JSON payload and links you to the API endpoints.
+This project is licensed under the **MIT Licence** (see [LICENSE](LICENSE)). MIT is a widely understood permissive licence that supports broad collaboration and reuse.
 
-### 4) Run the frontend (Nuxt 3)
+## Security
 
-```bash
-make frontend-dev
-```
+Please report security issues privately. See [SECURITY.md](SECURITY.md).
 
-Frontend pages:
+## Support and funding
 
-- `http://127.0.0.1:3000/` landing page
-- `http://127.0.0.1:3000/status` status page (calls Laravel API)
-- `http://127.0.0.1:3000/admin` admin placeholder
+- Support: [SUPPORT.md](SUPPORT.md)
+- Funding direction: [FUNDING.md](FUNDING.md)
+- Disclaimer: [DISCLAIMER.md](DISCLAIMER.md)
 
-### 5) Useful URLs
-
-```bash
-make urls
-```
-
-## Key environment variables
-
-### Backend (`backend/.env`)
-
-- `DB_CONNECTION=pgsql`
-- `DB_HOST=127.0.0.1`
-- `DB_PORT=5432`
-- `DB_DATABASE=knowmycouncil`
-- `DB_USERNAME=knowmycouncil`
-- `DB_PASSWORD=knowmycouncil`
-
-- `CACHE_STORE=redis`
-- `SESSION_DRIVER=redis`
-- `QUEUE_CONNECTION=redis`
-- `REDIS_CLIENT=predis` (portable default; does not require the `phpredis` extension)
-
-- `SCOUT_DRIVER=meilisearch`
-- `MEILISEARCH_HOST=http://127.0.0.1:7700`
-- `MEILISEARCH_KEY=local-meili-master-key`
-
-- `FILESYSTEM_DISK=minio`
-- `MINIO_ENDPOINT=http://127.0.0.1:9000`
-- `MINIO_ACCESS_KEY_ID=minio`
-- `MINIO_SECRET_ACCESS_KEY=miniosecret`
-- `MINIO_BUCKET=knowmycouncil`
-
-- `MAIL_MAILER=smtp`
-- `MAIL_HOST=127.0.0.1`
-- `MAIL_PORT=1025`
-
-### Frontend (`frontend/.env`)
-
-- `NUXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api`
-
-## Direction (high level)
-
-KnowMyCouncil is expected to be read-heavy:
-
-- Many public page views and API reads
-- Less frequent but potentially expensive ingestion/import workloads
-
-The codebase is organised to support a clean separation between:
-
-- Ingestion and "truth" storage (imports, raw data, audit trails)
-- Read/query layer (denormalised views, search indices, public-facing endpoints)
-
-See [docs/architecture.md](docs/architecture.md) and [docs/local-development.md](docs/local-development.md).
-
-For the next sensible build phases, see [docs/next-steps.md](docs/next-steps.md).
-
-## Notes
-
-- Docker Compose is used for local services only. Laravel and Nuxt run on the host.
-- Use en_GB English for docs, comments, and UI placeholders.

@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and discussion
+    url: https://github.com/Public-Information-Hub/know-my-council/discussions
+    about: Use Discussions for questions, design conversations, and broader ideas (if enabled for this repo).
+  - name: Security issues
+    url: https://github.com/Public-Information-Hub/know-my-council/security/advisories
+    about: Report vulnerabilities privately via GitHub Security Advisories (recommended, if enabled for this repo).
