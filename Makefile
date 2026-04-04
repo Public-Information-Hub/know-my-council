@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 .PHONY: help infra-up infra-down infra-logs urls \
-	backend-install backend-dev backend-queue backend-migrate backend-test backend-coverage backend-coverage-open \
+	backend-install backend-dev backend-queue backend-migrate backend-schema-smoke backend-test backend-coverage backend-coverage-open \
 	frontend-install frontend-dev
 
 help:
@@ -19,6 +19,7 @@ help:
 	@echo "  make backend-dev     Run Laravel dev server on http://127.0.0.1:8000"
 	@echo "  make backend-queue   Run a queue worker"
 	@echo "  make backend-test    Run backend tests"
+	@echo "  make backend-schema-smoke Run migrations against PostgreSQL (schema smoke)"
 	@echo "  make backend-coverage Generate backend coverage (HTML + Clover XML)"
 	@echo "  make backend-coverage-open Open HTML coverage report"
 	@echo ""
@@ -59,6 +60,9 @@ backend-queue:
 
 backend-test:
 	@./scripts/backend-test.sh
+
+backend-schema-smoke:
+	@./scripts/backend-schema-smoke.sh
 
 backend-coverage:
 	@./scripts/backend-coverage.sh

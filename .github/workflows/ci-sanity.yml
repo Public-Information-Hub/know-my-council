@@ -12,6 +12,20 @@ permissions:
 jobs:
   lint-and-tests:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: knowmycouncil_schema_smoke
+          POSTGRES_USER: knowmycouncil
+          POSTGRES_PASSWORD: knowmycouncil
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U knowmycouncil -d knowmycouncil_schema_smoke"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,12 +70,30 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
+          extensions: pgsql, pdo_pgsql
           coverage: pcov
           tools: composer:v2
 
       - name: Backend install
         run: composer install --no-interaction --prefer-dist
         working-directory: backend
+
+      - name: Backend schema smoke (PostgreSQL)
+        run: ../scripts/backend-schema-smoke.sh
+        working-directory: backend
+        env:
+          APP_ENV: testing
+          APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: knowmycouncil_schema_smoke
+          DB_USERNAME: knowmycouncil
+          DB_PASSWORD: knowmycouncil
+          CACHE_STORE: array
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: array
+          MAIL_MAILER: array
 
       - name: Backend tests (sqlite in-memory)
         run: php artisan test

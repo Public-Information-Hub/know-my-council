@@ -56,6 +56,22 @@ Run migrations:
 make backend-migrate
 ```
 
+Schema smoke (PostgreSQL migrations + constraints):
+
+This runs `migrate:fresh` against a dedicated PostgreSQL database (default `knowmycouncil_schema_smoke`) to catch migration/DDL issues early. It will refuse to run against `DB_DATABASE=knowmycouncil`.
+
+Create the database once (example using the local Docker container):
+
+```bash
+docker exec -it knowmycouncil-postgres createdb -U knowmycouncil knowmycouncil_schema_smoke
+```
+
+Run the smoke test:
+
+```bash
+make backend-schema-smoke
+```
+
 Run the API:
 
 ```bash
