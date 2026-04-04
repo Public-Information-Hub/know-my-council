@@ -21,13 +21,13 @@ Recommended settings for the `master` branch:
 
 Suggested minimum required checks:
 
-- `CI (Pull Request)` (for PRs)
+- `CI (Pull Request) / pr-checks` (for PRs)
 - `Repo Hygiene`
 - `Issue Template Sanity` (only when templates change)
 
 Suggested mainline checks:
 
-- `CI (Master)` (runs PostgreSQL schema smoke and uploads backend coverage)
+- `CI (Master) / mainline` (runs PostgreSQL schema smoke and uploads backend coverage)
 
 Exact check names must match the workflow names in `.github/workflows/`.
 
@@ -61,4 +61,3 @@ Recommended settings:
 - require PRs for dependency updates (already the default)
 - apply a `dependencies` label automatically (workflow already exists)
 - do not auto-merge dependency updates by default; review them
-
