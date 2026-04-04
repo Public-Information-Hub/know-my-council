@@ -38,8 +38,8 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE contracts
-             ADD CONSTRAINT contracts_public_state_check
-             CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT contracts_public_state_check
+CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
 
         Schema::create('contract_suppliers', function (Blueprint $table) {
@@ -59,8 +59,8 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE contract_suppliers
-             ADD CONSTRAINT contract_suppliers_mapping_confidence_check
-             CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
+ADD CONSTRAINT contract_suppliers_mapping_confidence_check
+CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
         );
 
         Schema::create('spend_records', function (Blueprint $table) {
@@ -93,13 +93,13 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE spend_records
-             ADD CONSTRAINT spend_records_mapping_confidence_check
-             CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
+ADD CONSTRAINT spend_records_mapping_confidence_check
+CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
         );
         DB::statement(
             "ALTER TABLE spend_records
-             ADD CONSTRAINT spend_records_public_state_check
-             CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT spend_records_public_state_check
+CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
     }
 
@@ -110,4 +110,3 @@ return new class extends Migration
         Schema::dropIfExists('contracts');
     }
 };
-

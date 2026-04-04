@@ -41,8 +41,8 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE source_files
-             ADD CONSTRAINT source_files_visibility_check
-             CHECK (visibility IN ('public','restricted','private'))"
+ADD CONSTRAINT source_files_visibility_check
+CHECK (visibility IN ('public','restricted','private'))"
         );
     }
 
@@ -51,4 +51,3 @@ return new class extends Migration
         Schema::dropIfExists('source_files');
     }
 };
-

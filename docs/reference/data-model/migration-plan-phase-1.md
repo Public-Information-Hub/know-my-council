@@ -197,34 +197,34 @@ Not allowed in Phase 1:
 ## 7. Migration Sequencing (rough order)
 
 1. Base entities
-   - `councils`
-   - `council_versions`
-   - `geographies` (minimal, if included)
-   - `organisations`
-   - `organisation_aliases`
-   - `organisation_identifiers`
+  - `councils`
+  - `council_versions`
+  - `geographies` (minimal, if included)
+  - `organisations`
+  - `organisation_aliases`
+  - `organisation_identifiers`
 
 2. Dataset and ingestion foundations
-   - `datasets`
-   - `dataset_versions`
-   - `imports`
-   - `import_runs`
-   - `source_files`
-   - `reporting_periods` (if included)
+  - `datasets`
+  - `dataset_versions`
+  - `imports`
+  - `import_runs`
+  - `source_files`
+  - `reporting_periods` (if included)
 
 3. Financial records
-   - `contracts`
-   - `contract_suppliers`
-   - `spend_records`
+  - `contracts`
+  - `contract_suppliers`
+  - `spend_records`
 
 4. Indexes and integrity constraints
-   - foreign keys for domain relationships
-   - check constraints for Phase 1 vocabularies
-   - unique constraints where safe (avoid assuming global uniqueness for external codes)
+  - foreign keys for domain relationships
+  - check constraints for Phase 1 vocabularies
+  - unique constraints where safe (avoid assuming global uniqueness for external codes)
 
 5. Audit baseline
-   - `audit_logs`
-   - `state_transitions`
+  - `audit_logs`
+  - `state_transitions`
 
 ## 8. Risks and Follow-ups
 

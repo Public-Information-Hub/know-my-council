@@ -61,13 +61,13 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE organisation_identifiers
-             ADD CONSTRAINT organisation_identifiers_mapping_confidence_check
-             CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
+ADD CONSTRAINT organisation_identifiers_mapping_confidence_check
+CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
         );
         DB::statement(
             "ALTER TABLE organisation_aliases
-             ADD CONSTRAINT organisation_aliases_mapping_confidence_check
-             CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
+ADD CONSTRAINT organisation_aliases_mapping_confidence_check
+CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
         );
     }
 
@@ -78,4 +78,3 @@ return new class extends Migration
         Schema::dropIfExists('organisations');
     }
 };
-

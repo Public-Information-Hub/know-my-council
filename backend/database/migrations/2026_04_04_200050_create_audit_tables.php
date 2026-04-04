@@ -46,8 +46,8 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE audit_logs
-             ADD CONSTRAINT audit_logs_actor_type_check
-             CHECK (actor_type IN ('user','system','import','job','api','ai_process'))"
+ADD CONSTRAINT audit_logs_actor_type_check
+CHECK (actor_type IN ('user','system','import','job','api','ai_process'))"
         );
 
         Schema::create('state_transitions', function (Blueprint $table) {
@@ -79,18 +79,18 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_actor_type_check
-             CHECK (actor_type IN ('user','system','import','job','api','ai_process'))"
+ADD CONSTRAINT state_transitions_actor_type_check
+CHECK (actor_type IN ('user','system','import','job','api','ai_process'))"
         );
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_to_state_check
-             CHECK (to_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT state_transitions_to_state_check
+CHECK (to_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_from_state_check
-             CHECK (from_state IS NULL OR from_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT state_transitions_from_state_check
+CHECK (from_state IS NULL OR from_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
     }
 
@@ -100,4 +100,3 @@ return new class extends Migration
         Schema::dropIfExists('audit_logs');
     }
 };
-

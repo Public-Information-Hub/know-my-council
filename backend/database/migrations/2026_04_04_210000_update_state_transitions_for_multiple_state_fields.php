@@ -30,28 +30,28 @@ return new class extends Migration
         // Phase 1: controlled vocabulary for which state fields are allowed to be tracked.
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_state_field_check
-             CHECK (state_field IN ('public_state','run_state'))"
+ADD CONSTRAINT state_transitions_state_field_check
+CHECK (state_field IN ('public_state','run_state'))"
         );
 
         // Enforce the correct vocabulary based on state_field without locking state_transitions to one set forever.
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_to_state_by_field_check
-             CHECK (
-                (state_field = 'public_state' AND to_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))
-                OR
-                (state_field = 'run_state' AND to_state IN ('queued','running','succeeded','failed','cancelled'))
-             )"
+ADD CONSTRAINT state_transitions_to_state_by_field_check
+CHECK (
+    (state_field = 'public_state' AND to_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))
+    OR
+    (state_field = 'run_state' AND to_state IN ('queued','running','succeeded','failed','cancelled'))
+)"
         );
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_from_state_by_field_check
-             CHECK (
-                from_state IS NULL
-                OR (state_field = 'public_state' AND from_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))
-                OR (state_field = 'run_state' AND from_state IN ('queued','running','succeeded','failed','cancelled'))
-             )"
+ADD CONSTRAINT state_transitions_from_state_by_field_check
+CHECK (
+    from_state IS NULL
+    OR (state_field = 'public_state' AND from_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))
+    OR (state_field = 'run_state' AND from_state IN ('queued','running','succeeded','failed','cancelled'))
+)"
         );
     }
 
@@ -73,14 +73,13 @@ return new class extends Migration
         // Restore the original "publication-only" constraints.
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_to_state_check
-             CHECK (to_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT state_transitions_to_state_check
+CHECK (to_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
         DB::statement(
             "ALTER TABLE state_transitions
-             ADD CONSTRAINT state_transitions_from_state_check
-             CHECK (from_state IS NULL OR from_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT state_transitions_from_state_check
+CHECK (from_state IS NULL OR from_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
     }
 };
-

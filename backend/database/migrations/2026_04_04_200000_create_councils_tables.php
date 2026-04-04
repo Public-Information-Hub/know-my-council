@@ -42,8 +42,8 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE council_versions
-             ADD CONSTRAINT council_versions_public_state_check
-             CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT council_versions_public_state_check
+CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
     }
 
@@ -53,4 +53,3 @@ return new class extends Migration
         Schema::dropIfExists('councils');
     }
 };
-

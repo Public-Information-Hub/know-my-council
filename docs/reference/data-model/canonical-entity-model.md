@@ -564,21 +564,21 @@ Do not create a `content_items` row for every factual row by default. A spend li
 The model uses four separate traceability layers. They solve different problems and should not be collapsed into one generic mechanism.
 
 1. **Action audit**
-   - use `audit_logs`
-   - answers: who or what acted, against what, when, and in which workflow context
+  - use `audit_logs`
+  - answers: who or what acted, against what, when, and in which workflow context
 
 2. **State transition history**
-   - use `state_transitions`
-   - answers: how did a record move between workflow/publication/moderation states
+  - use `state_transitions`
+  - answers: how did a record move between workflow/publication/moderation states
 
 3. **Record/entity history**
-   - use dedicated event/history tables where the exact prior and new entity state may need reconstruction
-   - examples already in this model include `organisation_resolution_events`, `authority_lineage`, `foi_request_events`
-   - additional entity-specific history tables should be added where simple audit entries are not enough
+  - use dedicated event/history tables where the exact prior and new entity state may need reconstruction
+  - examples already in this model include `organisation_resolution_events`, `authority_lineage`, `foi_request_events`
+  - additional entity-specific history tables should be added where simple audit entries are not enough
 
 4. **Provenance linkage**
-   - use `source_files`, `source_file_links`, evidence linkage, dataset/import references, FOI response links, and review context
-   - answers: where did the fact, claim, or publication basis come from
+  - use `source_files`, `source_file_links`, evidence linkage, dataset/import references, FOI response links, and review context
+  - answers: where did the fact, claim, or publication basis come from
 
 Important distinction:
 

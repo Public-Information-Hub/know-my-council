@@ -54,18 +54,18 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE dataset_versions
-             ADD CONSTRAINT dataset_versions_mapping_confidence_check
-             CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
+ADD CONSTRAINT dataset_versions_mapping_confidence_check
+CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
         );
         DB::statement(
             "ALTER TABLE dataset_versions
-             ADD CONSTRAINT dataset_versions_freshness_state_check
-             CHECK (freshness_state IN ('current','stale','unknown'))"
+ADD CONSTRAINT dataset_versions_freshness_state_check
+CHECK (freshness_state IN ('current','stale','unknown'))"
         );
         DB::statement(
             "ALTER TABLE dataset_versions
-             ADD CONSTRAINT dataset_versions_public_state_check
-             CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
+ADD CONSTRAINT dataset_versions_public_state_check
+CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
         );
 
         Schema::create('imports', function (Blueprint $table) {
@@ -112,8 +112,8 @@ return new class extends Migration
 
         DB::statement(
             "ALTER TABLE import_runs
-             ADD CONSTRAINT import_runs_run_state_check
-             CHECK (run_state IN ('queued','running','succeeded','failed','cancelled'))"
+ADD CONSTRAINT import_runs_run_state_check
+CHECK (run_state IN ('queued','running','succeeded','failed','cancelled'))"
         );
     }
 
@@ -125,4 +125,3 @@ return new class extends Migration
         Schema::dropIfExists('datasets');
     }
 };
-
