@@ -17,6 +17,9 @@
 /public/build
 /public/hot
 /public/storage
+/coverage/*
+!/coverage/.gitkeep
+!/coverage/README.md
 /storage/*.key
 /storage/pail
 /vendor

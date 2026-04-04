@@ -62,6 +62,7 @@ Local dev runs apps on the host and infrastructure services in Docker.
 - [docs/local-development.md](docs/local-development.md)
 - [docs/architecture.md](docs/architecture.md)
 - [docs/next-steps.md](docs/next-steps.md)
+- Backend debugging and coverage: [docs/xdebug-and-coverage.md](docs/xdebug-and-coverage.md)
 
 ## Licence
 
@@ -76,4 +77,3 @@ Please report security issues privately. See [SECURITY.md](SECURITY.md).
 - Support: [SUPPORT.md](SUPPORT.md)
 - Funding direction: [FUNDING.md](FUNDING.md)
 - Disclaimer: [DISCLAIMER.md](DISCLAIMER.md)
-

@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 .PHONY: help infra-up infra-down infra-logs urls \
-	backend-install backend-dev backend-queue backend-migrate \
+	backend-install backend-dev backend-queue backend-migrate backend-test backend-coverage backend-coverage-open \
 	frontend-install frontend-dev
 
 help:
@@ -18,6 +18,9 @@ help:
 	@echo "  make backend-migrate Run migrations"
 	@echo "  make backend-dev     Run Laravel dev server on http://127.0.0.1:8000"
 	@echo "  make backend-queue   Run a queue worker"
+	@echo "  make backend-test    Run backend tests"
+	@echo "  make backend-coverage Generate backend coverage (HTML + Clover XML)"
+	@echo "  make backend-coverage-open Open HTML coverage report"
 	@echo ""
 	@echo "Frontend (Nuxt 3):"
 	@echo "  make frontend-install Install JS dependencies"
@@ -53,6 +56,15 @@ backend-dev:
 
 backend-queue:
 	@cd backend && php artisan queue:work
+
+backend-test:
+	@./scripts/backend-test.sh
+
+backend-coverage:
+	@./scripts/backend-coverage.sh
+
+backend-coverage-open:
+	@./scripts/backend-coverage-open.sh
 
 frontend-install:
 	@cd frontend && npm install

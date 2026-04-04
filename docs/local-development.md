@@ -78,6 +78,11 @@ API endpoints:
 - `GET /api/health`
 - `GET /api/version`
 
+## Debugging and coverage (backend)
+
+- Xdebug setup and usage: [docs/xdebug-and-coverage.md](xdebug-and-coverage.md)
+- Coverage output location: `backend/coverage/` (HTML is `backend/coverage/html/index.html`)
+
 ## Frontend workflow (Nuxt 3)
 
 Create a local env file:
