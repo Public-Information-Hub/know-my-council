@@ -20,7 +20,7 @@ Each ADR should include:
 - Context
 - Decision
 - Consequences
- - Links (optional but recommended: to reference docs, issues, PRs)
+- Links (optional but recommended: to reference docs, issues, PRs)
 
 ## Editing ADRs
 
@@ -35,4 +35,3 @@ Write an ADR when a choice will otherwise be re-litigated or inconsistently appl
 - separation between truth/ingestion and read/query layers
 - evidence/provenance boundaries
 - contributor workflow changes that affect implementation
-

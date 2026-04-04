@@ -60,12 +60,17 @@ If you have a source-led lead to investigate, use the Investigation template and
 
 AI-assisted contributions are welcome if they meet our standards for truthfulness, evidence discipline, and reviewability. Keep changes scoped, verify outputs, and avoid invented facts or sources.
 
+### Branch and PR workflow
+
+Normal development happens on branches and is merged into `master` via pull requests. We recommend protecting `master` in GitHub settings (see [docs/github-branch-and-ci-settings.md](docs/github-branch-and-ci-settings.md)).
+
 ## Local development
 
 Local dev runs apps on the host and infrastructure services in Docker.
 
 - [docs/local-development.md](docs/local-development.md)
 - [docs/architecture.md](docs/architecture.md)
+- Phase 1 spend CSV ingestion: [docs/ingestion/spend-csv.md](docs/ingestion/spend-csv.md)
 - Reference system (architecture, domain, ADRs): [docs/reference/README.md](docs/reference/README.md)
 - [docs/next-steps.md](docs/next-steps.md)
 - Backend debugging and coverage: [docs/xdebug-and-coverage.md](docs/xdebug-and-coverage.md)

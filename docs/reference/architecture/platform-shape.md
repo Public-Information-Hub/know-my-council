@@ -24,14 +24,14 @@ For the introductory architecture overview in `docs/`, see:
 The platform is expected to evolve with a deliberate separation between:
 
 1. **Ingestion and “truth” layer**
-   - Fetch and store source artefacts (files, HTML, PDFs, etc.) with provenance.
-   - Parse and normalise into canonical entities.
-   - Capture import runs, errors, and traceability (what happened, when, and why).
+  - Fetch and store source artefacts (files, HTML, PDFs, etc.) with provenance.
+  - Parse and normalise into canonical entities.
+  - Capture import runs, errors, and traceability (what happened, when, and why).
 
 2. **Read/query layer**
-   - Serve stable public pages and APIs with predictable reads.
-   - Use denormalised read models where needed for performance.
-   - Feed and query Meilisearch for user-facing search experiences.
+  - Serve stable public pages and APIs with predictable reads.
+  - Use denormalised read models where needed for performance.
+  - Feed and query Meilisearch for user-facing search experiences.
 
 This separation reduces the risk that operational complexity (imports, retries, parsing variance) leaks into public query performance or user-facing data guarantees.
 

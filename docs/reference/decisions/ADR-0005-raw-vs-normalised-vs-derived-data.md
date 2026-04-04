@@ -18,19 +18,19 @@ For a civic transparency platform, trust depends on auditability:
 Adopt an explicit separation of data layers:
 
 1. **Raw source data (raw)**
-   - The original artefacts and extracted fields as-observed.
-   - Immutable once stored (append-only corrections are new records).
-   - Always linked to a source artefact and capture metadata.
+  - The original artefacts and extracted fields as-observed.
+  - Immutable once stored (append-only corrections are new records).
+  - Always linked to a source artefact and capture metadata.
 
 2. **Normalised structured data (canonical/normalised)**
-   - Structured entities used for consistent interpretation across councils and time.
-   - Contains stable internal IDs and explicit temporal validity where needed.
-   - May include mappings from raw observations to canonical entities, with provenance and (where relevant) uncertainty.
+  - Structured entities used for consistent interpretation across councils and time.
+  - Contains stable internal IDs and explicit temporal validity where needed.
+  - May include mappings from raw observations to canonical entities, with provenance and (where relevant) uncertainty.
 
 3. **Derived data (read models / projections)**
-   - Query-optimised, denormalised, or aggregated representations built from normalised data (and sometimes raw metadata).
-   - Rebuildable and disposable (can be regenerated from upstream layers).
-   - Used to serve read-heavy pages and APIs efficiently.
+  - Query-optimised, denormalised, or aggregated representations built from normalised data (and sometimes raw metadata).
+  - Rebuildable and disposable (can be regenerated from upstream layers).
+  - Used to serve read-heavy pages and APIs efficiently.
 
 Derived outputs must never be treated as the system of record.
 
@@ -45,4 +45,3 @@ Derived outputs must never be treated as the system of record.
   - public endpoints should primarily read from derived read models for performance
   - investigative and audit tools may query raw/canonical layers with appropriate guardrails
 - This approach increases storage and modelling work, but reduces the risk of misleading comparisons and makes the platform defensible when challenged.
-

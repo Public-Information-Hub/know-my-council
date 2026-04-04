@@ -22,6 +22,10 @@ This keeps the dev loop fast while still matching production-style dependencies.
 - Node.js + npm
 - Docker Desktop (or Docker Engine + Compose)
 
+Backend note:
+
+- The backend currently requires PHP 8.4+ (see `backend/composer.json`).
+
 ## Start/stop infra
 
 Start infra:
@@ -56,6 +60,22 @@ Run migrations:
 make backend-migrate
 ```
 
+Schema smoke (PostgreSQL migrations + constraints):
+
+This runs `migrate:fresh` against a dedicated PostgreSQL database (default `knowmycouncil_schema_smoke`) to catch migration/DDL issues early. It will refuse to run against `DB_DATABASE=knowmycouncil`.
+
+Create the database once (example using the local Docker container):
+
+```bash
+docker exec -it knowmycouncil-postgres createdb -U knowmycouncil knowmycouncil_schema_smoke
+```
+
+Run the smoke test:
+
+```bash
+make backend-schema-smoke
+```
+
 Run the API:
 
 ```bash
@@ -77,6 +97,13 @@ API endpoints:
 
 - `GET /api/health`
 - `GET /api/version`
+
+## Phase 1 ingestion (backend)
+
+Phase 1 includes one practical ingestion path for council "spend over £500" CSV files.
+
+- Docs: [docs/ingestion/spend-csv.md](ingestion/spend-csv.md)
+- Command: `php artisan kmc:ingest:council-spend-csv <council_slug> <path-to-file.csv>`
 
 ## Debugging and coverage (backend)
 

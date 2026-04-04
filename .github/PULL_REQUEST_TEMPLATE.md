@@ -6,6 +6,10 @@ What changed?
 
 Why was this change needed?
 
+## Branch workflow
+
+- [ ] This PR is ready for review (no direct pushes to `master` assumed).
+
 ## Testing
 
 - [ ] I ran tests locally (describe what you ran)
