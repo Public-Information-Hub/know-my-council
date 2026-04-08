@@ -1,0 +1,185 @@
+name: knowmycouncil
+
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    container_name: knowmycouncil-caddy
+    depends_on:
+      - backend
+      - frontend
+    env_file:
+      - ./.env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: knowmycouncil-backend
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+    volumes:
+      - backend_storage:/var/www/backend/storage
+    restart: unless-stopped
+
+  backend-worker:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: knowmycouncil-backend-worker
+    env_file:
+      - ./.env
+    depends_on:
+      backend:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+    command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=90"]
+    volumes:
+      - backend_storage:/var/www/backend/storage
+    restart: unless-stopped
+
+  backend-scheduler:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: knowmycouncil-backend-scheduler
+    env_file:
+      - ./.env
+    depends_on:
+      backend:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+    command: ["php", "artisan", "schedule:work"]
+    volumes:
+      - backend_storage:/var/www/backend/storage
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: frontend/Dockerfile
+    container_name: knowmycouncil-frontend
+    env_file:
+      - ./.env
+    depends_on:
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: knowmycouncil-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-knowmycouncil}
+      POSTGRES_USER: ${POSTGRES_USER:-knowmycouncil}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-knowmycouncil}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: knowmycouncil-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.8
+    container_name: knowmycouncil-meilisearch
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_KEY:-local-meili-master-key}
+    volumes:
+      - meili_data:/meili_data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:7700/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    container_name: knowmycouncil-minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY_ID:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_ACCESS_KEY:-miniosecret}
+    command: ["server", "/data", "--console-address", ":9001"]
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:9000/minio/health/live || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: knowmycouncil-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-lc"]
+    command: |
+      set -eu
+      until mc alias set kmc http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" >/dev/null 2>&1; do
+        echo "Waiting for MinIO..."
+        sleep 1
+      done
+      mc mb --ignore-existing kmc/knowmycouncil
+      mc anonymous set download kmc/knowmycouncil
+      echo "MinIO bucket ready: knowmycouncil"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY_ID:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_ACCESS_KEY:-miniosecret}
+    restart: "no"
+
+volumes:
+  postgres_data:
+  redis_data:
+  meili_data:
+  minio_data:
+  backend_storage:
+  caddy_data:
+  caddy_config:

@@ -1,6 +1,6 @@
 # Temporal Authority and Geography Modelling (intended approach)
 
-English local government changes over time. Councils reorganise, merge, split, rename, and change boundaries. External identifiers evolve. Datasets are published inconsistently and often reflect the publisher’s organisational view at the time.
+UK local government changes over time. Councils reorganise, merge, split, rename, and change boundaries. External identifiers evolve. Datasets are published inconsistently and often reflect the publisher’s organisational view at the time.
 
 A civic transparency platform that models only “current state” will eventually mislead people. This document describes an intended modelling approach that remains:
 

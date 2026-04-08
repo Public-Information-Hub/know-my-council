@@ -1,0 +1,27 @@
+http://knowmycouncil.uk, http://www.knowmycouncil.uk {
+  redir https://knowmycouncil.uk{uri} permanent
+}
+
+www.knowmycouncil.uk {
+  redir https://knowmycouncil.uk{uri} permanent
+}
+
+knowmycouncil.uk {
+  basic_auth {
+    {env.KMC_BASIC_AUTH_USER} {env.KMC_BASIC_AUTH_HASH}
+  }
+
+  encode gzip
+
+  handle_path /api/* {
+    reverse_proxy backend:8000
+  }
+
+  handle /up {
+    reverse_proxy backend:8000
+  }
+
+  handle {
+    reverse_proxy frontend:3000
+  }
+}

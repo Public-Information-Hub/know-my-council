@@ -39,11 +39,13 @@ return new class extends Migration
             $table->index(['sha256']);
         });
 
-        DB::statement(
-            "ALTER TABLE source_files
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                "ALTER TABLE source_files
 ADD CONSTRAINT source_files_visibility_check
 CHECK (visibility IN ('public','restricted','private'))"
-        );
+            );
+        }
     }
 
     public function down(): void

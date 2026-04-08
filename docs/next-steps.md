@@ -15,6 +15,8 @@ This repository is intentionally only the initial scaffold. The next sensible bu
 - Store raw source files in object storage (MinIO locally) and record metadata in PostgreSQL.
 - Parse and validate into staging tables before updating canonical tables.
 - Prefer automated refresh routes for stable council sources, with manual ingestion kept as a fallback.
+- Bootstrap the council registry from the official ONS / ArcGIS local authority dataset, then keep the internal council lookup route aligned with that registry.
+- Surface ingestion counts, recent runs, and source freshness in the admin area so operators can see what needs attention quickly.
 
 ## 3) Read models
 

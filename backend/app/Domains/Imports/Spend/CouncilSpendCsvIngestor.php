@@ -36,12 +36,16 @@ class CouncilSpendCsvIngestor
         $delimiter = (string) ($options['delimiter'] ?? ',');
         $storageDisk = (string) ($options['storage_disk'] ?: config('filesystems.default'));
         $visibility = (string) ($options['visibility'] ?? 'restricted');
+        $captureMethod = is_string($options['capture_method'] ?? null) ? trim((string) $options['capture_method']) : null;
+        $captureMethod = $captureMethod !== '' ? $captureMethod : 'upload';
 
         $editionDate = $this->parseDateOnly($options['edition_date'] ?? null) ?? CarbonImmutable::now()->toDateString();
         $capturedAt = $this->parseTimestamp($options['captured_at'] ?? null) ?? CarbonImmutable::now();
         $publishedAt = $this->parseTimestamp($options['published_at'] ?? null);
         $ingestionSourceId = is_string($options['ingestion_source_id'] ?? null) ? trim((string) $options['ingestion_source_id']) : null;
         $ingestionSourceId = $ingestionSourceId !== '' ? $ingestionSourceId : null;
+        $sourceUrl = is_string($options['source_url'] ?? null) ? trim((string) $options['source_url']) : null;
+        $sourceUrl = $sourceUrl !== '' ? $sourceUrl : null;
 
         $datasetKey = (string) ($options['dataset_key'] ?: "council:{$councilSlug}:spend_over_500_csv");
         $importKey = "spend_over_500_csv:{$councilSlug}";
@@ -238,7 +242,8 @@ class CouncilSpendCsvIngestor
                 'sha256' => $sha256,
                 'content_type' => $contentType,
                 'byte_size' => $byteSize,
-                'capture_method' => 'upload',
+                'capture_method' => $captureMethod,
+                'source_url' => $sourceUrl,
                 'published_at' => $publishedAt,
                 'captured_at' => $capturedAt,
                 'is_raw_unmodified' => true,
@@ -396,7 +401,8 @@ class CouncilSpendCsvIngestor
         return CouncilVersion::query()
             ->where('council_id', $council->id)
             ->where('public_state', 'published')
-            ->orderByRaw('valid_from desc nulls last')
+            ->orderByRaw('CASE WHEN valid_from IS NULL THEN 1 ELSE 0 END')
+            ->orderByDesc('valid_from')
             ->orderByDesc('created_at')
             ->first();
     }

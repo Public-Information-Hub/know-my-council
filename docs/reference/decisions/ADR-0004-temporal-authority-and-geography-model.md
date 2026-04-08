@@ -5,7 +5,7 @@ Date: 2026-04-04
 
 ## Context
 
-English local authorities reorganise over time. Names, codes, and boundaries change. Datasets are published inconsistently and often reflect the publisher’s organisational view at the time.
+UK local authorities reorganise over time. Names, codes, and boundaries change. Datasets are published inconsistently and often reflect the publisher’s organisational view at the time.
 
 A transparency platform that overwrites identities or uses external codes as primary keys will:
 

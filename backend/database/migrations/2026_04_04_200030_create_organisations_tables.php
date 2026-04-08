@@ -59,16 +59,18 @@ return new class extends Migration
             $table->index(['alias']);
         });
 
-        DB::statement(
-            "ALTER TABLE organisation_identifiers
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                "ALTER TABLE organisation_identifiers
 ADD CONSTRAINT organisation_identifiers_mapping_confidence_check
 CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
-        );
-        DB::statement(
-            "ALTER TABLE organisation_aliases
+            );
+            DB::statement(
+                "ALTER TABLE organisation_aliases
 ADD CONSTRAINT organisation_aliases_mapping_confidence_check
 CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
-        );
+            );
+        }
     }
 
     public function down(): void
