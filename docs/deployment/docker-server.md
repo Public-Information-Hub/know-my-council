@@ -26,6 +26,22 @@ The current production shape is:
 5. Run `docker compose -f deploy/docker-compose.prod.yml up -d --build`.
 6. Run the Laravel migrations once the database is healthy.
 
+## Mail setup
+
+The production environment should use a real SMTP mailbox for account verification, password reset, and login challenges.
+
+For the OVH Zimbra mailbox `hello@knowmycouncil.uk`, the default settings are:
+
+- Mailer: `smtp`
+- Host: `smtp.mail.ovh.net`
+- Port: `465`
+- Encryption: `ssl`
+- Username: `hello@knowmycouncil.uk`
+- Password: the mailbox password from OVH
+- From address: `hello@knowmycouncil.uk`
+
+These values belong in `deploy/.env` on the server. Keep the password out of git.
+
 ## Manual GitHub deploy
 
 The repository includes a manual GitHub Actions workflow for production deploys.
