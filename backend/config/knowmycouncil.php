@@ -14,5 +14,5 @@ return [
     */
     'version' => env('APP_VERSION', '0.1.0-dev'),
     'commit_sha' => env('APP_COMMIT_SHA'),
+    'frontend_url' => env('FRONTEND_URL', 'http://127.0.0.1:3000'),
 ];
-

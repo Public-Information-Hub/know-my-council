@@ -1,0 +1,240 @@
+<script setup lang="ts">
+import { apiGet, apiPatch, apiPost, formatApiError } from '~/lib/api'
+
+type AuthUser = {
+  id: number
+  name: string
+  handle: string | null
+  email: string
+  public_bio: string | null
+  account_state: string
+  verification_level: string
+  trust_level: string
+  two_factor_mode: string
+  email_verified_at: string | null
+  last_seen_at: string | null
+  is_email_verified: boolean
+}
+
+type AuthResponse = {
+  user: AuthUser
+}
+
+const twoFactorModes = ['off', 'email_code', 'magic_link', 'both'] as const
+
+useHead({
+  title: 'Profile'
+})
+
+const router = useRouter()
+const route = useRoute()
+const user = ref<AuthUser | null>(null)
+const loading = ref(true)
+const notice = ref(route.query.signed_in ? 'You are signed in.' : route.query.password_reset ? 'Your password has been updated.' : '')
+const errorMessage = ref('')
+const savingProfile = ref(false)
+const savingPassword = ref(false)
+const sendingVerification = ref(false)
+
+const profileName = ref('')
+const profileHandle = ref('')
+const profileBio = ref('')
+const profileTwoFactorMode = ref<'off' | 'email_code' | 'magic_link' | 'both'>('off')
+const currentPassword = ref('')
+const newPassword = ref('')
+const newPasswordConfirmation = ref('')
+
+async function loadUser(): Promise<void> {
+  loading.value = true
+  try {
+    const response = await apiGet<AuthResponse>('/auth/me')
+    user.value = response.user
+    profileName.value = response.user.name
+    profileHandle.value = response.user.handle ?? ''
+    profileBio.value = response.user.public_bio ?? ''
+    profileTwoFactorMode.value = twoFactorModes.includes(response.user.two_factor_mode as typeof twoFactorModes[number])
+      ? (response.user.two_factor_mode as typeof twoFactorModes[number])
+      : 'off'
+  } catch {
+    user.value = null
+  } finally {
+    loading.value = false
+  }
+}
+
+async function saveProfile(): Promise<void> {
+  if (!user.value) return
+  savingProfile.value = true
+  notice.value = ''
+  errorMessage.value = ''
+
+  try {
+    const response = await apiPatch<AuthResponse>('/auth/profile', {
+      name: profileName.value,
+      handle: profileHandle.value,
+      public_bio: profileBio.value || null,
+      two_factor_mode: profileTwoFactorMode.value
+    })
+    user.value = response.user
+    notice.value = 'Your profile has been updated.'
+  } catch (error: unknown) {
+    errorMessage.value = formatApiError(error, 'We could not update your profile right now.')
+  } finally {
+    savingProfile.value = false
+  }
+}
+
+async function savePassword(): Promise<void> {
+  if (!user.value) return
+  savingPassword.value = true
+  notice.value = ''
+  errorMessage.value = ''
+
+  try {
+    await apiPatch('/auth/password', {
+      current_password: currentPassword.value,
+      password: newPassword.value,
+      password_confirmation: newPasswordConfirmation.value
+    })
+    currentPassword.value = ''
+    newPassword.value = ''
+    newPasswordConfirmation.value = ''
+    notice.value = 'Your password has been updated.'
+  } catch (error: unknown) {
+    errorMessage.value = formatApiError(error, 'We could not update your password right now.')
+  } finally {
+    savingPassword.value = false
+  }
+}
+
+async function resendVerification(): Promise<void> {
+  sendingVerification.value = true
+  notice.value = ''
+  errorMessage.value = ''
+
+  try {
+    const response = await apiPost<{ message: string; user: AuthUser }>('/auth/email-verification-notification')
+    user.value = response.user
+    notice.value = response.message
+  } catch (error: unknown) {
+    errorMessage.value = formatApiError(error, 'We could not send another verification email.')
+  } finally {
+    sendingVerification.value = false
+  }
+}
+
+async function signOut(): Promise<void> {
+  await apiPost('/auth/logout')
+  user.value = null
+  await router.push('/login?signed_out=1')
+}
+
+onMounted(async () => {
+  await loadUser()
+})
+</script>
+
+<template>
+  <div class="landing auth-page">
+    <section class="panel auth-card auth-card--wide">
+      <div class="auth-card__intro">
+        <p class="eyebrow">Profile</p>
+        <h1 class="hero__title">Your account</h1>
+        <p class="hero__lede">Manage your public identity, verification state and sign-in options from one place.</p>
+      </div>
+
+      <div v-if="notice" class="callout" role="status" aria-live="polite">{{ notice }}</div>
+      <div v-if="errorMessage" class="callout auth-card__error" role="alert">{{ errorMessage }}</div>
+
+      <div v-if="loading" class="callout">Loading your profile…</div>
+      <template v-else>
+        <div v-if="user" class="stack">
+          <div class="card-grid card-grid--two">
+            <article class="card">
+              <h2 class="section__heading" style="margin-top: 0;">Public identity</h2>
+              <p>Name: {{ user.name }}</p>
+              <p>Handle: {{ user.handle ?? 'Not set' }}</p>
+              <p style="margin-bottom: 0;">Email: {{ user.email }}</p>
+            </article>
+            <article class="card">
+              <h2 class="section__heading" style="margin-top: 0;">Verification</h2>
+              <p>Email verified: {{ user.is_email_verified ? 'Yes' : 'Not yet' }}</p>
+              <p>Account state: {{ user.account_state }}</p>
+              <p>Verification level: {{ user.verification_level }}</p>
+              <p style="margin-bottom: 0;">Trust level: {{ user.trust_level }}</p>
+            </article>
+          </div>
+
+          <article class="card">
+            <h2 class="section__heading" style="margin-top: 0;">Profile details</h2>
+            <form class="auth-form auth-form--grid" @submit.prevent="saveProfile">
+              <label class="field">
+                <span class="field__label">Public name</span>
+                <input v-model="profileName" class="field__input" type="text" required>
+              </label>
+
+              <label class="field">
+                <span class="field__label">Public handle</span>
+                <input v-model="profileHandle" class="field__input" type="text" required>
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">Public bio</span>
+                <textarea v-model="profileBio" class="field__input field__input--textarea" rows="4" maxlength="280"></textarea>
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">Extra sign-in checks</span>
+                <select v-model="profileTwoFactorMode" class="field__input">
+                  <option value="off">Off for now</option>
+                  <option value="email_code">Email code</option>
+                  <option value="magic_link">Magic link</option>
+                  <option value="both">Both code and magic link</option>
+                </select>
+              </label>
+
+              <div class="auth-actions field--full">
+                <button class="finder__button" type="submit" :disabled="savingProfile">{{ savingProfile ? 'Saving…' : 'Save profile' }}</button>
+                <button v-if="!user.is_email_verified" class="pill" type="button" :disabled="sendingVerification" @click="resendVerification">
+                  {{ sendingVerification ? 'Sending…' : 'Resend verification email' }}
+                </button>
+                <button class="pill" type="button" @click="signOut">Sign out</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <h2 class="section__heading" style="margin-top: 0;">Change password</h2>
+            <form class="auth-form auth-form--grid" @submit.prevent="savePassword">
+              <label class="field">
+                <span class="field__label">Current password</span>
+                <input v-model="currentPassword" class="field__input" type="password" autocomplete="current-password" required>
+              </label>
+
+              <label class="field">
+                <span class="field__label">New password</span>
+                <input v-model="newPassword" class="field__input" type="password" autocomplete="new-password" required>
+              </label>
+
+              <label class="field field--full">
+                <span class="field__label">Confirm new password</span>
+                <input v-model="newPasswordConfirmation" class="field__input" type="password" autocomplete="new-password" required>
+              </label>
+
+              <div class="auth-actions field--full">
+                <button class="finder__button" type="submit" :disabled="savingPassword">{{ savingPassword ? 'Updating…' : 'Update password' }}</button>
+              </div>
+            </form>
+          </article>
+        </div>
+        <div v-else class="stack">
+          <p class="section__lead">You are not signed in yet.</p>
+          <div class="auth-actions">
+            <NuxtLink class="pill" to="/login">Sign in</NuxtLink>
+            <NuxtLink class="pill" to="/register">Create account</NuxtLink>
+          </div>
+        </div>
+      </template>
+    </section>
+  </div>
+</template>

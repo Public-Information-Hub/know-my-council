@@ -24,6 +24,9 @@ const { theme, themes, setTheme } = useTheme()
 
       <nav class="site-nav" aria-label="Primary">
         <NuxtLink to="/" class="site-nav__link">Home</NuxtLink>
+        <NuxtLink to="/login" class="site-nav__link">Sign in</NuxtLink>
+        <NuxtLink to="/register" class="site-nav__link">Create account</NuxtLink>
+        <NuxtLink to="/profile" class="site-nav__link">Profile</NuxtLink>
         <NuxtLink to="/status" class="site-nav__link">Status</NuxtLink>
         <NuxtLink to="/admin" class="site-nav__link">Admin</NuxtLink>
       </nav>
