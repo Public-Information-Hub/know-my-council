@@ -9,6 +9,7 @@ use App\Models\DatasetVersion;
 use App\Models\Import;
 use App\Models\ImportRun;
 use App\Models\IngestionSource;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,6 +19,10 @@ class IngestionDashboardControllerTest extends TestCase
 
     public function test_it_returns_an_ingestion_summary_for_the_admin_area(): void
     {
+        $user = User::factory()->create([
+            'is_super_admin' => true,
+        ]);
+
         $council = Council::query()->create([
             'canonical_slug' => 'example-council',
             'jurisdiction_code' => 'E06000000',
@@ -95,7 +100,8 @@ class IngestionDashboardControllerTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->getJson('/api/admin/ingestion-summary')
+        $this->actingAs($user)
+            ->getJson('/api/admin/ingestion-summary')
             ->assertOk()
             ->assertJsonPath('counts.councils', 1)
             ->assertJsonPath('counts.import_runs', 1)

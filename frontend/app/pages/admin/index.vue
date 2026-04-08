@@ -69,7 +69,7 @@ type AdminSummary = {
 }
 
 definePageMeta({
-  layout: 'admin'
+  middleware: 'admin'
 })
 
 useHead({

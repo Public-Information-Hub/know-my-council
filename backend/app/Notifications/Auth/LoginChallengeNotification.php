@@ -35,6 +35,7 @@ class LoginChallengeNotification extends Notification
         }
 
         return $message
-            ->line('This check expires soon. If you did not try to sign in, you can ignore this email.');
+            ->line('This check expires soon. If you did not try to sign in, you can ignore this email.')
+            ->line('We send both a code and a magic link so you can choose the sign-in method that is easiest for you.');
     }
 }

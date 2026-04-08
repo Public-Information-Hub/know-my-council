@@ -66,6 +66,7 @@ async function ensureCsrfCookie(): Promise<void> {
 async function apiRequest<T = JsonValue>(method: ApiMethod, path: string, opts: ApiRequestOptions = {}): Promise<T> {
   const base = getApiBaseUrl()
   const url = path.startsWith('http') ? path : `${base}${path.startsWith('/') ? '' : '/'}${path}`
+  const requestHeaders = process.server ? useRequestHeaders(['cookie']) : {}
 
   if (method !== 'GET' && process.client) {
     await ensureCsrfCookie()
@@ -79,6 +80,10 @@ async function apiRequest<T = JsonValue>(method: ApiMethod, path: string, opts: 
   const xsrf = getCookie('XSRF-TOKEN')
   if (xsrf && method !== 'GET') {
     headers['X-XSRF-TOKEN'] = xsrf
+  }
+
+  if (process.server && requestHeaders.cookie) {
+    headers.Cookie = requestHeaders.cookie
   }
 
   try {

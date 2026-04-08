@@ -10,6 +10,7 @@ type AuthUser = {
   account_state: string
   verification_level: string
   trust_level: string
+  is_super_admin: boolean
   two_factor_mode: string
   email_verified_at: string | null
   last_seen_at: string | null
@@ -20,14 +21,13 @@ type AuthResponse = {
   user: AuthUser
 }
 
-const twoFactorModes = ['off', 'email_code', 'magic_link', 'both'] as const
-
 useHead({
   title: 'Profile'
 })
 
 const router = useRouter()
 const route = useRoute()
+const { clearCurrentUser } = useCurrentUser()
 const user = ref<AuthUser | null>(null)
 const loading = ref(true)
 const notice = ref(route.query.signed_in ? 'You are signed in.' : route.query.password_reset ? 'Your password has been updated.' : '')
@@ -39,7 +39,6 @@ const sendingVerification = ref(false)
 const profileName = ref('')
 const profileHandle = ref('')
 const profileBio = ref('')
-const profileTwoFactorMode = ref<'off' | 'email_code' | 'magic_link' | 'both'>('off')
 const currentPassword = ref('')
 const newPassword = ref('')
 const newPasswordConfirmation = ref('')
@@ -52,9 +51,6 @@ async function loadUser(): Promise<void> {
     profileName.value = response.user.name
     profileHandle.value = response.user.handle ?? ''
     profileBio.value = response.user.public_bio ?? ''
-    profileTwoFactorMode.value = twoFactorModes.includes(response.user.two_factor_mode as typeof twoFactorModes[number])
-      ? (response.user.two_factor_mode as typeof twoFactorModes[number])
-      : 'off'
   } catch {
     user.value = null
   } finally {
@@ -72,8 +68,7 @@ async function saveProfile(): Promise<void> {
     const response = await apiPatch<AuthResponse>('/auth/profile', {
       name: profileName.value,
       handle: profileHandle.value,
-      public_bio: profileBio.value || null,
-      two_factor_mode: profileTwoFactorMode.value
+      public_bio: profileBio.value || null
     })
     user.value = response.user
     notice.value = 'Your profile has been updated.'
@@ -126,6 +121,7 @@ async function resendVerification(): Promise<void> {
 async function signOut(): Promise<void> {
   await apiPost('/auth/logout')
   user.value = null
+  clearCurrentUser()
   await router.push('/login?signed_out=1')
 }
 
@@ -140,7 +136,7 @@ onMounted(async () => {
       <div class="auth-card__intro">
         <p class="eyebrow">Profile</p>
         <h1 class="hero__title">Your account</h1>
-        <p class="hero__lede">Manage your public identity, verification state and sign-in options from one place.</p>
+        <p class="hero__lede">Manage your public identity, verification state and account access from one place.</p>
       </div>
 
       <div v-if="notice" class="callout" role="status" aria-live="polite">{{ notice }}</div>
@@ -161,6 +157,7 @@ onMounted(async () => {
               <p>Email verified: {{ user.is_email_verified ? 'Yes' : 'Not yet' }}</p>
               <p>Account state: {{ user.account_state }}</p>
               <p>Verification level: {{ user.verification_level }}</p>
+              <p>Admin access: {{ user.is_super_admin ? 'Superadmin' : 'No' }}</p>
               <p style="margin-bottom: 0;">Trust level: {{ user.trust_level }}</p>
             </article>
           </div>
@@ -183,15 +180,12 @@ onMounted(async () => {
                 <textarea v-model="profileBio" class="field__input field__input--textarea" rows="4" maxlength="280"></textarea>
               </label>
 
-              <label class="field field--full">
-                <span class="field__label">Extra sign-in checks</span>
-                <select v-model="profileTwoFactorMode" class="field__input">
-                  <option value="off">Off for now</option>
-                  <option value="email_code">Email code</option>
-                  <option value="magic_link">Magic link</option>
-                  <option value="both">Both code and magic link</option>
-                </select>
-              </label>
+              <div class="callout field--full">
+                <strong>Email sign-in checks are enabled.</strong>
+                <span style="display: block; margin-top: 0.25rem;">
+                  We use an emailed code by default, and magic-link login is still available when you need it.
+                </span>
+              </div>
 
               <div class="auth-actions field--full">
                 <button class="finder__button" type="submit" :disabled="savingProfile">{{ savingProfile ? 'Saving…' : 'Save profile' }}</button>

@@ -35,7 +35,8 @@ class UserFactory extends Factory
             'account_state' => 'active',
             'verification_level' => 'verified',
             'trust_level' => 'trusted',
-            'two_factor_mode' => 'off',
+            'is_super_admin' => false,
+            'two_factor_mode' => 'email_code',
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
@@ -53,6 +54,7 @@ class UserFactory extends Factory
             'account_state' => 'pending',
             'verification_level' => 'unverified',
             'trust_level' => 'untrusted',
+            'is_super_admin' => false,
         ]);
     }
 }

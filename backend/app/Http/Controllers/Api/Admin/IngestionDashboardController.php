@@ -85,6 +85,11 @@ class IngestionDashboardController extends Controller
                     'command' => 'kmc:ingestion-source:upsert',
                     'purpose' => 'Register or refresh a council data source before wiring it into automation.',
                 ],
+                [
+                    'label' => 'Grant superadmin',
+                    'command' => 'kmc:user:superadmin --email=you@example.com',
+                    'purpose' => 'Grant unrestricted access to the admin area for a trusted account.',
+                ],
             ],
         ]);
     }

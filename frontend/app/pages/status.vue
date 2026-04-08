@@ -10,7 +10,7 @@ const version = await apiGet('/version')
     <h1 style="margin-top: 0;">Status</h1>
     <p class="muted">Quick checks against the Laravel API configured in <code>NUXT_PUBLIC_API_BASE_URL</code>.</p>
     <p class="muted">
-      For ingestion controls, import runs and source refresh status, open the <NuxtLink to="/admin">admin area</NuxtLink>.
+      Ingestion controls, import runs and source refresh status are available to superadmins in the admin area.
     </p>
 
     <h2 style="margin-bottom: 8px;">API health</h2>
