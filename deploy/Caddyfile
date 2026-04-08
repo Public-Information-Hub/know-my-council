@@ -1,4 +1,12 @@
-knowmycouncil.uk, www.knowmycouncil.uk {
+http://knowmycouncil.uk, http://www.knowmycouncil.uk {
+  redir https://knowmycouncil.uk{uri} permanent
+}
+
+www.knowmycouncil.uk {
+  redir https://knowmycouncil.uk{uri} permanent
+}
+
+knowmycouncil.uk {
   encode gzip
 
   handle_path /api/* {
