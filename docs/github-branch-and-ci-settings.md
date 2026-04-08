@@ -2,7 +2,7 @@
 
 This document lists recommended GitHub settings that cannot be fully enforced from repository files alone.
 
-These are recommendations, not claims about current enforcement.
+These are recommendations, not claims about current enforcement. If branch protection is temporarily disabled, treat the notes below as the target state to restore later.
 
 ## Branch protection: `master`
 
