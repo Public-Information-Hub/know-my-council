@@ -16,12 +16,7 @@
       </div>
 
       <aside class="hero__panel" aria-label="At a glance">
-        <div class="callout">
-          <p class="eyebrow" style="margin-bottom: 0.35rem;">At a glance</p>
-          <p style="margin: 0;">
-            The site is in build mode, protected while work is under way, and designed to become a readable public record rather than a marketing page.
-          </p>
-        </div>
+        <UkMap />
 
         <dl class="fact-grid" aria-label="Project facts">
           <div class="fact-grid__item">
@@ -38,6 +33,19 @@
           </div>
         </dl>
       </aside>
+    </section>
+
+    <section class="section">
+      <div class="callout">
+        <h2 class="section__heading" style="margin-top: 0;">Start with a postcode</h2>
+        <p class="section__lead" style="margin-bottom: 0;">
+          The map is the fastest route in, but postcode lookup will take people directly to the relevant council page once they are ready to search.
+        </p>
+        <div class="row" style="margin-top: 0.9rem;">
+          <NuxtLink class="pill" to="/councils">Find your council</NuxtLink>
+          <a class="pill" href="#accessibility">Accessibility first</a>
+        </div>
+      </div>
     </section>
 
     <nav class="section" aria-label="On this page">

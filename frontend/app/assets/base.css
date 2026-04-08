@@ -368,6 +368,13 @@ pre {
   box-shadow: var(--kmc-shadow);
 }
 
+.card--button {
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+}
+
 .card h3 {
   margin: 0 0 0.35rem;
   font-size: 1rem;
@@ -401,6 +408,97 @@ pre {
 .landing {
   display: grid;
   gap: 1rem;
+}
+
+.map-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--kmc-border);
+  background: var(--kmc-panel);
+  box-shadow: var(--kmc-shadow);
+}
+
+.map-card__header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.map-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.finder {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.finder__label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.finder__row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.finder__input {
+  flex: 1 1 240px;
+  min-width: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--kmc-border);
+  background: var(--kmc-panel);
+  color: var(--kmc-text);
+  font: inherit;
+}
+
+.finder__input::placeholder {
+  color: var(--kmc-muted);
+}
+
+.finder__button {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--kmc-border);
+  background: var(--kmc-text);
+  color: var(--kmc-panel);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.finder__button:disabled {
+  opacity: 0.72;
+  cursor: progress;
+}
+
+.finder__help {
+  margin: 0;
+  color: var(--kmc-muted);
+  font-size: 0.92rem;
+}
+
+.uk-map {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.uk-map__link {
+  cursor: pointer;
+}
+
+.uk-map__link:focus-visible rect,
+.uk-map__link:hover rect {
+  stroke: var(--kmc-focus);
+  stroke-width: 3;
 }
 
 .fact-grid {
