@@ -23,7 +23,7 @@ jobs:
       name: production
     steps:
       - name: Checkout selected branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.branch }}
           fetch-depth: 1
