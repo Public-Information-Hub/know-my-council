@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { apiGet, apiPatch, apiPost, formatApiError } from '~/lib/api'
+import { extractFieldErrors, firstFieldError, hasFieldErrors, isValidHandle, normaliseHandle, type FieldErrorMap } from '~/lib/form-errors'
 
 type AuthUser = {
   id: number
@@ -35,6 +36,7 @@ const errorMessage = ref('')
 const savingProfile = ref(false)
 const savingPassword = ref(false)
 const sendingVerification = ref(false)
+const fieldErrors = ref<FieldErrorMap>({})
 
 const profileName = ref('')
 const profileHandle = ref('')
@@ -42,6 +44,22 @@ const profileBio = ref('')
 const currentPassword = ref('')
 const newPassword = ref('')
 const newPasswordConfirmation = ref('')
+
+function clearFormErrors(): void {
+  fieldErrors.value = {}
+}
+
+function setFormErrors(error: unknown, fallback: string): void {
+  const nextFieldErrors = extractFieldErrors(error)
+  fieldErrors.value = nextFieldErrors
+
+  if (hasFieldErrors(nextFieldErrors)) {
+    errorMessage.value = 'Please correct the highlighted fields and try again.'
+    return
+  }
+
+  errorMessage.value = formatApiError(error, fallback)
+}
 
 async function loadUser(): Promise<void> {
   loading.value = true
@@ -63,8 +81,20 @@ async function saveProfile(): Promise<void> {
   savingProfile.value = true
   notice.value = ''
   errorMessage.value = ''
+  clearFormErrors()
 
   try {
+    profileHandle.value = normaliseHandle(profileHandle.value)
+
+    if (!isValidHandle(profileHandle.value)) {
+      fieldErrors.value = {
+        handle: ['Use only letters, numbers, dots, hyphens, and underscores.']
+      }
+      errorMessage.value = 'Please correct the highlighted fields and try again.'
+      savingProfile.value = false
+      return
+    }
+
     const response = await apiPatch<AuthResponse>('/auth/profile', {
       name: profileName.value,
       handle: profileHandle.value,
@@ -73,7 +103,7 @@ async function saveProfile(): Promise<void> {
     user.value = response.user
     notice.value = 'Your profile has been updated.'
   } catch (error: unknown) {
-    errorMessage.value = formatApiError(error, 'We could not update your profile right now.')
+    setFormErrors(error, 'We could not update your profile right now.')
   } finally {
     savingProfile.value = false
   }
@@ -84,6 +114,7 @@ async function savePassword(): Promise<void> {
   savingPassword.value = true
   notice.value = ''
   errorMessage.value = ''
+  clearFormErrors()
 
   try {
     await apiPatch('/auth/password', {
@@ -96,7 +127,7 @@ async function savePassword(): Promise<void> {
     newPasswordConfirmation.value = ''
     notice.value = 'Your password has been updated.'
   } catch (error: unknown) {
-    errorMessage.value = formatApiError(error, 'We could not update your password right now.')
+    setFormErrors(error, 'We could not update your password right now.')
   } finally {
     savingPassword.value = false
   }
@@ -106,6 +137,7 @@ async function resendVerification(): Promise<void> {
   sendingVerification.value = true
   notice.value = ''
   errorMessage.value = ''
+  clearFormErrors()
 
   try {
     const response = await apiPost<{ message: string; user: AuthUser }>('/auth/email-verification-notification')
@@ -145,9 +177,9 @@ onMounted(async () => {
       <div v-if="loading" class="callout">Loading your profile…</div>
       <template v-else>
         <div v-if="user" class="stack">
-          <div class="card-grid card-grid--two">
-            <article class="card">
-              <h2 class="section__heading" style="margin-top: 0;">Public identity</h2>
+        <div class="card-grid card-grid--two">
+          <article class="card">
+            <h2 class="section__heading" style="margin-top: 0;">Public identity</h2>
               <p>Name: {{ user.name }}</p>
               <p>Handle: {{ user.handle ?? 'Not set' }}</p>
               <p style="margin-bottom: 0;">Email: {{ user.email }}</p>
@@ -168,16 +200,31 @@ onMounted(async () => {
               <label class="field">
                 <span class="field__label">Public name</span>
                 <input v-model="profileName" class="field__input" type="text" required>
+                <span v-if="firstFieldError(fieldErrors, 'name')" class="field__error">{{ firstFieldError(fieldErrors, 'name') }}</span>
               </label>
 
               <label class="field">
                 <span class="field__label">Public handle</span>
-                <input v-model="profileHandle" class="field__input" type="text" required>
+                <input
+                  v-model="profileHandle"
+                  class="field__input"
+                  type="text"
+                  inputmode="text"
+                  maxlength="32"
+                  pattern="[A-Za-z0-9_.-]+"
+                  required
+                  :aria-invalid="Boolean(firstFieldError(fieldErrors, 'handle'))"
+                  :title="'Use only letters, numbers, dots, hyphens, and underscores.'"
+                  @blur="profileHandle = normaliseHandle(profileHandle)"
+                >
+                <span v-if="firstFieldError(fieldErrors, 'handle')" class="field__error">{{ firstFieldError(fieldErrors, 'handle') }}</span>
+                <span class="field__hint">Letters, numbers, hyphens, underscores and dots are allowed. We normalise it to lower-case.</span>
               </label>
 
               <label class="field field--full">
                 <span class="field__label">Public bio</span>
                 <textarea v-model="profileBio" class="field__input field__input--textarea" rows="4" maxlength="280"></textarea>
+                <span v-if="firstFieldError(fieldErrors, 'public_bio')" class="field__error">{{ firstFieldError(fieldErrors, 'public_bio') }}</span>
               </label>
 
               <div class="callout field--full">
@@ -203,16 +250,19 @@ onMounted(async () => {
               <label class="field">
                 <span class="field__label">Current password</span>
                 <input v-model="currentPassword" class="field__input" type="password" autocomplete="current-password" required>
+                <span v-if="firstFieldError(fieldErrors, 'current_password')" class="field__error">{{ firstFieldError(fieldErrors, 'current_password') }}</span>
               </label>
 
               <label class="field">
                 <span class="field__label">New password</span>
                 <input v-model="newPassword" class="field__input" type="password" autocomplete="new-password" required>
+                <span v-if="firstFieldError(fieldErrors, 'password')" class="field__error">{{ firstFieldError(fieldErrors, 'password') }}</span>
               </label>
 
               <label class="field field--full">
                 <span class="field__label">Confirm new password</span>
                 <input v-model="newPasswordConfirmation" class="field__input" type="password" autocomplete="new-password" required>
+                <span v-if="firstFieldError(fieldErrors, 'password_confirmation')" class="field__error">{{ firstFieldError(fieldErrors, 'password_confirmation') }}</span>
               </label>
 
               <div class="auth-actions field--full">

@@ -19,6 +19,9 @@ class PasswordResetController extends Controller
     {
         $data = $request->validate([
             'email' => ['required', 'string', 'email:rfc', 'max:255'],
+        ], [
+            'email.required' => 'Please enter your email address.',
+            'email.email' => 'Please enter a valid email address.',
         ]);
 
         $status = Password::sendResetLink([
@@ -37,6 +40,13 @@ class PasswordResetController extends Controller
             'token' => ['required', 'string'],
             'email' => ['required', 'string', 'email:rfc', 'max:255'],
             'password' => ['required', 'confirmed', PasswordRule::min(12)->mixedCase()->numbers()],
+        ], [
+            'token.required' => 'Please include the reset token from your email.',
+            'email.required' => 'Please enter your email address.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'Please enter a new password.',
+            'password.confirmed' => 'The new password confirmation does not match.',
+            'password.min' => 'Your password must be at least 12 characters long.',
         ]);
 
         $status = Password::reset(

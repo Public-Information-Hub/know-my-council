@@ -25,6 +25,10 @@ class TwoFactorChallengeController extends Controller
         $data = $request->validate([
             'challenge_id' => ['required', 'string', 'exists:auth_challenges,id'],
             'code' => ['required', 'string'],
+        ], [
+            'challenge_id.required' => 'Please restart the sign-in flow and request a fresh check.',
+            'challenge_id.exists' => 'Please restart the sign-in flow and request a fresh check.',
+            'code.required' => 'Please enter the code from your email.',
         ]);
 
         $challenge = UserAuthChallenge::query()->with('user')->findOrFail($data['challenge_id']);
@@ -57,6 +61,10 @@ class TwoFactorChallengeController extends Controller
         $data = $request->validate([
             'challenge_id' => ['required', 'string', 'exists:auth_challenges,id'],
             'delivery_mode' => ['nullable', 'string', 'in:email_code,magic_link'],
+        ], [
+            'challenge_id.required' => 'Please restart the sign-in flow and request a fresh check.',
+            'challenge_id.exists' => 'Please restart the sign-in flow and request a fresh check.',
+            'delivery_mode.in' => 'Please choose a valid sign-in check delivery method.',
         ]);
 
         $challenge = UserAuthChallenge::query()->with('user')->findOrFail($data['challenge_id']);

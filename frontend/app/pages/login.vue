@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { apiPost, formatApiError } from '~/lib/api'
+import { extractFieldErrors, firstFieldError, hasFieldErrors, type FieldErrorMap } from '~/lib/form-errors'
 
 type Challenge = {
   id: string
@@ -45,6 +46,23 @@ const busy = ref(false)
 const challengeBusy = ref(false)
 const notice = ref(route.query.signed_out ? 'You have been signed out.' : '')
 const errorMessage = ref('')
+const fieldErrors = ref<FieldErrorMap>({})
+
+function clearFormErrors(): void {
+  fieldErrors.value = {}
+}
+
+function setFormErrors(error: unknown, fallback: string): void {
+  const nextFieldErrors = extractFieldErrors(error)
+  fieldErrors.value = nextFieldErrors
+
+  if (hasFieldErrors(nextFieldErrors)) {
+    errorMessage.value = 'Please correct the highlighted fields and try again.'
+    return
+  }
+
+  errorMessage.value = formatApiError(error, fallback)
+}
 
 function clearMessages(): void {
   notice.value = ''
@@ -53,6 +71,7 @@ function clearMessages(): void {
 
 async function submitLogin(): Promise<void> {
   clearMessages()
+  clearFormErrors()
   busy.value = true
 
   try {
@@ -74,7 +93,7 @@ async function submitLogin(): Promise<void> {
     await refreshCurrentUser()
     await router.push(redirectTarget.value)
   } catch (error: unknown) {
-    errorMessage.value = formatApiError(error, 'We could not sign you in right now.')
+    setFormErrors(error, 'We could not sign you in right now.')
   } finally {
     busy.value = false
   }
@@ -84,6 +103,7 @@ async function confirmChallenge(): Promise<void> {
   if (!challengeId.value) return
 
   clearMessages()
+  clearFormErrors()
   challengeBusy.value = true
 
   try {
@@ -94,7 +114,7 @@ async function confirmChallenge(): Promise<void> {
     await refreshCurrentUser()
     await router.push(redirectTarget.value)
   } catch (error: unknown) {
-    errorMessage.value = formatApiError(error, 'We could not confirm the sign-in check.')
+    setFormErrors(error, 'We could not confirm the sign-in check.')
   } finally {
     challengeBusy.value = false
   }
@@ -104,6 +124,7 @@ async function resendChallenge(): Promise<void> {
   if (!challengeId.value) return
 
   clearMessages()
+  clearFormErrors()
   challengeBusy.value = true
 
   try {
@@ -115,7 +136,7 @@ async function resendChallenge(): Promise<void> {
     challengeExpiresAt.value = response.challenge.expires_at ?? ''
     notice.value = response.message
   } catch (error: unknown) {
-    errorMessage.value = formatApiError(error, 'We could not resend the sign-in check.')
+    setFormErrors(error, 'We could not resend the sign-in check.')
   } finally {
     challengeBusy.value = false
   }
@@ -147,11 +168,13 @@ async function switchChallengeMode(nextMode: 'email_code' | 'magic_link'): Promi
         <label class="field">
           <span class="field__label">Email address</span>
           <input v-model="email" class="field__input" type="email" autocomplete="email" required>
+          <span v-if="firstFieldError(fieldErrors, 'email')" class="field__error">{{ firstFieldError(fieldErrors, 'email') }}</span>
         </label>
 
         <label class="field">
           <span class="field__label">Password</span>
           <input v-model="password" class="field__input" type="password" autocomplete="current-password" required>
+          <span v-if="firstFieldError(fieldErrors, 'password')" class="field__error">{{ firstFieldError(fieldErrors, 'password') }}</span>
         </label>
 
         <label class="field field--inline">
@@ -179,7 +202,18 @@ async function switchChallengeMode(nextMode: 'email_code' | 'magic_link'): Promi
       <form class="auth-form" @submit.prevent="confirmChallenge">
         <label class="field">
           <span class="field__label">Verification code</span>
-          <input v-model="challengeCode" class="field__input" type="text" inputmode="numeric" autocomplete="one-time-code" :disabled="challengeMode === 'magic_link'" :placeholder="challengeMode === 'magic_link' ? 'Use the magic link in your email' : 'Enter the 6-digit code'">
+          <input
+            v-model="challengeCode"
+            class="field__input"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            maxlength="6"
+            pattern="[0-9]{6}"
+            :disabled="challengeMode === 'magic_link'"
+            :placeholder="challengeMode === 'magic_link' ? 'Use the magic link in your email' : 'Enter the 6-digit code'"
+          >
+          <span v-if="firstFieldError(fieldErrors, 'code')" class="field__error">{{ firstFieldError(fieldErrors, 'code') }}</span>
         </label>
 
         <div class="auth-actions">

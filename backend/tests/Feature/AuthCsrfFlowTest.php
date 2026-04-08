@@ -54,6 +54,24 @@ class AuthCsrfFlowTest extends TestCase
         Notification::assertSentTo($user, VerifyEmailLinkNotification::class);
     }
 
+    public function test_registration_rejects_invalid_handles_with_helpful_feedback(): void
+    {
+        $xsrfToken = $this->bootstrapXsrfToken();
+
+        $this->withHeader('X-XSRF-TOKEN', $xsrfToken)
+            ->postJson('/api/auth/register', [
+                'name' => 'Ada Lovelace',
+                'handle' => 'ada lovelace',
+                'email' => 'ada-invalid-handle@example.com',
+                'public_bio' => 'Council data researcher.',
+                'password' => 'Password12345',
+                'password_confirmation' => 'Password12345',
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['handle'])
+            ->assertJsonPath('errors.handle.0', 'Use only letters, numbers, dots, hyphens, and underscores in your handle.');
+    }
+
     public function test_login_two_factor_and_magic_link_sign_in_can_use_the_csrf_cookie_bootstrap(): void
     {
         Notification::fake();
@@ -99,6 +117,30 @@ class AuthCsrfFlowTest extends TestCase
             ->assertOk();
 
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_login_feedback_points_to_the_email_and_password_fields(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'ellen@example.com',
+            'password' => Hash::make('Password12345'),
+            'two_factor_mode' => 'off',
+            'account_state' => 'active',
+            'verification_level' => 'verified',
+        ]);
+
+        $xsrfToken = $this->bootstrapXsrfToken();
+
+        $this->withHeader('X-XSRF-TOKEN', $xsrfToken)
+            ->postJson('/api/auth/login', [
+                'email' => $user->email,
+                'password' => 'incorrect-password',
+                'remember' => false,
+            ])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['email', 'password'])
+            ->assertJsonPath('errors.email.0', 'We could not sign you in with those details. Check your email address and password.')
+            ->assertJsonPath('errors.password.0', 'We could not sign you in with those details. Check your email address and password.');
     }
 
     public function test_password_reset_can_use_the_csrf_cookie_bootstrap(): void

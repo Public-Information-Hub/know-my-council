@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { apiPost, formatApiError } from '~/lib/api'
+import { extractFieldErrors, firstFieldError, hasFieldErrors, type FieldErrorMap } from '~/lib/form-errors'
 
 useHead({
   title: 'Forgot password'
@@ -9,10 +10,28 @@ const email = ref('')
 const busy = ref(false)
 const notice = ref('')
 const errorMessage = ref('')
+const fieldErrors = ref<FieldErrorMap>({})
+
+function clearFormErrors(): void {
+  fieldErrors.value = {}
+}
+
+function setFormErrors(error: unknown, fallback: string): void {
+  const nextFieldErrors = extractFieldErrors(error)
+  fieldErrors.value = nextFieldErrors
+
+  if (hasFieldErrors(nextFieldErrors)) {
+    errorMessage.value = 'Please correct the highlighted fields and try again.'
+    return
+  }
+
+  errorMessage.value = formatApiError(error, fallback)
+}
 
 async function submitForgotPassword(): Promise<void> {
   notice.value = ''
   errorMessage.value = ''
+  clearFormErrors()
   busy.value = true
 
   try {
@@ -21,7 +40,7 @@ async function submitForgotPassword(): Promise<void> {
     })
     notice.value = response.message
   } catch (error: unknown) {
-    errorMessage.value = formatApiError(error, 'We could not request a password reset right now.')
+    setFormErrors(error, 'We could not request a password reset right now.')
   } finally {
     busy.value = false
   }
@@ -44,6 +63,7 @@ async function submitForgotPassword(): Promise<void> {
         <label class="field">
           <span class="field__label">Email address</span>
           <input v-model="email" class="field__input" type="email" autocomplete="email" required>
+          <span v-if="firstFieldError(fieldErrors, 'email')" class="field__error">{{ firstFieldError(fieldErrors, 'email') }}</span>
         </label>
 
         <div class="auth-actions">

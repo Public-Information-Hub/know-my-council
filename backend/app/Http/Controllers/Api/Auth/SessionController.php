@@ -36,6 +36,22 @@ class SessionController extends Controller
             'email' => ['required', 'string', 'email:rfc', 'max:255', 'unique:users,email'],
             'public_bio' => ['nullable', 'string', 'max:280'],
             'password' => ['required', 'confirmed', Password::min(12)->mixedCase()->numbers()],
+        ], [
+            'name.required' => 'Please enter your public name.',
+            'name.min' => 'Your public name must be at least 2 characters long.',
+            'name.max' => 'Your public name must be 120 characters or fewer.',
+            'handle.required' => 'Please choose a public handle.',
+            'handle.min' => 'Your public handle must be at least 3 characters long.',
+            'handle.max' => 'Your public handle must be 32 characters or fewer.',
+            'handle.regex' => 'Use only letters, numbers, dots, hyphens, and underscores in your handle.',
+            'handle.unique' => 'That public handle is already in use.',
+            'email.required' => 'Please enter an email address.',
+            'email.email' => 'Please enter a valid email address.',
+            'email.unique' => 'That email address is already in use.',
+            'public_bio.max' => 'Your public bio must be 280 characters or fewer.',
+            'password.required' => 'Please enter a password.',
+            'password.confirmed' => 'The password confirmation does not match.',
+            'password.min' => 'Your password must be at least 12 characters long.',
         ]);
 
         $user = new User();
@@ -73,6 +89,10 @@ class SessionController extends Controller
             'email' => ['required', 'string', 'email:rfc', 'max:255'],
             'password' => ['required', 'string'],
             'remember' => ['sometimes', 'boolean'],
+        ], [
+            'email.required' => 'Please enter your email address.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'Please enter your password.',
         ]);
 
         $user = User::query()
@@ -81,12 +101,15 @@ class SessionController extends Controller
 
         if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are invalid.'],
+                'email' => ['We could not sign you in with those details. Check your email address and password.'],
+                'password' => ['We could not sign you in with those details. Check your email address and password.'],
             ]);
         }
 
         if ($user->account_state === 'suspended') {
-            abort(403, 'This account has been suspended.');
+            throw ValidationException::withMessages([
+                'email' => ['This account has been suspended. Please contact support if you think this is a mistake.'],
+            ]);
         }
 
         if ($user->two_factor_mode !== 'off') {
@@ -134,6 +157,16 @@ class SessionController extends Controller
             'name' => ['required', 'string', 'min:2', 'max:120'],
             'handle' => ['required', 'string', 'min:3', 'max:32', 'regex:/^[A-Za-z0-9_.-]+$/', Rule::unique('users', 'handle')->ignore($user->getKey())],
             'public_bio' => ['nullable', 'string', 'max:280'],
+        ], [
+            'name.required' => 'Please enter your public name.',
+            'name.min' => 'Your public name must be at least 2 characters long.',
+            'name.max' => 'Your public name must be 120 characters or fewer.',
+            'handle.required' => 'Please choose a public handle.',
+            'handle.min' => 'Your public handle must be at least 3 characters long.',
+            'handle.max' => 'Your public handle must be 32 characters or fewer.',
+            'handle.regex' => 'Use only letters, numbers, dots, hyphens, and underscores in your handle.',
+            'handle.unique' => 'That public handle is already in use.',
+            'public_bio.max' => 'Your public bio must be 280 characters or fewer.',
         ]);
 
         $user->forceFill([
@@ -154,6 +187,12 @@ class SessionController extends Controller
         $data = $request->validate([
             'current_password' => ['required', 'current_password'],
             'password' => ['required', 'confirmed', Password::min(12)->mixedCase()->numbers()],
+        ], [
+            'current_password.required' => 'Please enter your current password.',
+            'current_password.current_password' => 'The current password is not correct.',
+            'password.required' => 'Please enter a new password.',
+            'password.confirmed' => 'The new password confirmation does not match.',
+            'password.min' => 'Your password must be at least 12 characters long.',
         ]);
 
         $user = $request->user();
