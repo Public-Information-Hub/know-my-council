@@ -1,3 +1,5 @@
+import { ApiError, apiGet } from '~/lib/api'
+
 type LocalAuthorityRecord = {
   name: string
   homepage_url?: string
@@ -18,6 +20,16 @@ export async function lookupLocalAuthorityByPostcode(postcode: string): Promise<
 
 export async function lookupLocalAuthorityBySlug(slug: string): Promise<LocalAuthorityRecord> {
   const encoded = encodeURIComponent(slug)
+  try {
+    const response = await apiGet<{ local_authority: LocalAuthorityRecord }>(`/api/councils/${encoded}`)
+    return response.local_authority
+  } catch (error) {
+    const status = error instanceof ApiError ? error.status : undefined
+    if (status !== 404) {
+      throw error
+    }
+  }
+
   const attempts = [
     `${GOVUK_LOCAL_AUTHORITY_API}/${encoded}`,
     `${GOVUK_LOCAL_AUTHORITY_API}/?slug=${encoded}`

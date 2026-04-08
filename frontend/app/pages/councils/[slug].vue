@@ -37,7 +37,7 @@ useHead({
       <aside class="hero__panel">
         <div class="callout">
           <p class="eyebrow" style="margin-bottom: 0.35rem;">Source record</p>
-          <p style="margin: 0;">This page is powered by the GOV.UK local authority lookup while the fuller council registry is still being built.</p>
+          <p style="margin: 0;">This page is powered by the internal council registry first, with GOV.UK still available as a fallback while coverage is expanded.</p>
         </div>
       </aside>
     </section>

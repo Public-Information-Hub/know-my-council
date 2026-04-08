@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CouncilLookupController;
 
 Route::get('/health', function (Request $request) {
     return response()->json([
@@ -22,3 +23,5 @@ Route::get('/version', function () {
     ]);
 });
 
+Route::get('/councils/{slug}', [CouncilLookupController::class, 'show'])
+    ->where('slug', '[A-Za-z0-9\-]+');
