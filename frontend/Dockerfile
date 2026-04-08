@@ -7,6 +7,9 @@ RUN npm install --no-fund --no-audit
 
 COPY frontend ./
 RUN npm run build
+RUN chown -R node:node /app
+
+USER node
 
 EXPOSE 3000
 

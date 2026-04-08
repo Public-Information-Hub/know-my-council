@@ -31,3 +31,13 @@ The current production shape is:
 - The queue worker container runs `php artisan queue:work`.
 - MinIO is initialised with a `knowmycouncil` bucket.
 - Caddy will request and renew TLS automatically once the domain points at the server and ports 80/443 are open.
+
+## Host hardening
+
+- SSH is restricted to key-based root access only.
+- Password and keyboard-interactive SSH authentication are disabled.
+- X11 forwarding is disabled on the host.
+- UFW is enabled with inbound access limited to `22`, `80`, and `443`.
+- Fail2ban is enabled with an SSH jail.
+- Unattended security upgrades are enabled on the server.
+- Only Caddy publishes public ports from the Compose stack; the app services stay on the internal Docker network.
