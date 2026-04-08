@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Council;
 use App\Models\CouncilVersion;
+use App\Models\CorrectionRequest;
 use App\Models\Dataset;
 use App\Models\Import;
 use App\Models\ImportRun;
@@ -49,6 +50,13 @@ class IngestionDashboardController extends Controller
             ->map(fn (IngestionSource $source): array => $this->serialiseIngestionSource($source))
             ->all();
 
+        $latestCorrections = CorrectionRequest::query()
+            ->orderByDesc('created_at')
+            ->limit(8)
+            ->get()
+            ->map(fn (CorrectionRequest $request): array => $this->serialiseCorrectionRequest($request))
+            ->all();
+
         return response()->json([
             'generated_at' => now()->toIso8601String(),
             'counts' => [
@@ -61,6 +69,8 @@ class IngestionDashboardController extends Controller
                 'active_ingestion_sources' => IngestionSource::query()->where('is_active', true)->count(),
                 'failing_ingestion_sources' => IngestionSource::query()->whereNotNull('last_failure_at')->count(),
                 'running_import_runs' => ImportRun::query()->where('run_state', 'running')->count(),
+                'correction_requests' => CorrectionRequest::query()->count(),
+                'pending_correction_requests' => CorrectionRequest::query()->where('status', 'pending')->count(),
             ],
             'council_registry' => [
                 'import_key' => $councilRegistryImportKey,
@@ -69,6 +79,7 @@ class IngestionDashboardController extends Controller
             ],
             'recent_import_runs' => $latestImportRuns,
             'recent_ingestion_sources' => $latestSources,
+            'recent_correction_requests' => $latestCorrections,
             'suggested_actions' => [
                 [
                     'label' => 'Bootstrap council registry',
@@ -89,6 +100,11 @@ class IngestionDashboardController extends Controller
                     'label' => 'Grant superadmin',
                     'command' => 'kmc:user:superadmin --email=you@example.com',
                     'purpose' => 'Grant unrestricted access to the admin area for a trusted account.',
+                ],
+                [
+                    'label' => 'Review corrections',
+                    'command' => 'Open the admin corrections list',
+                    'purpose' => 'Check incoming contact requests for council page corrections and follow up on them.',
                 ],
             ],
         ]);
@@ -134,6 +150,28 @@ class IngestionDashboardController extends Controller
             'last_success_at' => $this->formatTimestamp($source->last_success_at),
             'last_failure_at' => $this->formatTimestamp($source->last_failure_at),
             'last_error_summary' => $source->last_error_summary,
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serialiseCorrectionRequest(CorrectionRequest $request): array
+    {
+        return [
+            'id' => $request->id,
+            'topic' => $request->topic,
+            'name' => $request->name,
+            'email' => $request->email,
+            'council_name' => $request->council_name,
+            'council_slug' => $request->council_slug,
+            'page_url' => $request->page_url,
+            'source_url' => $request->source_url,
+            'details' => $request->details,
+            'status' => $request->status,
+            'admin_notes' => $request->admin_notes,
+            'reviewed_at' => $this->formatTimestamp($request->reviewed_at),
+            'created_at' => $this->formatTimestamp($request->created_at),
         ];
     }
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Auth\SessionController;
 use App\Http\Controllers\Api\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Api\Admin\IngestionDashboardController;
 use App\Http\Controllers\Api\CouncilLookupController;
+use App\Http\Controllers\Api\Contact\CorrectionRequestController;
 
 Route::get('/health', function (Request $request) {
     return response()->json([
@@ -32,6 +33,9 @@ Route::get('/councils/{slug}', [CouncilLookupController::class, 'show'])
     ->where('slug', '[A-Za-z0-9\-]+');
 
 Route::middleware('web')->group(function (): void {
+    Route::post('/contact/correction-request', [CorrectionRequestController::class, 'store'])
+        ->middleware('throttle:6,1');
+
     Route::get('/admin/ingestion-summary', [IngestionDashboardController::class, 'index'])
         ->middleware(['auth', 'can:access-admin']);
 });

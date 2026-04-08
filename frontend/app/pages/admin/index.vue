@@ -13,6 +13,8 @@ type AdminSummary = {
     active_ingestion_sources: number
     failing_ingestion_sources: number
     running_import_runs: number
+    correction_requests: number
+    pending_correction_requests: number
   }
   council_registry: {
     import_key: string
@@ -60,6 +62,21 @@ type AdminSummary = {
     last_success_at: string | null
     last_failure_at: string | null
     last_error_summary: string | null
+  }>
+  recent_correction_requests: Array<{
+    id: string
+    topic: string
+    name: string
+    email: string
+    council_name: string | null
+    council_slug: string | null
+    page_url: string | null
+    source_url: string | null
+    details: string
+    status: string
+    admin_notes: string | null
+    reviewed_at: string | null
+    created_at: string | null
   }>
   suggested_actions: Array<{
     label: string
@@ -155,6 +172,10 @@ function formatCount(value: number | null | undefined): string {
               <h3>Sources needing attention</h3>
               <p>{{ summary?.counts.failing_ingestion_sources ?? 0 }}</p>
             </article>
+            <article class="card">
+              <h3>Pending corrections</h3>
+              <p>{{ summary?.counts.pending_correction_requests ?? 0 }}</p>
+            </article>
           </div>
 
           <div class="card-grid card-grid--three" style="margin-top: 1rem;">
@@ -178,6 +199,45 @@ function formatCount(value: number | null | undefined): string {
             </article>
           </div>
         </template>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="panel">
+        <h2 class="section__heading" style="margin-top: 0;">Recent correction requests</h2>
+        <div v-if="summary?.recent_correction_requests?.length" class="stack">
+          <article v-for="request in summary.recent_correction_requests" :key="request.id" class="card">
+            <div class="row" style="justify-content: space-between; align-items: flex-start;">
+              <div>
+                <h3 style="margin-top: 0; margin-bottom: 0.35rem;">{{ request.topic }}</h3>
+                <p class="muted" style="margin: 0;">{{ request.name }} · {{ request.email }}</p>
+              </div>
+              <span class="pill">{{ request.status }}</span>
+            </div>
+
+            <div class="card-grid card-grid--two" style="margin-top: 0.85rem;">
+              <div>
+                <p class="muted" style="margin: 0 0 0.2rem;">Council</p>
+                <p style="margin: 0;">{{ request.council_name ?? request.council_slug ?? 'Not set' }}</p>
+              </div>
+              <div>
+                <p class="muted" style="margin: 0 0 0.2rem;">Submitted</p>
+                <p style="margin: 0;">{{ formatDate(request.created_at) }}</p>
+              </div>
+              <div v-if="request.page_url">
+                <p class="muted" style="margin: 0 0 0.2rem;">Page</p>
+                <p style="margin: 0;">{{ request.page_url }}</p>
+              </div>
+              <div v-if="request.source_url">
+                <p class="muted" style="margin: 0 0 0.2rem;">Source</p>
+                <p style="margin: 0;">{{ request.source_url }}</p>
+              </div>
+            </div>
+
+            <p style="margin: 0.85rem 0 0;">{{ request.details }}</p>
+          </article>
+        </div>
+        <p v-else class="muted">No correction requests yet.</p>
       </div>
     </section>
 
