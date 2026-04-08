@@ -110,7 +110,6 @@ async function submitRegister(): Promise<void> {
             autocomplete="username"
             inputmode="text"
             maxlength="32"
-            pattern="[A-Za-z0-9_.-]+"
             required
             placeholder="example-user"
             :aria-invalid="Boolean(firstFieldError(fieldErrors, 'handle'))"

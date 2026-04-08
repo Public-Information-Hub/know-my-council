@@ -211,7 +211,6 @@ onMounted(async () => {
                   type="text"
                   inputmode="text"
                   maxlength="32"
-                  pattern="[A-Za-z0-9_.-]+"
                   required
                   :aria-invalid="Boolean(firstFieldError(fieldErrors, 'handle'))"
                   :title="'Use only letters, numbers, dots, hyphens, and underscores.'"
