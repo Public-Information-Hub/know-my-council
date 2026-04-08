@@ -13,7 +13,7 @@ This note summarises the early repository setup direction for KnowMyCouncil. It 
 
 ## Why temporal authority/geography modelling is highlighted early
 
-English councils reorganise over time. Without temporal modelling and explicit lineage, the project would eventually:
+UK local government reorganises over time. Without temporal modelling and explicit lineage, the project would eventually:
 
 - overwrite history
 - produce misleading comparisons
@@ -25,4 +25,3 @@ See:
 
 - [../data-model/temporal-authority-and-geography-modelling.md](../data-model/temporal-authority-and-geography-modelling.md)
 - [../decisions/ADR-0004-temporal-authority-and-geography-model.md](../decisions/ADR-0004-temporal-authority-and-geography-model.md)
-

@@ -1,12 +1,12 @@
 # Authorities (councils)
 
-In KnowMyCouncil, an **authority** is a public body in England with local government responsibilities that publishes (or should publish) information relevant to public spending, contracts, assets, decisions, and supporting documents.
+In KnowMyCouncil, an **authority** is a public body in the UK with local government responsibilities that publishes (or should publish) information relevant to public spending, contracts, assets, decisions, and supporting documents.
 
 This document defines the concept at a high level so we model it consistently.
 
 ## Scope (initial)
 
-The project is focused on English councils. That includes the reality that:
+The project is focused on UK councils and local authorities. That includes the reality that:
 
 - there are different authority types and structures (and this can change over time)
 - the same authority may appear under different names in different datasets
@@ -37,4 +37,3 @@ Public trust requires that we can show:
 - why we think that mapping is correct (sources and assumptions)
 
 When there is uncertainty, the model and UI must allow “unknown” and “uncertain” states without forcing a misleading tidy answer.
-

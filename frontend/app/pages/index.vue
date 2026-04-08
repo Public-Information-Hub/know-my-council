@@ -32,9 +32,9 @@ const ingestionSources = [
     <section class="hero panel">
       <div>
         <p class="eyebrow">Public information site</p>
-        <h1 class="hero__title">Clear, source-led information about English councils</h1>
+        <h1 class="hero__title">Clear, source-led information about UK councils</h1>
         <p class="hero__lede">
-          KnowMyCouncil is being built to help people find council spend, suppliers, contracts and source material in one place, with accessibility and provenance at the centre.
+          KnowMyCouncil is being built to help people find council spend, suppliers, contracts and source material across the UK in one place, with accessibility and provenance at the centre.
         </p>
 
         <div class="row" style="margin-top: 1rem;">
@@ -54,7 +54,7 @@ const ingestionSources = [
           </div>
           <div class="fact-grid__item">
             <dt class="fact-grid__label">Current focus</dt>
-            <dd class="fact-grid__value">Build the data model, ingestion routes and public views together.</dd>
+            <dd class="fact-grid__value">Build the UK-wide data model, ingestion routes and public views together.</dd>
           </div>
           <div class="fact-grid__item">
             <dt class="fact-grid__label">Theme support</dt>
@@ -103,7 +103,7 @@ const ingestionSources = [
         </article>
         <article class="card">
           <h3>Built for councils and citizens</h3>
-          <p>Every page should work for people checking a single line item or exploring a broader pattern.</p>
+          <p>Every page should work for people checking a single line item or exploring a broader UK pattern.</p>
         </article>
       </div>
     </section>

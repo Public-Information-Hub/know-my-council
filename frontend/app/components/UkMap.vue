@@ -44,7 +44,7 @@ const regions: NationMapEntry[] = [
     key: 'scotland',
     label: 'Scotland',
     href: '/councils?nation=scotland',
-    description: 'Scotland is not in the first release scope.',
+    description: 'Part of the UK-wide council map.',
     x: 140,
     y: 28,
     width: 120,
@@ -55,7 +55,7 @@ const regions: NationMapEntry[] = [
     key: 'northern-ireland',
     label: 'Northern Ireland',
     href: '/councils?nation=northern-ireland',
-    description: 'Northern Ireland is not in the first release scope.',
+    description: 'Part of the UK-wide council map.',
     x: 34,
     y: 182,
     width: 84,
@@ -66,7 +66,7 @@ const regions: NationMapEntry[] = [
     key: 'wales',
     label: 'Wales',
     href: '/councils?nation=wales',
-    description: 'Wales is not in the first release scope.',
+    description: 'Part of the UK-wide council map.',
     x: 96,
     y: 190,
     width: 72,
@@ -77,7 +77,7 @@ const regions: NationMapEntry[] = [
     key: 'england',
     label: 'England',
     href: '/councils',
-    description: 'England councils are the first release focus.',
+    description: 'Part of the UK-wide council map.',
     x: 174,
     y: 150,
     width: 150,
@@ -92,7 +92,7 @@ const pins: PinEntry[] = [
     label: 'England',
     shortLabel: 'ENG',
     href: '/councils',
-    description: 'England councils are the first release focus.',
+    description: 'Part of the UK-wide council map.',
     position: { lat: 52.9, lng: -1.7 },
     color: '#0f766e'
   },
@@ -101,7 +101,7 @@ const pins: PinEntry[] = [
     label: 'Scotland',
     shortLabel: 'SCT',
     href: '/councils?nation=scotland',
-    description: 'Scotland is not in the first release scope.',
+    description: 'Part of the UK-wide council map.',
     position: { lat: 56.7, lng: -4.2 },
     color: '#0c5670'
   },
@@ -110,7 +110,7 @@ const pins: PinEntry[] = [
     label: 'Wales',
     shortLabel: 'WLS',
     href: '/councils?nation=wales',
-    description: 'Wales is not in the first release scope.',
+    description: 'Part of the UK-wide council map.',
     position: { lat: 52.2, lng: -3.8 },
     color: '#a16207'
   },
@@ -119,7 +119,7 @@ const pins: PinEntry[] = [
     label: 'Northern Ireland',
     shortLabel: 'NIR',
     href: '/councils?nation=northern-ireland',
-    description: 'Northern Ireland is not in the first release scope.',
+    description: 'Part of the UK-wide council map.',
     position: { lat: 54.7, lng: -6.6 },
     color: '#9333ea'
   }
@@ -244,7 +244,7 @@ onMounted(async () => {
         <h2 id="uk-map-title" class="section__heading" style="margin: 0;">Find your council</h2>
       </div>
       <p class="subtle" style="margin: 0;">
-        England is the current focus; the map remains set up for UK-wide expansion.
+        The map is set up for UK-wide council navigation from the start.
       </p>
     </div>
 
@@ -255,7 +255,7 @@ onMounted(async () => {
         <svg class="uk-map" viewBox="0 0 420 420" role="img" aria-labelledby="uk-map-svg-title uk-map-svg-desc">
           <title id="uk-map-svg-title">Interactive map of the United Kingdom</title>
           <desc id="uk-map-svg-desc">
-            Select a nation to continue to the council finder or the future council pages.
+            Select a nation to continue to the council finder or the council pages.
           </desc>
 
           <rect x="12" y="12" width="396" height="396" rx="28" fill="var(--kmc-panel)" stroke="var(--kmc-border)" />

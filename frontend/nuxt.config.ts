@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     head: {
       title: 'KnowMyCouncil',
       meta: [
-        { name: 'description', content: 'KnowMyCouncil: a public transparency platform for English councils.' }
+        { name: 'description', content: 'KnowMyCouncil: a public transparency platform for UK councils and local authorities.' }
       ]
     }
   },

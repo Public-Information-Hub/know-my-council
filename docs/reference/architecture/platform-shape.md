@@ -1,6 +1,6 @@
 # Platform Shape (intended direction)
 
-KnowMyCouncil is intended to be a read-heavy public transparency platform focused on English councils.
+KnowMyCouncil is intended to be a read-heavy public transparency platform focused on UK councils and local authorities.
 
 “Read-heavy” means most traffic is expected to be anonymous browsing, searching, and API queries. Writes exist, but are typically operational and bursty (imports, re-indexing, corrections, administrative changes).
 

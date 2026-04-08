@@ -18,7 +18,7 @@ const { theme, themes, setTheme } = useTheme()
         <NuxtLink to="/" class="site-brand__mark" aria-label="KnowMyCouncil home">KMC</NuxtLink>
         <div>
           <NuxtLink to="/" class="site-brand__name">KnowMyCouncil</NuxtLink>
-          <p class="site-brand__tag">Public information for English councils</p>
+          <p class="site-brand__tag">Public information for UK councils and local authorities</p>
         </div>
       </div>
 
@@ -48,7 +48,7 @@ const { theme, themes, setTheme } = useTheme()
 
     <footer class="site-footer">
       <p>
-        KnowMyCouncil is a source-led civic information project focused on English councils.
+        KnowMyCouncil is a source-led civic information project focused on UK councils and local authorities.
       </p>
       <p class="site-footer__meta">
         Built for clear reading, keyboard use, and accessible presentation from the start.

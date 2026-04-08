@@ -1,6 +1,6 @@
 # KnowMyCouncil
 
-KnowMyCouncil is an open civic transparency platform focused on English councils. The goal is to help the public inspect, understand, and challenge how councils use money and exercise power.
+KnowMyCouncil is an open civic transparency platform focused on UK councils and local authorities. The goal is to help the public inspect, understand, and challenge how councils use money and exercise power.
 
 This repository is public-interest infrastructure: evidence-led, non-partisan, source-driven, and designed to be community-contributed.
 
