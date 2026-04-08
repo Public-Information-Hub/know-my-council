@@ -36,7 +36,6 @@ class SessionController extends Controller
             'email' => ['required', 'string', 'email:rfc', 'max:255', 'unique:users,email'],
             'public_bio' => ['nullable', 'string', 'max:280'],
             'password' => ['required', 'confirmed', Password::min(12)->mixedCase()->numbers()],
-            'two_factor_mode' => ['nullable', Rule::in(['off', 'email_code', 'magic_link', 'both'])],
         ]);
 
         $user = new User();
@@ -49,7 +48,8 @@ class SessionController extends Controller
             'account_state' => 'pending',
             'verification_level' => 'unverified',
             'trust_level' => 'untrusted',
-            'two_factor_mode' => $data['two_factor_mode'] ?? 'off',
+            'is_super_admin' => false,
+            'two_factor_mode' => 'email_code',
             'password' => $data['password'],
             'email_verified_at' => null,
             'last_seen_at' => Carbon::now(),
@@ -134,7 +134,6 @@ class SessionController extends Controller
             'name' => ['required', 'string', 'min:2', 'max:120'],
             'handle' => ['required', 'string', 'min:3', 'max:32', 'regex:/^[A-Za-z0-9_.-]+$/', Rule::unique('users', 'handle')->ignore($user->getKey())],
             'public_bio' => ['nullable', 'string', 'max:280'],
-            'two_factor_mode' => ['required', Rule::in(['off', 'email_code', 'magic_link', 'both'])],
         ]);
 
         $user->forceFill([
@@ -142,7 +141,6 @@ class SessionController extends Controller
             'display_name' => trim($data['name']),
             'handle' => Str::lower(trim($data['handle'])),
             'public_bio' => $data['public_bio'] ?? null,
-            'two_factor_mode' => $data['two_factor_mode'],
         ])->save();
 
         return response()->json([
@@ -216,6 +214,7 @@ class SessionController extends Controller
             'account_state' => $user->account_state,
             'verification_level' => $user->verification_level,
             'trust_level' => $user->trust_level,
+            'is_super_admin' => $user->isSuperAdmin(),
             'two_factor_mode' => $user->two_factor_mode,
             'email_verified_at' => $user->email_verified_at?->toIso8601String(),
             'last_seen_at' => $user->last_seen_at?->toIso8601String(),
@@ -229,7 +228,7 @@ class SessionController extends Controller
             'user_id' => $user->getKey(),
             'purpose' => 'login',
             'challenge_type' => 'login',
-            'delivery_mode' => $user->two_factor_mode,
+            'delivery_mode' => 'email_code',
             'code_hash' => null,
             'magic_token_hash' => null,
             'code_sent_to' => $user->email,
@@ -243,31 +242,24 @@ class SessionController extends Controller
             ],
         ]);
 
-        $code = null;
-        $magicToken = null;
-
-        if ($user->two_factor_mode === 'email_code' || $user->two_factor_mode === 'both') {
-            $code = (string) random_int(100000, 999999);
-            $challenge->forceFill(['code_hash' => Hash::make($code)]);
-        }
-
-        if ($user->two_factor_mode === 'magic_link' || $user->two_factor_mode === 'both') {
-            $magicToken = Str::random(64);
-            $challenge->forceFill(['magic_token_hash' => Hash::make($magicToken)]);
-        }
+        $code = (string) random_int(100000, 999999);
+        $challenge->forceFill(['code_hash' => Hash::make($code)]);
 
         $challenge->save();
 
-        $magicLink = $magicToken !== null
-            ? URL::temporarySignedRoute(
-                'auth.two-factor.magic-link',
-                Carbon::now()->addMinutes(15),
-                [
-                    'challenge' => $challenge->getKey(),
-                    'token' => $magicToken,
-                ]
-            )
-            : null;
+        $magicToken = Str::random(64);
+        $challenge->forceFill([
+            'magic_token_hash' => Hash::make($magicToken),
+        ])->save();
+
+        $magicLink = URL::temporarySignedRoute(
+            'auth.two-factor.magic-link',
+            Carbon::now()->addMinutes(15),
+            [
+                'challenge' => $challenge->getKey(),
+                'token' => $magicToken,
+            ]
+        );
 
         $user->notify(new LoginChallengeNotification($challenge, $code, $magicLink));
 

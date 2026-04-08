@@ -56,12 +56,13 @@ class TwoFactorChallengeController extends Controller
     {
         $data = $request->validate([
             'challenge_id' => ['required', 'string', 'exists:auth_challenges,id'],
+            'delivery_mode' => ['nullable', 'string', 'in:email_code,magic_link'],
         ]);
 
         $challenge = UserAuthChallenge::query()->with('user')->findOrFail($data['challenge_id']);
         $this->assertChallengeCanBeUsed($challenge);
 
-        $this->refreshChallenge($challenge, $request);
+        $this->refreshChallenge($challenge, $request, $data['delivery_mode'] ?? null);
 
         return response()->json([
             'message' => 'We have sent a fresh sign-in check.',
@@ -103,6 +104,7 @@ class TwoFactorChallengeController extends Controller
                 'account_state' => $user->account_state,
                 'verification_level' => $user->verification_level,
                 'trust_level' => $user->trust_level,
+                'is_super_admin' => $user->isSuperAdmin(),
                 'two_factor_mode' => $user->two_factor_mode,
                 'email_verified_at' => $user->email_verified_at?->toIso8601String(),
                 'last_seen_at' => $user->last_seen_at?->toIso8601String(),
@@ -118,22 +120,24 @@ class TwoFactorChallengeController extends Controller
         }
     }
 
-    private function refreshChallenge(UserAuthChallenge $challenge, Request $request): void
+    private function refreshChallenge(UserAuthChallenge $challenge, Request $request, ?string $deliveryMode = null): void
     {
+        $deliveryMode ??= $challenge->delivery_mode;
         $code = null;
         $magicToken = null;
 
-        if ($challenge->delivery_mode === 'email_code' || $challenge->delivery_mode === 'both') {
+        if ($deliveryMode === 'email_code') {
             $code = (string) random_int(100000, 999999);
             $challenge->forceFill(['code_hash' => Hash::make($code)]);
         }
 
-        if ($challenge->delivery_mode === 'magic_link' || $challenge->delivery_mode === 'both') {
+        if ($deliveryMode === 'magic_link') {
             $magicToken = Str::random(64);
             $challenge->forceFill(['magic_token_hash' => Hash::make($magicToken)]);
         }
 
         $challenge->forceFill([
+            'delivery_mode' => $deliveryMode,
             'last_sent_at' => Carbon::now(),
             'resend_count' => $challenge->resend_count + 1,
             'expires_at' => Carbon::now()->addMinutes(15),

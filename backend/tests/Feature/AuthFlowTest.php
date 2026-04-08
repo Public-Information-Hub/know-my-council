@@ -30,7 +30,6 @@ class AuthFlowTest extends TestCase
             'public_bio' => 'Council data researcher.',
             'password' => 'Password12345',
             'password_confirmation' => 'Password12345',
-            'two_factor_mode' => 'off',
         ]);
 
         $response
@@ -44,6 +43,8 @@ class AuthFlowTest extends TestCase
             'handle' => 'ada-lovelace',
             'account_state' => 'pending',
             'verification_level' => 'unverified',
+            'two_factor_mode' => 'email_code',
+            'is_super_admin' => 0,
         ]);
 
         $user = User::query()->where('email', 'ada@example.com')->firstOrFail();
@@ -79,6 +80,7 @@ class AuthFlowTest extends TestCase
         Notification::assertSentTo($user, LoginChallengeNotification::class, function (LoginChallengeNotification $notification) use ($challenge, &$code): bool {
             $this->assertSame($challenge->getKey(), $notification->challenge->getKey());
             $code = $notification->code;
+            $this->assertNotNull($notification->magicLink);
             return true;
         });
 
@@ -164,10 +166,9 @@ class AuthFlowTest extends TestCase
             'name' => 'Eve Example',
             'handle' => 'eve-example',
             'public_bio' => 'Updated bio.',
-            'two_factor_mode' => 'both',
         ])->assertOk()
             ->assertJsonPath('user.handle', 'eve-example')
-            ->assertJsonPath('user.two_factor_mode', 'both');
+            ->assertJsonPath('user.two_factor_mode', 'email_code');
 
         $this->postJson('/api/auth/logout')->assertOk();
         $this->assertGuest();

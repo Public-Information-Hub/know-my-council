@@ -19,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
     'account_state',
     'verification_level',
     'trust_level',
+    'is_super_admin',
     'two_factor_mode',
     'password',
     'last_seen_at',
@@ -46,5 +47,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new \App\Notifications\Auth\VerifyEmailLinkNotification());
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return (bool) $this->is_super_admin;
     }
 }

@@ -11,13 +11,13 @@ useHead({
 })
 
 const router = useRouter()
+const { refreshCurrentUser } = useCurrentUser()
 const name = ref('')
 const handle = ref('')
 const email = ref('')
 const publicBio = ref('')
 const password = ref('')
 const passwordConfirmation = ref('')
-const twoFactorMode = ref<'off' | 'email_code' | 'magic_link' | 'both'>('off')
 const busy = ref(false)
 const notice = ref('')
 const errorMessage = ref('')
@@ -34,11 +34,11 @@ async function submitRegister(): Promise<void> {
       email: email.value,
       public_bio: publicBio.value || null,
       password: password.value,
-      password_confirmation: passwordConfirmation.value,
-      two_factor_mode: twoFactorMode.value
+      password_confirmation: passwordConfirmation.value
     })
 
     notice.value = response.message
+    await refreshCurrentUser()
     await router.push('/verify-email?registered=1')
   } catch (error: unknown) {
     errorMessage.value = formatApiError(error, 'We could not create the account right now.')
@@ -55,14 +55,14 @@ async function submitRegister(): Promise<void> {
         <p class="eyebrow">Create account</p>
         <h1 class="hero__title">Join KnowMyCouncil</h1>
         <p class="hero__lede">
-          Register with a public handle, verify your email, and pick how you want sign-in checks to work.
+          Register with a public handle, verify your email, and use the default email-based sign-in checks.
         </p>
       </div>
 
       <div v-if="notice" class="callout" role="status" aria-live="polite">{{ notice }}</div>
       <div v-if="errorMessage" class="callout auth-card__error" role="alert">{{ errorMessage }}</div>
 
-      <form class="auth-form auth-form--grid" @submit.prevent="submitRegister">
+      <form class="auth-form auth-form--stacked" @submit.prevent="submitRegister">
         <label class="field">
           <span class="field__label">Public name</span>
           <input v-model="name" class="field__input" type="text" autocomplete="name" required>
@@ -97,16 +97,12 @@ async function submitRegister(): Promise<void> {
           <input v-model="passwordConfirmation" class="field__input" type="password" autocomplete="new-password" required>
         </label>
 
-        <label class="field field--full">
-          <span class="field__label">Extra sign-in checks</span>
-          <select v-model="twoFactorMode" class="field__input">
-            <option value="off">Off for now</option>
-            <option value="email_code">Email code</option>
-            <option value="magic_link">Magic link</option>
-            <option value="both">Both code and magic link</option>
-          </select>
-          <span class="field__hint">You can change this later in your profile.</span>
-        </label>
+        <div class="callout field--full">
+          <strong>Email sign-in checks are on by default.</strong>
+          <span style="display: block; margin-top: 0.25rem;">
+            We will use an emailed code for sign-in checks, with magic-link login available when you need it.
+          </span>
+        </div>
 
         <div class="auth-actions field--full">
           <button class="finder__button" type="submit" :disabled="busy">{{ busy ? 'Creating…' : 'Create account' }}</button>
