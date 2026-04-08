@@ -21,8 +21,8 @@ type FetchErrorLike = {
 
 function getApiBaseUrl(): string {
   const cfg = useRuntimeConfig()
-  const base = String(cfg.public.apiBaseUrl || '').replace(/\/+$/, '')
-  if (!base) throw new Error('Missing runtimeConfig.public.apiBaseUrl')
+  const base = String(process.server ? cfg.apiInternalBaseUrl : cfg.public.apiBaseUrl || '').replace(/\/+$/, '')
+  if (!base) throw new Error('Missing API base URL runtime config')
   return base
 }
 

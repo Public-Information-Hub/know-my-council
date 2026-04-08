@@ -1,19 +1,137 @@
 <template>
-  <div class="panel">
-    <h1 style="margin-top: 0;">KnowMyCouncil is bootstrapped</h1>
-    <p class="muted">
-      This is the initial scaffold only. The platform will focus on read-heavy public transparency for English councils.
-    </p>
+  <div class="landing">
+    <section class="hero panel">
+      <div>
+        <p class="eyebrow">Public information site</p>
+        <h1 class="hero__title">Clear, source-led information about English councils</h1>
+        <p class="hero__lede">
+          KnowMyCouncil is being built to help people find council spend, suppliers, contracts and source material in one place, with accessibility and provenance at the centre.
+        </p>
 
-    <div class="row" style="margin-top: 12px;">
-      <NuxtLink class="pill" to="/status">View system status</NuxtLink>
-      <NuxtLink class="pill" to="/admin">Admin placeholder</NuxtLink>
-    </div>
+        <div class="row" style="margin-top: 1rem;">
+          <NuxtLink class="pill" to="/status">View status</NuxtLink>
+          <a class="pill" href="#what-this-is">What this is</a>
+          <a class="pill" href="#accessibility">Accessibility</a>
+        </div>
+      </div>
 
-    <hr style="border: 0; border-top: 1px solid var(--kmc-border); margin: 16px 0;">
+      <aside class="hero__panel" aria-label="At a glance">
+        <div class="callout">
+          <p class="eyebrow" style="margin-bottom: 0.35rem;">At a glance</p>
+          <p style="margin: 0;">
+            The site is in build mode, protected while work is under way, and designed to become a readable public record rather than a marketing page.
+          </p>
+        </div>
 
-    <p class="muted" style="margin: 0;">
-      Next: add ingestion pipelines, read models, and public-facing data views.
-    </p>
+        <dl class="fact-grid" aria-label="Project facts">
+          <div class="fact-grid__item">
+            <dt class="fact-grid__label">Primary purpose</dt>
+            <dd class="fact-grid__value">Make council information easier to inspect, compare and reuse.</dd>
+          </div>
+          <div class="fact-grid__item">
+            <dt class="fact-grid__label">Current focus</dt>
+            <dd class="fact-grid__value">Build the data model, ingestion routes and public views together.</dd>
+          </div>
+          <div class="fact-grid__item">
+            <dt class="fact-grid__label">Theme support</dt>
+            <dd class="fact-grid__value">Light, dark and high contrast are available in the header.</dd>
+          </div>
+        </dl>
+      </aside>
+    </section>
+
+    <nav class="section" aria-label="On this page">
+      <div class="row">
+        <a class="pill" href="#what-this-is">What this is</a>
+        <a class="pill" href="#what-you-will-find">What you’ll find</a>
+        <a class="pill" href="#accessibility">Accessibility</a>
+        <a class="pill" href="#status">Status</a>
+      </div>
+    </nav>
+
+    <section id="what-this-is" class="section">
+      <h2 class="section__heading">What this site is for</h2>
+      <p class="section__lead">
+        The site is being shaped as a public information service first: calm, fast to scan, and structured so the important details are obvious.
+      </p>
+
+      <div class="card-grid card-grid--three">
+        <article class="card">
+          <h3>Public record, not a brochure</h3>
+          <p>We want a practical site that shows where the information came from and what it means.</p>
+        </article>
+        <article class="card">
+          <h3>Readable at a glance</h3>
+          <p>Key context should be visible immediately, with deeper detail only when someone needs it.</p>
+        </article>
+        <article class="card">
+          <h3>Built for councils and citizens</h3>
+          <p>Every page should work for people checking a single line item or exploring a broader pattern.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="what-you-will-find" class="section">
+      <h2 class="section__heading">What you’ll find here</h2>
+      <p class="section__lead">
+        The initial public pages are being designed around the data we can source and verify, not around decorative content.
+      </p>
+
+      <div class="card-grid card-grid--two">
+        <article class="card">
+          <h3>Core public views</h3>
+          <ul class="list">
+            <li>Council summaries and source links</li>
+            <li>Spend, suppliers and contract records</li>
+            <li>Import history and provenance trails</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Operational pages</h3>
+          <ul class="list">
+            <li>Build and ingestion status</li>
+            <li>Source registration and refresh status</li>
+            <li>Admin paths for maintenance work</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="accessibility" class="section">
+      <div class="panel">
+        <h2 class="section__heading">Accessibility comes first</h2>
+        <p class="section__lead">
+          The interface is kept small, contrast-aware and keyboard-friendly. Theme choices are available right in the header.
+        </p>
+
+        <div class="card-grid card-grid--three">
+          <article class="card">
+            <h3>Colour modes</h3>
+            <p>Light, dark and high contrast are supported without changing the layout.</p>
+          </article>
+          <article class="card">
+            <h3>Keyboard support</h3>
+            <p>Skip links, visible focus states and simple navigation are built in.</p>
+          </article>
+          <article class="card">
+            <h3>Responsive by default</h3>
+            <p>The layout expands on desktop and progressively simplifies on smaller screens.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="status" class="section">
+      <div class="callout">
+        <h2 class="section__heading" style="margin-top: 0;">Current status</h2>
+        <p class="section__lead">
+          The site is protected while it is being built. The backend, ingestion work and public pages are still evolving.
+        </p>
+        <div class="row">
+          <NuxtLink class="pill" to="/status">Open build status</NuxtLink>
+          <NuxtLink class="pill" to="/admin">Admin area</NuxtLink>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
