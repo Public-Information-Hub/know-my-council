@@ -153,7 +153,7 @@ services:
     restart: unless-stopped
 
   minio-init:
-    image: minio/mc:RELEASE.2024-12-18T17-11-54Z
+    image: minio/mc:latest
     container_name: knowmycouncil-minio-init
     depends_on:
       minio:
