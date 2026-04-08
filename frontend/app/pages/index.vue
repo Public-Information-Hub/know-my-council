@@ -162,11 +162,10 @@ const ingestionSources = [
       <div class="callout">
         <h2 class="section__heading" style="margin-top: 0;">Current status</h2>
         <p class="section__lead">
-          The site is protected while it is being built. The backend, ingestion work and public pages are still evolving.
+          The site is live and still evolving. The backend, ingestion work and public pages are being refined in public.
         </p>
         <div class="row">
           <NuxtLink class="pill" to="/status">Open build status</NuxtLink>
-          <NuxtLink class="pill" to="/admin">Admin area</NuxtLink>
         </div>
       </div>
     </section>

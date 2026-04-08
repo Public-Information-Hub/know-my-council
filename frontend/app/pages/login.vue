@@ -21,11 +21,24 @@ useHead({
 
 const router = useRouter()
 const route = useRoute()
+const { refreshCurrentUser } = useCurrentUser()
+const redirectTarget = computed(() => {
+  const value = route.query.redirect
+  if (typeof value !== 'string' || value.length === 0) {
+    return '/profile?signed_in=1'
+  }
+
+  if (!value.startsWith('/') || value.startsWith('//')) {
+    return '/profile?signed_in=1'
+  }
+
+  return value
+})
 const email = ref('')
 const password = ref('')
 const remember = ref(true)
 const challengeId = ref('')
-const challengeMode = ref('off')
+const challengeMode = ref<'email_code' | 'magic_link'>('email_code')
 const challengeExpiresAt = ref('')
 const challengeCode = ref('')
 const busy = ref(false)
@@ -51,14 +64,15 @@ async function submitLogin(): Promise<void> {
 
     if (response.requires_two_factor && response.challenge) {
       challengeId.value = response.challenge.id
-      challengeMode.value = response.challenge.delivery_mode
+      challengeMode.value = response.challenge.delivery_mode === 'magic_link' ? 'magic_link' : 'email_code'
       challengeExpiresAt.value = response.challenge.expires_at ?? ''
       challengeCode.value = ''
-      notice.value = response.message
+      notice.value = 'We have sent a code and a magic link to your email.'
       return
     }
 
-    await router.push('/profile?signed_in=1')
+    await refreshCurrentUser()
+    await router.push(redirectTarget.value)
   } catch (error: unknown) {
     errorMessage.value = formatApiError(error, 'We could not sign you in right now.')
   } finally {
@@ -77,7 +91,8 @@ async function confirmChallenge(): Promise<void> {
       challenge_id: challengeId.value,
       code: challengeCode.value
     })
-    await router.push('/profile?signed_in=1')
+    await refreshCurrentUser()
+    await router.push(redirectTarget.value)
   } catch (error: unknown) {
     errorMessage.value = formatApiError(error, 'We could not confirm the sign-in check.')
   } finally {
@@ -93,9 +108,10 @@ async function resendChallenge(): Promise<void> {
 
   try {
     const response = await apiPost<{ message: string; challenge: Challenge }>('/auth/two-factor/resend', {
-      challenge_id: challengeId.value
+      challenge_id: challengeId.value,
+      delivery_mode: challengeMode.value
     })
-    challengeMode.value = response.challenge.delivery_mode
+    challengeMode.value = response.challenge.delivery_mode === 'magic_link' ? 'magic_link' : 'email_code'
     challengeExpiresAt.value = response.challenge.expires_at ?? ''
     notice.value = response.message
   } catch (error: unknown) {
@@ -103,6 +119,13 @@ async function resendChallenge(): Promise<void> {
   } finally {
     challengeBusy.value = false
   }
+}
+
+async function switchChallengeMode(nextMode: 'email_code' | 'magic_link'): Promise<void> {
+  if (!challengeId.value) return
+
+  challengeMode.value = nextMode
+  await resendChallenge()
 }
 </script>
 
@@ -148,7 +171,7 @@ async function resendChallenge(): Promise<void> {
         <p class="eyebrow">Extra check</p>
         <h2 class="section__heading">Complete the email check</h2>
         <p class="section__lead">
-          {{ challengeMode === 'magic_link' ? 'We sent a magic link to your email address.' : 'Enter the code from your email to finish signing in.' }}
+          {{ challengeMode === 'magic_link' ? 'We sent a magic link to your email address. Use the link in the email, or switch back to a code if you prefer.' : 'Enter the code from your email to finish signing in. You can also request a magic link instead.' }}
           <span v-if="challengeExpiresAt">This check expires at {{ new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(challengeExpiresAt)) }}.</span>
         </p>
       </div>
@@ -161,7 +184,10 @@ async function resendChallenge(): Promise<void> {
 
         <div class="auth-actions">
           <button class="finder__button" type="submit" :disabled="challengeBusy || challengeMode === 'magic_link'">{{ challengeBusy ? 'Checking…' : 'Confirm sign in' }}</button>
-          <button class="pill" type="button" :disabled="challengeBusy" @click="resendChallenge">Resend check</button>
+          <button class="pill" type="button" :disabled="challengeBusy" @click="resendChallenge">{{ challengeMode === 'magic_link' ? 'Resend magic link' : 'Resend code' }}</button>
+          <button class="pill" type="button" :disabled="challengeBusy" @click="switchChallengeMode(challengeMode === 'magic_link' ? 'email_code' : 'magic_link')">
+            {{ challengeMode === 'magic_link' ? 'Use code instead' : 'Send magic link instead' }}
+          </button>
         </div>
       </form>
     </section>
