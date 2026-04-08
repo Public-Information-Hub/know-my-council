@@ -7,37 +7,36 @@ useHead({
 <template>
   <div class="landing">
     <section class="panel">
-      <p class="eyebrow">Accessibility</p>
-      <h1 class="hero__title">Accessibility statement</h1>
+      <h1 class="hero__title">Accessibility</h1>
       <p class="hero__lede">
-        We are building the site to work well with keyboard navigation, screen readers, larger text, and high-contrast presentation.
+        This site is designed to work with screen readers, keyboard navigation, and assistive technology.
       </p>
     </section>
 
-    <section class="panel">
+    <section class="section">
       <div class="stack">
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">What we already support</h2>
+          <h2 style="margin-top: 0; font-size: 1rem;">What we support</h2>
           <ul class="list">
-            <li>Keyboard navigation with a skip link and visible focus states.</li>
-            <li>Light, dark, and high-contrast themes.</li>
-            <li>Responsive layouts for desktop, tablet, and mobile.</li>
+            <li>Keyboard navigation with a skip link and visible focus indicators.</li>
+            <li>Three colour themes: light, dark and high contrast.</li>
+            <li>Responsive layout for desktop, tablet and mobile screens.</li>
+            <li>Semantic HTML and ARIA labels for screen readers.</li>
           </ul>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">What we are watching</h2>
+          <h2 style="margin-top: 0; font-size: 1rem;">Known limitations</h2>
           <ul class="list">
-            <li>Whether embedded maps and charts remain readable at all sizes.</li>
-            <li>Whether forms stay clear when browser zoom is increased.</li>
-            <li>Whether source tables need more table-specific navigation support.</li>
+            <li>The interactive map may not be fully accessible to all screen reader users. Text alternatives are provided.</li>
+            <li>Some data tables may need additional navigation support at very large sizes.</li>
           </ul>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">Tell us about a problem</h2>
+          <h2 style="margin-top: 0; font-size: 1rem;">Report a problem</h2>
           <p>
-            If you find an accessibility issue, please use the contact page and tell us what device, browser, or assistive technology you were using.
+            If you have difficulty using this site, please <NuxtLink to="/contact">contact us</NuxtLink> and describe what device, browser or assistive technology you were using.
           </p>
         </article>
       </div>

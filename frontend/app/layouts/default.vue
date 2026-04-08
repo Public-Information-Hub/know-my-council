@@ -19,25 +19,36 @@ async function signOut(): Promise<void> {
 
 <template>
   <div class="site-shell">
-    <a class="skip-link" href="#content">Skip to content</a>
+    <a class="skip-link" href="#content">Skip to main content</a>
 
-    <header class="site-header app-bar">
-      <div class="site-brand">
-        <NuxtLink to="/" class="site-brand__mark" aria-label="KnowMyCouncil home">KMC</NuxtLink>
-        <div>
-          <NuxtLink to="/" class="site-brand__name">KnowMyCouncil</NuxtLink>
-          <p class="site-brand__tag">UK councils and local authorities</p>
+    <header class="site-header" role="banner">
+      <div class="site-header__inner">
+        <NuxtLink to="/" class="site-brand" aria-label="KnowMyCouncil home">
+          <span class="site-brand__mark" aria-hidden="true">KMC</span>
+          <span class="site-brand__name">KnowMyCouncil</span>
+        </NuxtLink>
+
+        <nav class="site-nav" aria-label="Main navigation">
+          <NuxtLink to="/" class="site-nav__link">Home</NuxtLink>
+          <NuxtLink to="/councils" class="site-nav__link">Councils</NuxtLink>
+          <NuxtLink to="/about" class="site-nav__link">About</NuxtLink>
+          <NuxtLink v-if="user?.is_super_admin" to="/admin" class="site-nav__link">Admin</NuxtLink>
+        </nav>
+
+        <div class="site-auth">
+          <template v-if="user">
+            <NuxtLink class="site-nav__link" to="/profile">Profile</NuxtLink>
+            <button class="site-nav__link site-nav__link--button" type="button" @click="signOut">Sign out</button>
+          </template>
+          <template v-else>
+            <NuxtLink class="site-nav__link" to="/login">Sign in</NuxtLink>
+          </template>
         </div>
       </div>
+    </header>
 
-      <nav class="site-nav" aria-label="Primary">
-        <NuxtLink to="/" class="site-nav__link">Home</NuxtLink>
-        <NuxtLink to="/councils" class="site-nav__link">Councils</NuxtLink>
-        <NuxtLink to="/status" class="site-nav__link">Status</NuxtLink>
-        <NuxtLink v-if="user?.is_super_admin" to="/admin" class="site-nav__link">Admin</NuxtLink>
-      </nav>
-
-      <div class="site-actions">
+    <div class="site-bar">
+      <div class="site-bar__inner">
         <div class="theme-switcher" role="group" aria-label="Colour theme">
           <button
             v-for="option in themes"
@@ -47,63 +58,51 @@ async function signOut(): Promise<void> {
             :aria-pressed="theme === option"
             @click="setTheme(option)"
           >
-            {{ option === 'contrast' ? 'Contrast' : option.charAt(0).toUpperCase() + option.slice(1) }}
+            {{ option === 'contrast' ? 'High contrast' : option.charAt(0).toUpperCase() + option.slice(1) }}
           </button>
         </div>
-
-        <div class="site-auth">
-          <template v-if="user">
-            <span class="site-auth__status">Signed in</span>
-            <NuxtLink class="site-nav__link" to="/profile">Profile</NuxtLink>
-            <button class="site-nav__link site-nav__link--button" type="button" @click="signOut">Sign out</button>
-          </template>
-          <template v-else>
-            <NuxtLink class="site-nav__link" to="/login">Sign in</NuxtLink>
-            <NuxtLink class="site-nav__link" to="/register">Create account</NuxtLink>
-          </template>
-        </div>
       </div>
-    </header>
+    </div>
 
-    <main id="content" class="site-main">
+    <main id="content" class="site-main" role="main">
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <p class="site-footer__eyebrow">Site links and policies</p>
-      <div class="site-footer__grid">
-        <div class="site-footer__brand">
-          <p class="site-footer__title">KnowMyCouncil</p>
-          <p>
-            Source-led civic information for UK councils and local authorities.
-          </p>
-          <p class="site-footer__meta">
-            Built for clear reading, keyboard use, and accessible presentation from the start.
-          </p>
-        </div>
-
-        <div class="site-footer__links">
-          <div class="site-footer__group">
-            <p class="site-footer__group-title">Explore</p>
-            <NuxtLink to="/">Home</NuxtLink>
-            <NuxtLink to="/councils">Councils</NuxtLink>
-            <NuxtLink to="/status">Status</NuxtLink>
-            <NuxtLink to="/about">About</NuxtLink>
+    <footer class="site-footer" role="contentinfo">
+      <div class="site-footer__inner">
+        <div class="site-footer__grid">
+          <div>
+            <p class="site-footer__title">KnowMyCouncil</p>
+            <p>Public information about UK councils and local authorities.</p>
           </div>
 
-          <div class="site-footer__group">
-            <p class="site-footer__group-title">Support</p>
-            <NuxtLink to="/contact">Contact</NuxtLink>
-            <NuxtLink to="/accessibility">Accessibility</NuxtLink>
-          </div>
+          <div class="site-footer__links">
+            <div class="site-footer__group">
+              <p class="site-footer__group-title">Explore</p>
+              <NuxtLink to="/">Home</NuxtLink>
+              <NuxtLink to="/councils">Councils</NuxtLink>
+              <NuxtLink to="/about">About</NuxtLink>
+              <NuxtLink to="/contact">Contact</NuxtLink>
+            </div>
 
-          <div class="site-footer__group">
-            <p class="site-footer__group-title">Policies</p>
-            <NuxtLink to="/privacy">Privacy</NuxtLink>
-            <NuxtLink to="/cookies">Cookies</NuxtLink>
-            <NuxtLink to="/terms">Terms</NuxtLink>
+            <div class="site-footer__group">
+              <p class="site-footer__group-title">Help</p>
+              <NuxtLink to="/accessibility">Accessibility</NuxtLink>
+              <NuxtLink to="/status">Service status</NuxtLink>
+            </div>
+
+            <div class="site-footer__group">
+              <p class="site-footer__group-title">Legal</p>
+              <NuxtLink to="/privacy">Privacy</NuxtLink>
+              <NuxtLink to="/cookies">Cookies</NuxtLink>
+              <NuxtLink to="/terms">Terms</NuxtLink>
+            </div>
           </div>
         </div>
+
+        <p class="site-footer__meta">
+          KnowMyCouncil is not affiliated with or endorsed by HM Government.
+        </p>
       </div>
     </footer>
   </div>

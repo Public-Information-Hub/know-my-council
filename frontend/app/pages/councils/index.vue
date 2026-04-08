@@ -62,77 +62,59 @@ useHead({
 
 <template>
   <div class="landing">
-    <section class="hero panel">
-      <div>
-        <p class="eyebrow">Council finder</p>
-        <h1 class="hero__title">Find the right council quickly</h1>
-        <p class="hero__lede">
-          Search by postcode to get to the relevant council page. This is the first public-entry step for a much deeper council record and source trail.
-        </p>
+    <section class="panel">
+      <h1 class="hero__title">Find your council</h1>
+      <p class="hero__lede">
+        Enter your postcode to find which council covers your area.
+      </p>
 
-        <form class="finder" @submit.prevent="search">
-          <label class="finder__label" for="postcode">Postcode</label>
-          <div class="finder__row">
-            <input
-              id="postcode"
-              v-model="postcode"
-              class="finder__input"
-              name="postcode"
-              autocomplete="postal-code"
-              inputmode="text"
-              placeholder="e.g. SW1A 1AA"
-            >
-            <button class="finder__button" type="submit" :disabled="busy">
-              {{ busy ? 'Looking up…' : 'Find council' }}
-            </button>
-          </div>
-          <p class="finder__help">We use the official GOV.UK local authority lookup for the initial council resolve.</p>
-        </form>
-      </div>
-
-      <aside class="hero__panel">
-        <UkMap />
-      </aside>
+      <form class="finder" role="search" aria-label="Council search" @submit.prevent="search">
+        <label class="finder__label" for="postcode">Postcode</label>
+        <div class="finder__row">
+          <input
+            id="postcode"
+            v-model="postcode"
+            class="finder__input"
+            name="postcode"
+            autocomplete="postal-code"
+            inputmode="text"
+            placeholder="e.g. SW1A 1AA"
+          >
+          <button class="finder__button" type="submit" :disabled="busy">
+            {{ busy ? 'Searching...' : 'Search' }}
+          </button>
+        </div>
+        <p class="finder__help">Uses the GOV.UK local authority register.</p>
+      </form>
     </section>
 
-    <section class="section">
-      <div v-if="error" class="callout" role="alert">
-        <strong>Lookup issue:</strong>
-        <span style="margin-left: 0.5rem;">{{ error }}</span>
+    <section class="section" aria-live="polite">
+      <div v-if="error" class="callout callout--error" role="alert">
+        {{ error }}
       </div>
 
       <div v-else-if="directAuthority" class="panel">
-        <p class="eyebrow" style="margin-bottom: 0.3rem;">Council found</p>
         <h2 class="section__heading" style="margin-top: 0;">{{ directAuthority.name }}</h2>
-        <p class="section__lead">
-          {{ directAuthority.tier ? `Tier: ${directAuthority.tier}.` : 'Council record returned by GOV.UK.' }}
-        </p>
+        <p v-if="directAuthority.tier" class="subtle">{{ directAuthority.tier }}</p>
 
-        <div class="card-grid card-grid--two">
-          <div class="card">
-            <h3>Slug</h3>
-            <p>{{ directAuthority.slug }}</p>
-          </div>
-          <div class="card">
-            <h3>Homepage</h3>
-            <p v-if="directAuthority.homepage_url">
+        <dl class="fact-grid" style="margin-top: 0.75rem;">
+          <div v-if="directAuthority.homepage_url" class="fact-grid__item">
+            <dt class="fact-grid__label">Website</dt>
+            <dd class="fact-grid__value">
               <a :href="directAuthority.homepage_url" rel="noreferrer noopener" target="_blank">{{ directAuthority.homepage_url }}</a>
-            </p>
-            <p v-else>Not supplied by the source record.</p>
+            </dd>
           </div>
-        </div>
+        </dl>
 
-        <div class="row" style="margin-top: 1rem;">
-          <NuxtLink class="pill" :to="`/councils/${directAuthority.slug}`">Open council page</NuxtLink>
-          <NuxtLink class="pill" to="/">Back to home</NuxtLink>
+        <div class="row" style="margin-top: 0.75rem;">
+          <NuxtLink class="finder__button" :to="`/councils/${directAuthority.slug}`">View council page</NuxtLink>
         </div>
       </div>
 
       <div v-else-if="addressChoices.length" class="panel">
-        <p class="eyebrow" style="margin-bottom: 0.3rem;">Multiple authorities</p>
-        <h2 class="section__heading" style="margin-top: 0;">Choose the address that matches you</h2>
+        <h2 class="section__heading" style="margin-top: 0;">Choose your address</h2>
         <p class="section__lead">
-          This postcode spans more than one authority, so pick the address that looks right.
+          This postcode covers more than one council area. Select the address that matches yours.
         </p>
 
         <div class="card-grid card-grid--two">
@@ -147,21 +129,6 @@ useHead({
             <p>{{ choice.address }}</p>
           </button>
         </div>
-      </div>
-
-      <div v-else class="card-grid card-grid--three">
-        <article class="card">
-          <h3>Why this page exists</h3>
-          <p>People should be able to get from postcode or map to the relevant council quickly.</p>
-        </article>
-        <article class="card">
-          <h3>What comes next</h3>
-          <p>We will join this to the council registry, source imports and profile pages.</p>
-        </article>
-        <article class="card">
-          <h3>How it will evolve</h3>
-          <p>The finder will become richer as official council metadata is ingested and refreshed.</p>
-        </article>
       </div>
     </section>
   </div>

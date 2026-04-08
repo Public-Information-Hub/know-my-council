@@ -1,40 +1,33 @@
 <script setup lang="ts">
 useHead({
-  title: 'Cookies'
+  title: 'Cookie policy'
 })
 </script>
 
 <template>
   <div class="landing">
     <section class="panel">
-      <p class="eyebrow">Policy</p>
-      <h1 class="hero__title">Cookie policy</h1>
+      <h1 class="hero__title">Cookies</h1>
       <p class="hero__lede">
-        We keep this simple: the site uses essential cookies and session storage needed for sign-in and security.
+        This site uses only essential cookies for sign-in and security.
       </p>
     </section>
 
-    <section class="panel">
+    <section class="section">
       <div class="stack">
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">Essential cookies</h2>
-          <p>
-            We use session cookies to keep you signed in and to protect authenticated actions such as profile updates, admin access, and account recovery.
-          </p>
+          <h2 style="margin-top: 0; font-size: 1rem;">Essential cookies</h2>
+          <p>Session cookies keep you signed in and protect authenticated actions such as profile updates and account recovery.</p>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">Security cookies</h2>
-          <p>
-            We use a CSRF token cookie so browser requests can be checked safely before they reach the API.
-          </p>
+          <h2 style="margin-top: 0; font-size: 1rem;">Security cookies</h2>
+          <p>A CSRF token cookie verifies that requests to the API come from this site.</p>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">Other cookies</h2>
-          <p>
-            We do not currently use advertising cookies. If that changes, we will document the change here before enabling it.
-          </p>
+          <h2 style="margin-top: 0; font-size: 1rem;">No advertising cookies</h2>
+          <p>We do not use advertising or analytics cookies. If that changes, we will update this page first.</p>
         </article>
       </div>
     </section>

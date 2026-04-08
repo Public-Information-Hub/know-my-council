@@ -1,58 +1,57 @@
 <script setup lang="ts">
 useHead({
-  title: 'Privacy'
+  title: 'Privacy policy'
 })
 </script>
 
 <template>
   <div class="landing">
     <section class="panel">
-      <p class="eyebrow">Policy</p>
       <h1 class="hero__title">Privacy policy</h1>
       <p class="hero__lede">
-        This page explains the personal data we process, why we process it, and how long we keep it.
+        How we handle personal data on this site.
       </p>
     </section>
 
-    <section class="panel">
+    <section class="section">
       <div class="stack">
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">What we collect</h2>
+          <h2 style="margin-top: 0; font-size: 1rem;">What we collect</h2>
           <ul class="list">
-            <li>Account details such as name, handle, email address, and public bio.</li>
-            <li>Session data needed to keep you signed in and protect the site.</li>
-            <li>Operational logs that help us run the service and investigate faults.</li>
+            <li>Account details: name, handle, email address and public bio.</li>
+            <li>Session data needed to keep you signed in.</li>
+            <li>Operational logs for running the service and investigating faults.</li>
           </ul>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">Why we collect it</h2>
+          <h2 style="margin-top: 0; font-size: 1rem;">Why we collect it</h2>
           <ul class="list">
-            <li>To create and manage accounts.</li>
-            <li>To send verification, login, and password reset emails.</li>
-            <li>To protect the admin area and keep the platform working.</li>
+            <li>To create and manage your account.</li>
+            <li>To send verification, sign-in and password reset emails.</li>
+            <li>To keep the service running and secure.</li>
           </ul>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">How we use it</h2>
+          <h2 style="margin-top: 0; font-size: 1rem;">How we use it</h2>
           <ul class="list">
-            <li>We use the minimum data needed for the service to operate.</li>
-            <li>We do not use unnecessary advertising tracking on the site.</li>
-            <li>We may keep operational records for debugging, security, and audit purposes.</li>
+            <li>We collect the minimum data needed for the service.</li>
+            <li>We do not use advertising trackers.</li>
+            <li>We may keep operational records for security and audit purposes.</li>
           </ul>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">Third-party services</h2>
+          <h2 style="margin-top: 0; font-size: 1rem;">Third-party services</h2>
           <p>
-            Some parts of the site may load external services such as map tiles or email delivery tools. When that happens, those providers may see limited technical data such as your IP address or email address needed to deliver the service.
+            The site may load external services such as map tiles or email delivery. Those providers may see limited technical data such as your IP address.
           </p>
         </article>
 
         <article class="card">
-          <h2 class="section__heading" style="margin-top: 0;">Contact</h2>
-          <p>If you have a privacy question or want to request a correction, email <a href="mailto:hello@knowmycouncil.uk?subject=KnowMyCouncil%20privacy%20query">hello@knowmycouncil.uk</a>.</p>
+          <h2 style="margin-top: 0; font-size: 1rem;">Contact</h2>
+          <p>For privacy queries, email <a href="mailto:hello@knowmycouncil.uk?subject=Privacy%20query">hello@knowmycouncil.uk</a>.</p>
         </article>
       </div>
     </section>

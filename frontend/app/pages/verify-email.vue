@@ -53,14 +53,14 @@ async function resendVerification(): Promise<void> {
     notice.value = response.message
     await loadUser()
   } catch (error: unknown) {
-    errorMessage.value = formatApiError(error, 'We could not send another verification email.')
+    errorMessage.value = formatApiError(error, 'Could not send the verification email.')
   } finally {
     sending.value = false
   }
 }
 
 onMounted(async () => {
-  notice.value = route.query.verified ? 'Your email address has been verified.' : route.query.registered ? 'Your account has been created. Please check your email.' : ''
+  notice.value = route.query.verified ? 'Your email has been verified.' : route.query.registered ? 'Account created. Check your email to verify.' : ''
   await loadUser()
 })
 </script>
@@ -69,41 +69,38 @@ onMounted(async () => {
   <div class="landing auth-page">
     <section class="panel auth-card">
       <div class="auth-card__intro">
-        <p class="eyebrow">Email verification</p>
-        <h1 class="hero__title">Confirm your email address</h1>
-        <p class="hero__lede">Email verification helps us keep accounts accountable and reduces spam and abuse.</p>
+        <h1 class="hero__title">Verify your email</h1>
+        <p class="hero__lede">We need to confirm your email address before you can use all features.</p>
       </div>
 
       <div v-if="notice" class="callout" role="status" aria-live="polite">{{ notice }}</div>
       <div v-if="errorMessage" class="callout auth-card__error" role="alert">{{ errorMessage }}</div>
 
-      <div v-if="loading" class="callout">Loading your account status…</div>
+      <div v-if="loading" class="callout">Loading...</div>
       <template v-else>
         <div v-if="user" class="stack">
-          <article class="card">
-            <h2 class="section__heading" style="margin-top: 0;">{{ user.name }}</h2>
-            <p class="subtle" style="margin-bottom: 0;">{{ user.email }}</p>
-          </article>
-
-          <article class="card">
-            <h3 style="margin-top: 0;">Verification status</h3>
-            <p>Email verified: {{ user.is_email_verified ? 'Yes' : 'Not yet' }}</p>
-            <p>Account state: {{ user.account_state }}</p>
-            <p>Verification level: {{ user.verification_level }}</p>
-            <p style="margin-bottom: 0;">Trust level: {{ user.trust_level }}</p>
-          </article>
+          <dl class="fact-grid">
+            <div class="fact-grid__item">
+              <dt class="fact-grid__label">Email</dt>
+              <dd class="fact-grid__value">{{ user.email }}</dd>
+            </div>
+            <div class="fact-grid__item">
+              <dt class="fact-grid__label">Verified</dt>
+              <dd class="fact-grid__value">{{ user.is_email_verified ? 'Yes' : 'Not yet' }}</dd>
+            </div>
+          </dl>
 
           <div class="auth-actions">
             <button class="finder__button" type="button" :disabled="sending || user.is_email_verified" @click="resendVerification">
-              {{ sending ? 'Sending…' : 'Send verification email again' }}
+              {{ sending ? 'Sending...' : 'Resend verification email' }}
             </button>
-            <NuxtLink class="pill" to="/profile">Open profile</NuxtLink>
+            <NuxtLink class="pill" to="/profile">Go to profile</NuxtLink>
           </div>
         </div>
         <div v-else class="stack">
-          <p class="section__lead">Sign in or create an account first so we can show your verification status.</p>
+          <p>Sign in or create an account to verify your email.</p>
           <div class="auth-actions">
-            <NuxtLink class="pill" to="/login">Sign in</NuxtLink>
+            <NuxtLink class="finder__button" to="/login">Sign in</NuxtLink>
             <NuxtLink class="pill" to="/register">Create account</NuxtLink>
           </div>
         </div>

@@ -57,7 +57,7 @@ function setFormErrors(error: unknown, fallback: string): void {
   fieldErrors.value = nextFieldErrors
 
   if (hasFieldErrors(nextFieldErrors)) {
-    errorMessage.value = 'Please correct the highlighted fields and try again.'
+    errorMessage.value = 'Please correct the highlighted fields.'
     return
   }
 
@@ -86,14 +86,14 @@ async function submitLogin(): Promise<void> {
       challengeMode.value = response.challenge.delivery_mode === 'magic_link' ? 'magic_link' : 'email_code'
       challengeExpiresAt.value = response.challenge.expires_at ?? ''
       challengeCode.value = ''
-      notice.value = 'We have sent a code and a magic link to your email.'
+      notice.value = 'Check your email for a verification code or magic link.'
       return
     }
 
     await refreshCurrentUser()
     await router.push(redirectTarget.value)
   } catch (error: unknown) {
-    setFormErrors(error, 'We could not sign you in right now.')
+    setFormErrors(error, 'Could not sign you in.')
   } finally {
     busy.value = false
   }
@@ -114,7 +114,7 @@ async function confirmChallenge(): Promise<void> {
     await refreshCurrentUser()
     await router.push(redirectTarget.value)
   } catch (error: unknown) {
-    setFormErrors(error, 'We could not confirm the sign-in check.')
+    setFormErrors(error, 'Could not verify the code.')
   } finally {
     challengeBusy.value = false
   }
@@ -136,7 +136,7 @@ async function resendChallenge(): Promise<void> {
     challengeExpiresAt.value = response.challenge.expires_at ?? ''
     notice.value = response.message
   } catch (error: unknown) {
-    setFormErrors(error, 'We could not resend the sign-in check.')
+    setFormErrors(error, 'Could not resend the code.')
   } finally {
     challengeBusy.value = false
   }
@@ -154,10 +154,9 @@ async function switchChallengeMode(nextMode: 'email_code' | 'magic_link'): Promi
   <div class="landing auth-page">
     <section class="panel auth-card">
       <div class="auth-card__intro">
-        <p class="eyebrow">Sign in</p>
-        <h1 class="hero__title">Welcome back</h1>
+        <h1 class="hero__title">Sign in</h1>
         <p class="hero__lede">
-          Sign in to manage your profile, email verification, and account settings.
+          Sign in to manage your profile and account settings.
         </p>
       </div>
 
@@ -168,13 +167,13 @@ async function switchChallengeMode(nextMode: 'email_code' | 'magic_link'): Promi
         <label class="field">
           <span class="field__label">Email address</span>
           <input v-model="email" class="field__input" type="email" autocomplete="email" required>
-          <span v-if="firstFieldError(fieldErrors, 'email')" class="field__error">{{ firstFieldError(fieldErrors, 'email') }}</span>
+          <span v-if="firstFieldError(fieldErrors, 'email')" class="field__error" role="alert">{{ firstFieldError(fieldErrors, 'email') }}</span>
         </label>
 
         <label class="field">
           <span class="field__label">Password</span>
           <input v-model="password" class="field__input" type="password" autocomplete="current-password" required>
-          <span v-if="firstFieldError(fieldErrors, 'password')" class="field__error">{{ firstFieldError(fieldErrors, 'password') }}</span>
+          <span v-if="firstFieldError(fieldErrors, 'password')" class="field__error" role="alert">{{ firstFieldError(fieldErrors, 'password') }}</span>
         </label>
 
         <label class="field field--inline">
@@ -183,19 +182,18 @@ async function switchChallengeMode(nextMode: 'email_code' | 'magic_link'): Promi
         </label>
 
         <div class="auth-actions">
-          <button class="finder__button" type="submit" :disabled="busy">{{ busy ? 'Signing in…' : 'Sign in' }}</button>
-          <NuxtLink class="pill" to="/forgot-password">Forgot password?</NuxtLink>
+          <button class="finder__button" type="submit" :disabled="busy">{{ busy ? 'Signing in...' : 'Sign in' }}</button>
+          <NuxtLink to="/forgot-password">Forgot password?</NuxtLink>
         </div>
       </form>
     </section>
 
-    <section v-if="challengeId" class="panel auth-card">
+    <section v-if="challengeId" class="panel auth-card" aria-live="polite">
       <div class="auth-card__intro">
-        <p class="eyebrow">Extra check</p>
-        <h2 class="section__heading">Complete the email check</h2>
+        <h2 class="section__heading">Verify your sign-in</h2>
         <p class="section__lead">
-          {{ challengeMode === 'magic_link' ? 'We sent a magic link to your email address. Use the link in the email, or switch back to a code if you prefer.' : 'Enter the code from your email to finish signing in. You can also request a magic link instead.' }}
-          <span v-if="challengeExpiresAt">This check expires at {{ new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(challengeExpiresAt)) }}.</span>
+          {{ challengeMode === 'magic_link' ? 'We sent a magic link to your email. You can also switch to a code.' : 'Enter the 6-digit code from your email.' }}
+          <span v-if="challengeExpiresAt"> Expires {{ new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(challengeExpiresAt)) }}.</span>
         </p>
       </div>
 
@@ -211,25 +209,23 @@ async function switchChallengeMode(nextMode: 'email_code' | 'magic_link'): Promi
             maxlength="6"
             pattern="[0-9]{6}"
             :disabled="challengeMode === 'magic_link'"
-            :placeholder="challengeMode === 'magic_link' ? 'Use the magic link in your email' : 'Enter the 6-digit code'"
+            :placeholder="challengeMode === 'magic_link' ? 'Using magic link' : '6-digit code'"
           >
-          <span v-if="firstFieldError(fieldErrors, 'code')" class="field__error">{{ firstFieldError(fieldErrors, 'code') }}</span>
+          <span v-if="firstFieldError(fieldErrors, 'code')" class="field__error" role="alert">{{ firstFieldError(fieldErrors, 'code') }}</span>
         </label>
 
         <div class="auth-actions">
-          <button class="finder__button" type="submit" :disabled="challengeBusy || challengeMode === 'magic_link'">{{ challengeBusy ? 'Checking…' : 'Confirm sign in' }}</button>
-          <button class="pill" type="button" :disabled="challengeBusy" @click="resendChallenge">{{ challengeMode === 'magic_link' ? 'Resend magic link' : 'Resend code' }}</button>
+          <button class="finder__button" type="submit" :disabled="challengeBusy || challengeMode === 'magic_link'">{{ challengeBusy ? 'Checking...' : 'Confirm' }}</button>
+          <button class="pill" type="button" :disabled="challengeBusy" @click="resendChallenge">Resend</button>
           <button class="pill" type="button" :disabled="challengeBusy" @click="switchChallengeMode(challengeMode === 'magic_link' ? 'email_code' : 'magic_link')">
-            {{ challengeMode === 'magic_link' ? 'Use code instead' : 'Send magic link instead' }}
+            {{ challengeMode === 'magic_link' ? 'Use code' : 'Use magic link' }}
           </button>
         </div>
       </form>
     </section>
 
-    <section class="panel">
-      <p class="section__lead" style="margin-bottom: 0;">
-        New here? <NuxtLink to="/register">Create an account</NuxtLink> to save your settings and access the profile area.
-      </p>
-    </section>
+    <p class="subtle" style="text-align: center;">
+      No account? <NuxtLink to="/register">Create one</NuxtLink>
+    </p>
   </div>
 </template>

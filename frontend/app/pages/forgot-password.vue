@@ -21,7 +21,7 @@ function setFormErrors(error: unknown, fallback: string): void {
   fieldErrors.value = nextFieldErrors
 
   if (hasFieldErrors(nextFieldErrors)) {
-    errorMessage.value = 'Please correct the highlighted fields and try again.'
+    errorMessage.value = 'Please correct the highlighted fields.'
     return
   }
 
@@ -40,7 +40,7 @@ async function submitForgotPassword(): Promise<void> {
     })
     notice.value = response.message
   } catch (error: unknown) {
-    setFormErrors(error, 'We could not request a password reset right now.')
+    setFormErrors(error, 'Could not send a reset link.')
   } finally {
     busy.value = false
   }
@@ -51,24 +51,23 @@ async function submitForgotPassword(): Promise<void> {
   <div class="landing auth-page">
     <section class="panel auth-card">
       <div class="auth-card__intro">
-        <p class="eyebrow">Password reset</p>
-        <h1 class="hero__title">Send a reset link</h1>
-        <p class="hero__lede">We will email a link to reset your password if the address exists in the system.</p>
+        <h1 class="hero__title">Reset your password</h1>
+        <p class="hero__lede">Enter your email and we will send a reset link.</p>
       </div>
 
-      <div v-if="notice" class="callout" role="status" aria-live="polite">{{ notice }}</div>
+      <div v-if="notice" class="callout callout--success" role="status" aria-live="polite">{{ notice }}</div>
       <div v-if="errorMessage" class="callout auth-card__error" role="alert">{{ errorMessage }}</div>
 
       <form class="auth-form" @submit.prevent="submitForgotPassword">
         <label class="field">
           <span class="field__label">Email address</span>
           <input v-model="email" class="field__input" type="email" autocomplete="email" required>
-          <span v-if="firstFieldError(fieldErrors, 'email')" class="field__error">{{ firstFieldError(fieldErrors, 'email') }}</span>
+          <span v-if="firstFieldError(fieldErrors, 'email')" class="field__error" role="alert">{{ firstFieldError(fieldErrors, 'email') }}</span>
         </label>
 
         <div class="auth-actions">
-          <button class="finder__button" type="submit" :disabled="busy">{{ busy ? 'Sending…' : 'Send reset link' }}</button>
-          <NuxtLink class="pill" to="/login">Back to sign in</NuxtLink>
+          <button class="finder__button" type="submit" :disabled="busy">{{ busy ? 'Sending...' : 'Send reset link' }}</button>
+          <NuxtLink to="/login">Back to sign in</NuxtLink>
         </div>
       </form>
     </section>
