@@ -13,4 +13,4 @@ USER node
 
 EXPOSE 3000
 
-CMD ["sh", "-lc", "npm run preview -- --host 0.0.0.0 --port 3000"]
+CMD ["sh", "-lc", "PORT=3000 HOST=0.0.0.0 node .output/server/index.mjs"]
