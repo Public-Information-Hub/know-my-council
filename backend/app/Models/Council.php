@@ -38,5 +38,9 @@ class Council extends Model
     {
         return $this->hasMany(Contract::class);
     }
-}
 
+    public function ingestionSources(): HasMany
+    {
+        return $this->hasMany(IngestionSource::class);
+    }
+}

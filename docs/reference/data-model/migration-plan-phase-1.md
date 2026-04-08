@@ -91,6 +91,11 @@ This section lists the Phase 1 tables. Column-level detail is intentionally omit
 
 - `imports`
   - Purpose: ingestion definitions/config anchors.
+  - Phase 1 notes: keep enough metadata to distinguish manual and automated source routes, parser versions, and normalisation profiles.
+
+- `ingestion_sources`
+  - Purpose: registry of concrete source endpoints, pages, or documents.
+  - Phase 1 notes: include enough metadata to support scheduled refreshes and replayable fetches.
 
 - `import_runs`
   - Purpose: record each execution, status, and summary metrics; required for replay and traceability.
@@ -98,7 +103,7 @@ This section lists the Phase 1 tables. Column-level detail is intentionally omit
 
 - `source_files`
   - Purpose: metadata for raw stored artefacts (object storage), including hashes and capture dates.
-  - Phase 1 notes: do not store binaries in PostgreSQL; store metadata + references only.
+  - Phase 1 notes: do not store binaries in PostgreSQL; store metadata + references only. Preserve source URLs, capture method, and source registry linkage so automated and manual routes remain distinguishable.
 
 Optional but recommended in Phase 1 if it is needed immediately for linking:
 

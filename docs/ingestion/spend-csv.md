@@ -54,6 +54,7 @@ Useful options:
 - `--published-at=...` Timestamp from the publisher (stored on `dataset_versions.published_at` and `source_files.published_at`).
 - `--captured-at=...` When this file was captured (defaults to now).
 - `--idempotency-key=...` Prevent accidental duplicates. If an earlier run for the same import key succeeded with the same key, the command reports `skipped`.
+- `--ingestion-source-id=...` Optional `ingestion_sources.id` to link the raw file to a registered council source.
 - `--storage-disk=minio` Disk used to store the raw CSV (defaults to `FILESYSTEM_DISK`).
 - `--visibility=restricted` One of `public|restricted|private` for the `source_files` row.
 - `--supplier-header=...` Override the supplier column header (case-insensitive match).
@@ -76,7 +77,7 @@ Useful options:
 ## Provenance and traceability
 
 - `spend_records` link to `import_runs` and `dataset_versions`.
-- The raw file is represented by `source_files` linked to the `import_run` and `dataset_version`.
+- The raw file is represented by `source_files` linked to the `import_run`, `dataset_version`, and optionally an `ingestion_source` row when the source is registered.
 - Phase 1 does not store row-level provenance pointers (for example, raw row number per spend record). That can be added later if required.
 
 ## Organisation matching (Phase 1)

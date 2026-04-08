@@ -38,6 +38,11 @@ class Import extends Model
         return $this->hasMany(ImportRun::class);
     }
 
+    public function ingestionSources(): HasMany
+    {
+        return $this->hasMany(IngestionSource::class);
+    }
+
     protected function casts(): array
     {
         return [
@@ -45,4 +50,3 @@ class Import extends Model
         ];
     }
 }
-

@@ -16,7 +16,8 @@ This roadmap is milestone-based rather than date-based. It reflects intended dir
 
 ## Phase 2: Ingestion pipelines
 
-- Import orchestration and idempotent job execution
+- Source registry, adapter support, and import orchestration
+- Idempotent job execution and scheduled refreshes
 - Raw source retention in object storage (MinIO locally)
 - Staging and validation prior to canonical updates
 
@@ -49,4 +50,3 @@ See also:
 - [docs/next-steps.md](docs/next-steps.md)
 - [docs/community-and-editorial-model.md](docs/community-and-editorial-model.md)
 - [docs/foi-and-eir-direction.md](docs/foi-and-eir-direction.md)
-

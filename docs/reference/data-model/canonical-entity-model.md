@@ -197,7 +197,7 @@ If these are mixed, the platform loses neutrality, traceability, and legal defen
 
 - Purpose: Stable dataset family or publication source definition.
 - Key fields: `id`, `dataset_key`, `publisher_name`, `publisher_kind`, `dataset_family`, `jurisdiction_scope`, `default_council_id`, `expected_refresh_cadence`, `licence_summary`.
-- Relationships: has many `dataset_versions`; has many `imports`; optionally belongs to `councils`.
+- Relationships: has many `dataset_versions`; has many `imports`; has many `ingestion_sources`; optionally belongs to `councils`.
 - Important constraints: a dataset family is not a file; it groups repeated releases or captures of the same conceptual source.
 
 #### `dataset_versions`
@@ -211,8 +211,15 @@ If these are mixed, the platform loses neutrality, traceability, and legal defen
 
 - Purpose: Reusable ingestion definition for a dataset family and parser/connector combination.
 - Key fields: `id`, `dataset_id`, `import_key`, `import_type`, `connector_key`, `parser_version`, `normalisation_profile`, `is_active`.
-- Relationships: belongs to `datasets`; has many `import_runs`.
-- Important constraints: import definition is stable configuration, not runtime history; changing parser behaviour should create a new versioned config or a clearly logged update.
+- Relationships: belongs to `datasets`; has many `import_runs`; has many `ingestion_sources`.
+- Important constraints: import definition is stable configuration, not runtime history; changing parser or connector behaviour should create a new versioned config or a clearly logged update. Import definitions should be able to represent both manual and automated source routes.
+
+#### `ingestion_sources`
+
+- Purpose: Registry of concrete council source endpoints, feeds, pages, or documents that can be fetched automatically or manually.
+- Key fields: `id`, `dataset_id`, `import_id`, `council_id`, `source_key`, `source_kind`, `source_name`, `source_url`, `discovery_url`, `adapter_key`, `refresh_mode`, `expected_refresh_cadence`, `last_checked_at`, `last_success_at`, `last_failure_at`, `last_error_summary`, `is_active`.
+- Relationships: belongs to `datasets`, `imports`, and `councils`; has many `source_files`.
+- Important constraints: source registry rows should be stable enough for scheduling and replay; source kinds are the observed publication shape, while adapter keys identify the ingestion code path.
 
 #### `import_runs`
 
@@ -224,9 +231,9 @@ If these are mixed, the platform loses neutrality, traceability, and legal defen
 #### `source_files`
 
 - Purpose: Metadata row for a raw stored artefact in object storage.
-- Key fields: `id`, `storage_provider`, `storage_bucket`, `storage_key`, `sha256`, `content_type`, `byte_size`, `capture_method`, `source_url`, `published_at`, `captured_at`, `is_raw_unmodified`, `visibility`.
-- Relationships: linked to `dataset_versions`, `import_runs`, `evidence`, `foi_responses`, and `geography_versions` through `source_file_links` or explicit foreign keys.
-- Important constraints: PostgreSQL stores metadata and relationships, not the binary; raw artefacts are immutable; republished files create new rows rather than overwriting.
+- Key fields: `id`, `ingestion_source_id`, `dataset_version_id`, `import_run_id`, `council_id`, `storage_provider`, `storage_bucket`, `storage_key`, `sha256`, `content_type`, `byte_size`, `capture_method`, `source_url`, `published_at`, `captured_at`, `is_raw_unmodified`, `visibility`.
+- Relationships: linked to `ingestion_sources`, `dataset_versions`, `import_runs`, `evidence`, `foi_responses`, and `geography_versions` through `source_file_links` or explicit foreign keys.
+- Important constraints: PostgreSQL stores metadata and relationships, not the binary; raw artefacts are immutable; republished files create new rows rather than overwriting. Capture method and source URL should preserve whether the artefact came from an API, a file download, a manual upload, or another supported route.
 
 #### `source_file_links`
 

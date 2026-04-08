@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'dataset_version_id',
     'import_run_id',
     'council_id',
+    'ingestion_source_id',
     'storage_provider',
     'storage_bucket',
     'storage_key',
@@ -50,6 +51,11 @@ class SourceFile extends Model
         return $this->belongsTo(Council::class);
     }
 
+    public function ingestionSource(): BelongsTo
+    {
+        return $this->belongsTo(IngestionSource::class);
+    }
+
     protected function casts(): array
     {
         return [
@@ -60,4 +66,3 @@ class SourceFile extends Model
         ];
     }
 }
-

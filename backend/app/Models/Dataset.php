@@ -41,5 +41,9 @@ class Dataset extends Model
     {
         return $this->hasMany(Import::class);
     }
-}
 
+    public function ingestionSources(): HasMany
+    {
+        return $this->hasMany(IngestionSource::class);
+    }
+}
