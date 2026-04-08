@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { apiGet } from '~/app/lib/api'
+import { apiGet } from '~/lib/api'
 
 const health = await apiGet('/health')
 const version = await apiGet('/version')
@@ -17,4 +17,3 @@ const version = await apiGet('/version')
     <pre class="panel" style="margin-top: 0; overflow: auto;">{{ version }}</pre>
   </div>
 </template>
-
