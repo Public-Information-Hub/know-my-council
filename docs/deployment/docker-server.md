@@ -36,10 +36,15 @@ The repository includes a manual GitHub Actions workflow for production deploys.
 
 Required repository secrets for the workflow:
 
-- `DEPLOY_HOST`
-- `DEPLOY_USER`
 - `DEPLOY_SSH_KEY`
-- `DEPLOY_PATH` is optional and defaults to `/root/know-my-council`
+
+Default deploy target values:
+
+- Host: `178.105.14.115`
+- User: `root`
+- Path: `/root/know-my-council`
+
+You can still override those by setting `DEPLOY_HOST`, `DEPLOY_USER`, or `DEPLOY_PATH` as repository secrets if the server details change.
 
 The workflow SSHes to the server, checks out the selected branch in the live clone, and runs the same Docker Compose deploy command used on the box.
 
