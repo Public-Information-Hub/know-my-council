@@ -1,3 +1,5 @@
+@import 'leaflet/dist/leaflet.css';
+
 :root {
   color-scheme: light;
   --kmc-bg: #f4f7fb;
@@ -441,6 +443,26 @@ pre {
   gap: 0.6rem;
 }
 
+.leaflet-uk-map {
+  width: 100%;
+  height: clamp(280px, 34vw, 420px);
+  border-radius: 18px;
+  border: 1px solid var(--kmc-border);
+  overflow: hidden;
+  background: var(--kmc-panel-soft);
+}
+
+.map-card__leaflet-note {
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--kmc-border);
+  background: color-mix(in srgb, var(--kmc-panel) 82%, transparent);
+  color: var(--kmc-muted);
+  font-size: 0.78rem;
+  line-height: 1;
+  box-shadow: var(--kmc-shadow);
+}
+
 .finder {
   display: grid;
   gap: 0.45rem;
@@ -501,15 +523,6 @@ pre {
   display: block;
 }
 
-.google-uk-map {
-  width: 100%;
-  height: clamp(280px, 34vw, 420px);
-  border-radius: 18px;
-  border: 1px solid var(--kmc-border);
-  overflow: hidden;
-  background: var(--kmc-panel-soft);
-}
-
 .map-card__status {
   margin: 0;
   color: var(--kmc-muted);
@@ -531,6 +544,21 @@ pre {
 .uk-map__link:hover rect {
   stroke: var(--kmc-focus);
   stroke-width: 3;
+}
+
+.leaflet-tooltip.leaflet-tooltip--nation {
+  border: 1px solid var(--kmc-border);
+  border-radius: 999px;
+  background: var(--kmc-panel);
+  color: var(--kmc-text);
+  box-shadow: var(--kmc-shadow);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+}
+
+.leaflet-tooltip.leaflet-tooltip--nation::before {
+  border-top-color: var(--kmc-panel);
 }
 
 .fact-grid {

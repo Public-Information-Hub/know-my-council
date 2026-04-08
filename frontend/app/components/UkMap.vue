@@ -1,21 +1,7 @@
 <script setup lang="ts">
-import { importLibrary, setOptions } from '@googlemaps/js-api-loader'
-
-declare const google: any
+import 'leaflet/dist/leaflet.css'
 
 type NationKey = 'england' | 'scotland' | 'wales' | 'northern-ireland'
-
-type LatLngLiteral = {
-  lat: number
-  lng: number
-}
-
-type LatLngBoundsLiteral = {
-  north: number
-  south: number
-  west: number
-  east: number
-}
 
 type NationMapEntry = {
   key: NationKey
@@ -35,8 +21,16 @@ type PinEntry = {
   shortLabel: string
   href: string
   description: string
-  position: LatLngLiteral
+  position: [number, number]
   color: string
+}
+
+type OutlineEntry = {
+  key: NationKey
+  label: string
+  href: string
+  description: string
+  points: [number, number][]
 }
 
 const regions: NationMapEntry[] = [
@@ -93,7 +87,7 @@ const pins: PinEntry[] = [
     shortLabel: 'ENG',
     href: '/councils',
     description: 'Part of the UK-wide council map.',
-    position: { lat: 52.9, lng: -1.7 },
+    position: [52.9, -1.7],
     color: '#0f766e'
   },
   {
@@ -102,7 +96,7 @@ const pins: PinEntry[] = [
     shortLabel: 'SCT',
     href: '/councils?nation=scotland',
     description: 'Part of the UK-wide council map.',
-    position: { lat: 56.7, lng: -4.2 },
+    position: [56.7, -4.2],
     color: '#0c5670'
   },
   {
@@ -111,7 +105,7 @@ const pins: PinEntry[] = [
     shortLabel: 'WLS',
     href: '/councils?nation=wales',
     description: 'Part of the UK-wide council map.',
-    position: { lat: 52.2, lng: -3.8 },
+    position: [52.2, -3.8],
     color: '#a16207'
   },
   {
@@ -120,117 +114,200 @@ const pins: PinEntry[] = [
     shortLabel: 'NIR',
     href: '/councils?nation=northern-ireland',
     description: 'Part of the UK-wide council map.',
-    position: { lat: 54.7, lng: -6.6 },
+    position: [54.7, -6.6],
     color: '#9333ea'
   }
 ]
 
-const ukBounds: LatLngBoundsLiteral = {
-  north: 61.2,
-  south: 49.4,
-  west: -11.2,
-  east: 3.6
-}
+const outlines: OutlineEntry[] = [
+  {
+    key: 'scotland',
+    label: 'Scotland',
+    href: '/councils?nation=scotland',
+    description: 'Part of the UK-wide council map.',
+    points: [
+      [55.0, -6.2],
+      [56.2, -6.0],
+      [57.5, -5.1],
+      [58.6, -3.8],
+      [59.2, -2.0],
+      [59.3, -0.8],
+      [58.0, 0.0],
+      [56.7, -0.5],
+      [55.8, -1.8],
+      [55.0, -3.8],
+      [55.0, -6.2]
+    ]
+  },
+  {
+    key: 'wales',
+    label: 'Wales',
+    href: '/councils?nation=wales',
+    description: 'Part of the UK-wide council map.',
+    points: [
+      [53.5, -5.5],
+      [52.8, -5.1],
+      [52.1, -4.6],
+      [51.7, -4.9],
+      [51.1, -5.3],
+      [51.0, -4.0],
+      [51.5, -3.1],
+      [52.4, -3.4],
+      [53.1, -4.0],
+      [53.5, -5.5]
+    ]
+  },
+  {
+    key: 'northern-ireland',
+    label: 'Northern Ireland',
+    href: '/councils?nation=northern-ireland',
+    description: 'Part of the UK-wide council map.',
+    points: [
+      [55.3, -8.3],
+      [55.1, -7.0],
+      [54.4, -6.4],
+      [54.0, -7.5],
+      [54.2, -8.7],
+      [55.3, -8.3]
+    ]
+  },
+  {
+    key: 'england',
+    label: 'England',
+    href: '/councils',
+    description: 'Part of the UK-wide council map.',
+    points: [
+      [55.8, -5.7],
+      [55.2, -4.2],
+      [54.7, -3.1],
+      [54.2, -2.0],
+      [53.7, -1.1],
+      [52.8, -0.2],
+      [52.0, 0.5],
+      [50.7, 0.0],
+      [50.0, -1.7],
+      [50.2, -3.8],
+      [50.9, -5.3],
+      [51.7, -5.6],
+      [52.7, -5.1],
+      [53.7, -4.8],
+      [54.7, -4.8],
+      [55.8, -5.7]
+    ]
+  }
+]
 
-const config = useRuntimeConfig()
+const ukBounds: [number, number][] = [
+  [61.2, -11.2],
+  [49.4, 3.6]
+]
+
 const router = useRouter()
 const mapElement = ref<HTMLDivElement | null>(null)
 const mapState = ref<'fallback' | 'loading' | 'ready' | 'error'>('fallback')
 const mapError = ref('')
 
-const hasGoogleMaps = computed(() => Boolean(config.public.googleMapsApiKey))
-const hasMapId = computed(() => Boolean(config.public.googleMapsMapId))
-
 function openRoute(href: string): void {
   void router.push(href)
 }
 
-function renderStaticMap(): void {
-  mapState.value = 'fallback'
+function resolveColor(name: string, fallback: string): string {
+  if (typeof window === 'undefined') {
+    return fallback
+  }
+
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return value || fallback
 }
 
 onMounted(async () => {
-  if (!mapElement.value || !hasGoogleMaps.value) {
-    renderStaticMap()
+  mapState.value = 'loading'
+  await nextTick()
+
+  if (!mapElement.value) {
+    mapState.value = 'fallback'
     return
   }
 
-  mapState.value = 'loading'
-
   try {
-    setOptions({
-      key: String(config.public.googleMapsApiKey),
-      v: 'weekly',
-      language: 'en-GB',
-      region: 'GB',
-      ...(hasMapId.value ? { mapIds: [String(config.public.googleMapsMapId)] } : {})
-    })
-
-    await importLibrary('maps')
-
-    const map = new google.maps.Map(mapElement.value, {
-      center: { lat: 54.5, lng: -3.3 },
+    const leaflet = await import('leaflet')
+    const map = leaflet.map(mapElement.value, {
+      center: [54.5, -3.3],
       zoom: 5.4,
       minZoom: 4,
       maxZoom: 8,
-      mapTypeId: 'roadmap',
-      gestureHandling: 'cooperative',
-      fullscreenControl: false,
-      streetViewControl: false,
-      mapTypeControl: false,
-      rotateControl: false,
-      clickableIcons: false,
       zoomControl: true,
-      restriction: {
-        latLngBounds: ukBounds,
-        strictBounds: true
-      },
-      mapId: hasMapId.value ? String(config.public.googleMapsMapId) : undefined
+      attributionControl: true,
+      scrollWheelZoom: false,
+      dragging: true,
+      touchZoom: true,
+      doubleClickZoom: true,
+      keyboard: true,
+      boxZoom: true,
+      maxBounds: ukBounds,
+      maxBoundsViscosity: 0.9
     })
 
-    if (hasMapId.value) {
-      const boundaryStroke = '#0f766e'
-      const boundaryFill = '#d9f0ec'
-      ;[google.maps.FeatureType.COUNTRY, google.maps.FeatureType.ADMINISTRATIVE_AREA_LEVEL_1].forEach((featureType) => {
-        const featureLayer = map.getFeatureLayer(featureType)
-        if (featureLayer.isAvailable) {
-          featureLayer.style = {
-            strokeColor: boundaryStroke,
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: boundaryFill,
-            fillOpacity: 0.08
-          }
-        }
+    leaflet
+      .tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        minZoom: 4,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       })
-    }
+      .addTo(map)
+
+    const borderColor = resolveColor('--kmc-border', '#cbd5e1')
+    const accentColor = resolveColor('--kmc-accent-soft', '#bfe8df')
+    const panelColor = resolveColor('--kmc-panel', '#ffffff')
+
+    outlines.forEach((nation) => {
+      const polygon = leaflet
+        .polygon(nation.points, {
+          color: borderColor,
+          weight: 2,
+          opacity: 0.95,
+          fillColor: accentColor,
+          fillOpacity: 0.2
+        })
+        .addTo(map)
+
+      polygon.bindTooltip(nation.label, {
+        permanent: true,
+        direction: 'center',
+        className: 'leaflet-tooltip--nation',
+        opacity: 0.95
+      })
+
+      polygon.on('click', () => openRoute(nation.href))
+      polygon.on('mouseover', () => polygon.setStyle({ weight: 3, fillOpacity: 0.28 }))
+      polygon.on('mouseout', () => polygon.setStyle({ weight: 2, fillOpacity: 0.2 }))
+    })
 
     pins.forEach((pin) => {
-      const marker = new google.maps.Marker({
-        map,
-        position: pin.position,
-        title: pin.label,
-        label: {
-          text: pin.shortLabel,
-          color: '#ffffff',
-          fontWeight: '700'
-        },
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          fillColor: pin.color,
-          fillOpacity: 1,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-          scale: 8
-        }
+      const marker = leaflet.circleMarker(pin.position, {
+        radius: 8,
+        color: panelColor,
+        weight: 2,
+        fillColor: pin.color,
+        fillOpacity: 1,
+        opacity: 1
+      }).addTo(map)
+
+      marker.bindTooltip(pin.label, {
+        direction: 'top',
+        offset: [0, -6],
+        opacity: 0.96
       })
 
-      marker.addListener('click', () => openRoute(pin.href))
+      marker.on('click', () => openRoute(pin.href))
     })
+
+    map.fitBounds(ukBounds, { padding: [22, 22] })
+    map.invalidateSize()
 
     mapState.value = 'ready'
   } catch (error) {
-    mapError.value = error instanceof Error ? error.message : 'Google Maps could not be loaded.'
+    mapError.value = error instanceof Error ? error.message : 'The open-source map could not be loaded.'
     mapState.value = 'error'
   }
 })
@@ -249,7 +326,7 @@ onMounted(async () => {
     </div>
 
     <div class="map-card__canvas">
-      <div v-if="mapState === 'ready'" ref="mapElement" class="google-uk-map" aria-label="Interactive Google map of the United Kingdom" />
+      <div v-if="mapState === 'loading' || mapState === 'ready'" ref="mapElement" class="leaflet-uk-map" aria-label="Interactive map of the United Kingdom" />
 
       <div v-else class="map-card__fallback">
         <svg class="uk-map" viewBox="0 0 420 420" role="img" aria-labelledby="uk-map-svg-title uk-map-svg-desc">
@@ -302,17 +379,12 @@ onMounted(async () => {
           <circle cx="252" cy="100" r="3" fill="var(--kmc-panel)" />
         </svg>
 
-        <p v-if="mapState === 'loading'" class="map-card__status">Loading Google Maps…</p>
-        <p v-else-if="mapState === 'error'" class="map-card__status">
-          Google Maps could not be loaded, so we are showing the fallback map.
+        <p v-if="mapState === 'error'" class="map-card__status">
+          The open-source map could not be loaded, so we are showing the fallback map.
           <span v-if="mapError" class="map-card__status-detail"> {{ mapError }}</span>
         </p>
         <p v-else class="map-card__status">
-          Google Maps will appear here when an API key is provided. The fallback map stays available for everyone.
-        </p>
-
-        <p v-if="hasGoogleMaps && !hasMapId" class="map-card__status-detail">
-          Add a Google Maps map ID to show the UK boundary outlines and styled boundaries.
+          The map uses open-source tiles and works without a paid API key. The fallback map stays available for everyone.
         </p>
       </div>
     </div>
