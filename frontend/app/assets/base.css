@@ -137,6 +137,8 @@ pre {
 }
 
 .site-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
@@ -288,15 +290,30 @@ pre {
   width: min(1440px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 0.8rem 0 2rem;
+  flex: 1 0 auto;
 }
 
 .site-footer {
   width: min(1440px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 1.25rem 0 2rem;
-  border-top: 1px solid var(--kmc-border);
+  margin-top: 0.5rem;
+  padding: 1.1rem 1rem 1.4rem;
+  border: 1px solid var(--kmc-border);
+  border-radius: 22px 22px 0 0;
   color: var(--kmc-muted);
   font-size: 0.95rem;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--kmc-panel) 92%, transparent), var(--kmc-panel));
+  box-shadow: var(--kmc-shadow);
+}
+
+.site-footer__eyebrow {
+  margin: 0 0 0.8rem;
+  color: var(--kmc-accent);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .site-footer__grid {

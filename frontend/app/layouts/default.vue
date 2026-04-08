@@ -70,6 +70,7 @@ async function signOut(): Promise<void> {
     </main>
 
     <footer class="site-footer">
+      <p class="site-footer__eyebrow">Site links and policies</p>
       <div class="site-footer__grid">
         <div class="site-footer__brand">
           <p class="site-footer__title">KnowMyCouncil</p>
