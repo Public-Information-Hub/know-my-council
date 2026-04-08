@@ -33,6 +33,7 @@ The current production shape is:
 - Caddy will request and renew TLS automatically once the domain points at the server and ports 80/443 are open.
 - The public site is protected with HTTP Basic Auth while the build is in progress.
 - Set `KMC_BASIC_AUTH_USER` and `KMC_BASIC_AUTH_HASH` in `deploy/.env` for the live credentials.
+- If you want the homepage map to use Google Maps, set `NUXT_PUBLIC_GOOGLE_MAPS_API_KEY` and optionally `NUXT_PUBLIC_GOOGLE_MAPS_MAP_ID` in `deploy/.env`.
 
 ## Host hardening
 

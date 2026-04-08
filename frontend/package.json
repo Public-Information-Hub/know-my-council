@@ -13,6 +13,8 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^2.0.2",
+    "@types/google.maps": "^3.58.1",
     "nuxt": "^4.4.2"
   },
   "devDependencies": {

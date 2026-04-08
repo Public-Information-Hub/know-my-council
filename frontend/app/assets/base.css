@@ -431,6 +431,16 @@ pre {
   gap: 0.45rem;
 }
 
+.map-card__canvas {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.map-card__fallback {
+  display: grid;
+  gap: 0.6rem;
+}
+
 .finder {
   display: grid;
   gap: 0.45rem;
@@ -489,6 +499,28 @@ pre {
   width: 100%;
   height: auto;
   display: block;
+}
+
+.google-uk-map {
+  width: 100%;
+  height: clamp(280px, 34vw, 420px);
+  border-radius: 18px;
+  border: 1px solid var(--kmc-border);
+  overflow: hidden;
+  background: var(--kmc-panel-soft);
+}
+
+.map-card__status {
+  margin: 0;
+  color: var(--kmc-muted);
+  font-size: 0.92rem;
+}
+
+.map-card__status-detail {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--kmc-muted);
+  font-size: 0.9rem;
 }
 
 .uk-map__link {
