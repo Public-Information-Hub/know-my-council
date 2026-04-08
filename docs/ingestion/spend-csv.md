@@ -79,6 +79,7 @@ Useful options:
 - `spend_records` link to `import_runs` and `dataset_versions`.
 - The raw file is represented by `source_files` linked to the `import_run`, `dataset_version`, and optionally an `ingestion_source` row when the source is registered.
 - Phase 1 does not store row-level provenance pointers (for example, raw row number per spend record). That can be added later if required.
+- If the council source is already registered, use `kmc:ingestion-source:upsert` to keep the source metadata in sync before the ingest run.
 
 ## Organisation matching (Phase 1)
 
