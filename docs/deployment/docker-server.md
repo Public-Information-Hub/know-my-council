@@ -54,8 +54,7 @@ The workflow SSHes to the server, checks out the selected branch in the live clo
 - The queue worker container runs `php artisan queue:work`.
 - MinIO is initialised with a `knowmycouncil` bucket.
 - Caddy will request and renew TLS automatically once the domain points at the server and ports 80/443 are open.
-- The public site is protected with HTTP Basic Auth while the build is in progress.
-- Set `KMC_BASIC_AUTH_USER` and `KMC_BASIC_AUTH_HASH` in `deploy/.env` for the live credentials.
+- The public site is intended to be accessible without a temporary HTTP Basic Auth wall.
 - The homepage map uses open-source Leaflet and OpenStreetMap tiles, so no paid map API key is required.
 
 ## Host hardening
