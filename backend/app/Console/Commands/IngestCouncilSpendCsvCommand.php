@@ -20,6 +20,7 @@ class IngestCouncilSpendCsvCommand extends Command
         {--published-at= : Optional dataset published timestamp (ISO 8601); stored on dataset_version and source_file if provided}
         {--captured-at= : Optional capture timestamp (ISO 8601); defaults to now}
         {--idempotency-key= : Optional idempotency key to prevent accidental duplicate runs}
+        {--ingestion-source-id= : Optional ingestion_sources UUID to link the raw file to a registered source}
         {--storage-disk= : Filesystem disk to store the raw source file on; defaults to FILESYSTEM_DISK}
         {--visibility=restricted : Source file visibility (public|restricted|private)}
         {--delimiter=, : CSV delimiter}
@@ -46,6 +47,7 @@ class IngestCouncilSpendCsvCommand extends Command
                 'published_at' => $this->option('published-at'),
                 'captured_at' => $this->option('captured-at'),
                 'idempotency_key' => $this->option('idempotency-key'),
+                'ingestion_source_id' => $this->option('ingestion-source-id'),
                 'storage_disk' => $this->option('storage-disk'),
                 'visibility' => $this->option('visibility'),
                 'delimiter' => $this->option('delimiter'),

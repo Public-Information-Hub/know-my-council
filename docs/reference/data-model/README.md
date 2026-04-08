@@ -14,4 +14,5 @@ If a domain doc defines what a concept means (for example “supplier”), data 
 Start with:
 
 - [canonical-entity-model.md](canonical-entity-model.md)
+- [source-ingestion-and-adapters.md](source-ingestion-and-adapters.md)
 - [temporal-authority-and-geography-modelling.md](temporal-authority-and-geography-modelling.md)

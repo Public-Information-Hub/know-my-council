@@ -11,8 +11,10 @@ This repository is intentionally only the initial scaffold. The next sensible bu
 ## 2) Ingestion pipeline
 
 - Introduce an import runner (queued jobs + retry strategy + idempotency).
+- Add a source registry and adapter layer for council APIs, CSV exports, HTML tables, and document feeds.
 - Store raw source files in object storage (MinIO locally) and record metadata in PostgreSQL.
 - Parse and validate into staging tables before updating canonical tables.
+- Prefer automated refresh routes for stable council sources, with manual ingestion kept as a fallback.
 
 ## 3) Read models
 
@@ -31,4 +33,3 @@ This repository is intentionally only the initial scaffold. The next sensible bu
 - Council profile pages: identity, datasets available, latest imports, spend summaries.
 - Supplier profile pages: aggregated spend, contracts, related councils, and search facets.
 - Build with stable URLs and SEO in mind (Nuxt SSR when appropriate).
-

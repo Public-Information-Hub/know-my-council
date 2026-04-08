@@ -25,6 +25,7 @@ The platform is expected to evolve with a deliberate separation between:
 
 1. **Ingestion and “truth” layer**
   - Fetch and store source artefacts (files, HTML, PDFs, etc.) with provenance.
+  - Represent source routes and reusable ingestion definitions explicitly so automated refreshes can be scheduled and replayed.
   - Parse and normalise into canonical entities.
   - Capture import runs, errors, and traceability (what happened, when, and why).
 
@@ -43,6 +44,7 @@ These are the intended responsibilities at a high level:
 - **Redis:** cache and queue backend for operational work (imports, indexing, document processing).
 - **Meilisearch:** user-facing search index for fast search/ranking and (where appropriate) filtering/facets.
 - **Object storage (MinIO locally):** source artefacts and document storage with provenance.
+- **Source registry / ingest definitions:** intended future metadata layer for discovery, refresh cadence, and adapter selection.
 
 Search and derived views must remain reproducible and traceable back to inputs.
 

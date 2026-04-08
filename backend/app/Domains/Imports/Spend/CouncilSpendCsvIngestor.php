@@ -40,6 +40,8 @@ class CouncilSpendCsvIngestor
         $editionDate = $this->parseDateOnly($options['edition_date'] ?? null) ?? CarbonImmutable::now()->toDateString();
         $capturedAt = $this->parseTimestamp($options['captured_at'] ?? null) ?? CarbonImmutable::now();
         $publishedAt = $this->parseTimestamp($options['published_at'] ?? null);
+        $ingestionSourceId = is_string($options['ingestion_source_id'] ?? null) ? trim((string) $options['ingestion_source_id']) : null;
+        $ingestionSourceId = $ingestionSourceId !== '' ? $ingestionSourceId : null;
 
         $datasetKey = (string) ($options['dataset_key'] ?: "council:{$councilSlug}:spend_over_500_csv");
         $importKey = "spend_over_500_csv:{$councilSlug}";
@@ -229,6 +231,7 @@ class CouncilSpendCsvIngestor
                 'dataset_version_id' => $datasetVersion->id,
                 'import_run_id' => $importRun->id,
                 'council_id' => $council->id,
+                'ingestion_source_id' => $ingestionSourceId,
                 'storage_provider' => $storageDisk,
                 'storage_bucket' => $bucket,
                 'storage_key' => $key,
