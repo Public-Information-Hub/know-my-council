@@ -1,5 +1,12 @@
 <template>
   <div>
+    <div class="container" style="padding-bottom: 0;">
+      <div class="panel" style="background: #fff7e6; border-color: #f1d28a; color: #5a4100;">
+        <strong>Site in progress.</strong>
+        <span style="margin-left: 6px;">KnowMyCouncil is being built and is not live yet.</span>
+      </div>
+    </div>
+
     <header class="container">
       <div class="row" style="justify-content: space-between;">
         <div class="row">

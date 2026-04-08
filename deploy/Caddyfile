@@ -7,6 +7,10 @@ www.knowmycouncil.uk {
 }
 
 knowmycouncil.uk {
+  basic_auth {
+    {env.KMC_BASIC_AUTH_USER} {env.KMC_BASIC_AUTH_HASH}
+  }
+
   encode gzip
 
   handle_path /api/* {
