@@ -2,6 +2,8 @@
 
 This repository is intentionally only the initial scaffold. The next sensible build phases are:
 
+The account/auth surface is now in place at a basic product level: registration, login, email verification, password reset, profile management, and email-based 2FA. The remaining work there is refinement and policy hardening rather than a blank start.
+
 ## 1) Canonical data model
 
 - Define canonical identifiers and entity boundaries (council, supplier, contract, spend line, document).
