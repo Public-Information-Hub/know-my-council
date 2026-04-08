@@ -528,6 +528,67 @@ pre {
   font-size: 0.98rem;
 }
 
+.source-strip {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 760px) {
+  .source-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .source-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.source-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--kmc-border);
+  background: var(--kmc-panel);
+  box-shadow: var(--kmc-shadow);
+}
+
+.source-card__mark {
+  min-width: 3.5rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 14px;
+  background: var(--kmc-accent-soft);
+  color: var(--kmc-text);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+.source-card__body {
+  min-width: 0;
+}
+
+.source-card__title {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.source-card__title a {
+  color: var(--kmc-text);
+}
+
+.source-card__text {
+  margin: 0.3rem 0 0;
+  color: var(--kmc-muted);
+  font-size: 0.94rem;
+}
+
 .landing__menu {
   display: flex;
   gap: 0.5rem;

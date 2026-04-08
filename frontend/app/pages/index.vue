@@ -1,3 +1,32 @@
+<script setup lang="ts">
+const ingestionSources = [
+  {
+    mark: 'ONS',
+    name: 'ONS Open Geography Portal',
+    description: 'Council names, codes and geography products for the core registry.',
+    href: 'https://geoportal.statistics.gov.uk/'
+  },
+  {
+    mark: 'GOV.UK',
+    name: 'GOV.UK Local Authorities API',
+    description: 'Postcode lookup and basic local authority metadata.',
+    href: 'https://docs.publishing.service.gov.uk/repos/frontend/local-authorities-api.html'
+  },
+  {
+    mark: 'CKAN',
+    name: 'data.gov.uk catalogue',
+    description: 'Discovery path for official local government datasets and releases.',
+    href: 'https://www.data.gov.uk/'
+  },
+  {
+    mark: 'CSV',
+    name: 'Council publication pages',
+    description: 'Spend and contract exports published directly by councils.',
+    href: '/councils'
+  }
+] as const
+</script>
+
 <template>
   <div class="landing">
     <section class="hero panel">
@@ -138,6 +167,29 @@
         <div class="row">
           <NuxtLink class="pill" to="/status">Open build status</NuxtLink>
           <NuxtLink class="pill" to="/admin">Admin area</NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <section id="ingestion-sources" class="section">
+      <div class="panel">
+        <h2 class="section__heading" style="margin-top: 0;">Ingestion points</h2>
+        <p class="section__lead">
+          These are the public sources we can already use or are wiring up first. The marks below are simple source badges so the section stays readable in all themes and screen sizes.
+        </p>
+
+        <div class="source-strip" aria-label="Ingestion sources">
+          <article v-for="source in ingestionSources" :key="source.name" class="source-card">
+            <div class="source-card__mark" aria-hidden="true">{{ source.mark }}</div>
+            <div class="source-card__body">
+              <h3 class="source-card__title">
+                <a :href="source.href" :target="source.href.startsWith('http') ? '_blank' : undefined" :rel="source.href.startsWith('http') ? 'noreferrer noopener' : undefined">
+                  {{ source.name }}
+                </a>
+              </h3>
+              <p class="source-card__text">{{ source.description }}</p>
+            </div>
+          </article>
         </div>
       </div>
     </section>
