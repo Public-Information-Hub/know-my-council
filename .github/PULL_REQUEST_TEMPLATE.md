@@ -8,7 +8,7 @@ Why was this change needed?
 
 ## Branch workflow
 
-- [ ] This PR is ready for review (no direct pushes to `master` assumed).
+- [ ] This change is ready for review or direct merge while branch protection is temporarily disabled.
 
 ## Testing
 

@@ -101,9 +101,10 @@ See: [docs/community-and-editorial-model.md](docs/community-and-editorial-model.
 ## Branch and PR expectations
 
 - Create a branch from `master`.
-- Do not push directly to `master` as part of normal development. Use pull requests.
+- Direct pushes to `master` are temporarily allowed while branch protection is disabled.
+- When branch protection is restored, go back to branch-and-PR flow for normal development.
 - Use clear branch names (e.g. `docs/evidence-principles`, `infra/minio-init`).
-- Open a PR early if you want feedback.
+- Open a PR early if you want feedback, even during the temporary direct-push period.
 
 Maintainers: recommended GitHub branch protection and CI settings are documented in [docs/github-branch-and-ci-settings.md](docs/github-branch-and-ci-settings.md).
 

@@ -39,7 +39,7 @@ Goal: make a narrow, reviewable change (bug fix, small feature, dev tooling).
 3. Create a branch and keep changes focused.
 4. Make the smallest change that achieves the goal.
 5. Run targeted verification (tests, lint, a single endpoint).
-6. Open a pull request (do not assume direct pushes to `master`).
+6. If branch protection is enabled, open a pull request; if the repository is temporarily allowing direct pushes to `master`, commit and push carefully with the same review standards.
 7. Summarise what changed, what you verified, and any assumptions.
 
 ## Workflow B: documentation improvement
