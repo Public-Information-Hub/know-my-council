@@ -70,12 +70,40 @@ async function signOut(): Promise<void> {
     </main>
 
     <footer class="site-footer">
-      <p>
-        KnowMyCouncil is a source-led civic information project focused on UK councils and local authorities.
-      </p>
-      <p class="site-footer__meta">
-        Built for clear reading, keyboard use, and accessible presentation from the start.
-      </p>
+      <div class="site-footer__grid">
+        <div class="site-footer__brand">
+          <p class="site-footer__title">KnowMyCouncil</p>
+          <p>
+            Source-led civic information for UK councils and local authorities.
+          </p>
+          <p class="site-footer__meta">
+            Built for clear reading, keyboard use, and accessible presentation from the start.
+          </p>
+        </div>
+
+        <div class="site-footer__links">
+          <div class="site-footer__group">
+            <p class="site-footer__group-title">Explore</p>
+            <NuxtLink to="/">Home</NuxtLink>
+            <NuxtLink to="/councils">Councils</NuxtLink>
+            <NuxtLink to="/status">Status</NuxtLink>
+            <NuxtLink to="/about">About</NuxtLink>
+          </div>
+
+          <div class="site-footer__group">
+            <p class="site-footer__group-title">Support</p>
+            <NuxtLink to="/contact">Contact</NuxtLink>
+            <NuxtLink to="/accessibility">Accessibility</NuxtLink>
+          </div>
+
+          <div class="site-footer__group">
+            <p class="site-footer__group-title">Policies</p>
+            <NuxtLink to="/privacy">Privacy</NuxtLink>
+            <NuxtLink to="/cookies">Cookies</NuxtLink>
+            <NuxtLink to="/terms">Terms</NuxtLink>
+          </div>
+        </div>
+      </div>
     </footer>
   </div>
 </template>
