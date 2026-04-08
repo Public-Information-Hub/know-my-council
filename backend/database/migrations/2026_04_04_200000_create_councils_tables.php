@@ -40,11 +40,13 @@ return new class extends Migration
             $table->index(['council_id', 'valid_from']);
         });
 
-        DB::statement(
-            "ALTER TABLE council_versions
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                "ALTER TABLE council_versions
 ADD CONSTRAINT council_versions_public_state_check
 CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
-        );
+            );
+        }
     }
 
     public function down(): void

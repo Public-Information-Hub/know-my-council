@@ -129,6 +129,7 @@ Manual ingestion remains important as a fallback for:
 - cases where the automated route is not yet reliable enough
 
 Operators can register or update source entries with the `kmc:ingestion-source:upsert` command before wiring a source into a scheduled fetch path.
+The hourly dispatcher is `kmc:ingestion-source:dispatch-due`, which is also wired into Laravel's scheduler for regular runs.
 
 ## 7. Practical implementation order
 

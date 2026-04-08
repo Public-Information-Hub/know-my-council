@@ -36,11 +36,13 @@ return new class extends Migration
             $table->index(['dataset_version_id']);
         });
 
-        DB::statement(
-            "ALTER TABLE contracts
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                "ALTER TABLE contracts
 ADD CONSTRAINT contracts_public_state_check
 CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
-        );
+            );
+        }
 
         Schema::create('contract_suppliers', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -57,11 +59,13 @@ CHECK (public_state IN ('draft','submitted','under_review','approved','published
             $table->index(['organisation_id']);
         });
 
-        DB::statement(
-            "ALTER TABLE contract_suppliers
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                "ALTER TABLE contract_suppliers
 ADD CONSTRAINT contract_suppliers_mapping_confidence_check
 CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
-        );
+            );
+        }
 
         Schema::create('spend_records', function (Blueprint $table) {
             $table->uuid('id')->primary();
@@ -91,16 +95,18 @@ CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
             $table->index(['dataset_version_id']);
         });
 
-        DB::statement(
-            "ALTER TABLE spend_records
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                "ALTER TABLE spend_records
 ADD CONSTRAINT spend_records_mapping_confidence_check
 CHECK (mapping_confidence IN ('high','medium','low','unknown'))"
-        );
-        DB::statement(
-            "ALTER TABLE spend_records
+            );
+            DB::statement(
+                "ALTER TABLE spend_records
 ADD CONSTRAINT spend_records_public_state_check
 CHECK (public_state IN ('draft','submitted','under_review','approved','published','disputed','rejected','archived'))"
-        );
+            );
+        }
     }
 
     public function down(): void

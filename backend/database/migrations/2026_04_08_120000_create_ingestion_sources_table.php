@@ -42,16 +42,18 @@ return new class extends Migration
             $table->index(['refresh_mode']);
         });
 
-        DB::statement(
-            "ALTER TABLE ingestion_sources
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                "ALTER TABLE ingestion_sources
 ADD CONSTRAINT ingestion_sources_source_kind_check
 CHECK (source_kind IN ('api','csv','html','xlsx','pdf','document','other'))"
-        );
-        DB::statement(
-            "ALTER TABLE ingestion_sources
+            );
+            DB::statement(
+                "ALTER TABLE ingestion_sources
 ADD CONSTRAINT ingestion_sources_refresh_mode_check
 CHECK (refresh_mode IN ('manual','scheduled','automatic'))"
-        );
+            );
+        }
     }
 
     public function down(): void
