@@ -31,8 +31,10 @@ Route::get('/version', function () {
 Route::get('/councils/{slug}', [CouncilLookupController::class, 'show'])
     ->where('slug', '[A-Za-z0-9\-]+');
 
-Route::get('/admin/ingestion-summary', [IngestionDashboardController::class, 'index'])
-    ->middleware(['auth', 'can:access-admin']);
+Route::middleware('web')->group(function (): void {
+    Route::get('/admin/ingestion-summary', [IngestionDashboardController::class, 'index'])
+        ->middleware(['auth', 'can:access-admin']);
+});
 
 Route::middleware('web')->prefix('auth')->group(function (): void {
     Route::get('/csrf-cookie', [SessionController::class, 'csrfCookie']);
