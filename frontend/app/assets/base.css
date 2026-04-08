@@ -344,6 +344,11 @@ pre {
   font-size: 0.98rem;
 }
 
+.stack {
+  display: grid;
+  gap: 0.9rem;
+}
+
 .card-grid {
   display: grid;
   grid-template-columns: 1fr;
