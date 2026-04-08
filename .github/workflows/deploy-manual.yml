@@ -38,10 +38,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          : "${DEPLOY_HOST:?Set DEPLOY_HOST in repository secrets.}"
-          : "${DEPLOY_USER:?Set DEPLOY_USER in repository secrets.}"
           : "${DEPLOY_SSH_KEY:?Set DEPLOY_SSH_KEY in repository secrets.}"
           : "${DEPLOY_BRANCH:?Set the workflow branch input.}"
+          DEPLOY_HOST="${DEPLOY_HOST:-178.105.14.115}"
+          DEPLOY_USER="${DEPLOY_USER:-root}"
           DEPLOY_PATH="${DEPLOY_PATH:-/root/know-my-council}"
 
           install -d -m 700 ~/.ssh
