@@ -15,6 +15,7 @@ The current production shape is:
 - `deploy/docker-compose.prod.yml`
 - `deploy/Caddyfile`
 - `deploy/.env.example`
+- `.github/workflows/deploy-manual.yml`
 
 ## High-level flow
 
@@ -24,6 +25,23 @@ The current production shape is:
 4. Copy `deploy/.env.example` to `deploy/.env` and fill in any remaining production values.
 5. Run `docker compose -f deploy/docker-compose.prod.yml up -d --build`.
 6. Run the Laravel migrations once the database is healthy.
+
+## Manual GitHub deploy
+
+The repository includes a manual GitHub Actions workflow for production deploys.
+
+- Workflow file: `.github/workflows/deploy-manual.yml`
+- Trigger: manual only, via `workflow_dispatch`
+- Branch input: selectable at run time, defaulting to `master`
+
+Required repository secrets for the workflow:
+
+- `DEPLOY_HOST`
+- `DEPLOY_USER`
+- `DEPLOY_SSH_KEY`
+- `DEPLOY_PATH` is optional and defaults to `/root/know-my-council`
+
+The workflow SSHes to the server, checks out the selected branch in the live clone, and runs the same Docker Compose deploy command used on the box.
 
 ## Operational notes
 
