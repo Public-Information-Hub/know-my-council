@@ -32,7 +32,7 @@ class SessionController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:120'],
-            'handle' => ['required', 'string', 'min:3', 'max:32', 'regex:/^[A-Za-z0-9_.-]+$/', 'unique:users,handle'],
+            'handle' => ['nullable', 'string', 'max:32', 'regex:/^[A-Za-z0-9_.-]+$/', 'unique:users,handle'],
             'email' => ['required', 'string', 'email:rfc', 'max:255', 'unique:users,email'],
             'public_bio' => ['nullable', 'string', 'max:280'],
             'password' => ['required', 'confirmed', Password::min(12)->mixedCase()->numbers()],
@@ -40,8 +40,6 @@ class SessionController extends Controller
             'name.required' => 'Please enter your public name.',
             'name.min' => 'Your public name must be at least 2 characters long.',
             'name.max' => 'Your public name must be 120 characters or fewer.',
-            'handle.required' => 'Please choose a public handle.',
-            'handle.min' => 'Your public handle must be at least 3 characters long.',
             'handle.max' => 'Your public handle must be 32 characters or fewer.',
             'handle.regex' => 'Use only letters, numbers, dots, hyphens, and underscores in your handle.',
             'handle.unique' => 'That public handle is already in use.',
@@ -55,10 +53,12 @@ class SessionController extends Controller
         ]);
 
         $user = new User();
+        $handle = $this->resolveRegistrationHandle($data['name'], $data['handle'] ?? null);
+
         $user->forceFill([
             'name' => trim($data['name']),
             'display_name' => trim($data['name']),
-            'handle' => Str::lower(trim($data['handle'])),
+            'handle' => $handle,
             'email' => Str::lower(trim($data['email'])),
             'public_bio' => $data['public_bio'] ?? null,
             'account_state' => 'pending',
@@ -303,5 +303,38 @@ class SessionController extends Controller
         $user->notify(new LoginChallengeNotification($challenge, $code, $magicLink));
 
         return $challenge;
+    }
+
+    private function resolveRegistrationHandle(string $name, ?string $handle): string
+    {
+        $candidate = trim((string) $handle);
+
+        if ($candidate === '') {
+            $candidate = Str::slug(trim($name), '-');
+        }
+
+        $candidate = Str::lower($candidate);
+        $candidate = preg_replace('/[^a-z0-9_.-]+/', '-', $candidate) ?? $candidate;
+        $candidate = trim($candidate, '-._');
+
+        if ($candidate === '') {
+            $candidate = 'user';
+        }
+
+        if (strlen($candidate) < 3) {
+            $candidate = str_pad($candidate, 3, 'x');
+        }
+
+        $candidate = Str::limit($candidate, 32, '');
+        $base = $candidate;
+        $suffix = 2;
+
+        while (User::query()->whereRaw('lower(handle) = ?', [$candidate])->exists()) {
+            $extra = '-' . $suffix;
+            $candidate = rtrim(Str::limit($base, 32 - strlen($extra), ''), '-._') . $extra;
+            $suffix++;
+        }
+
+        return $candidate;
     }
 }

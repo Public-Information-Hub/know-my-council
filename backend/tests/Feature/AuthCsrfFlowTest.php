@@ -54,6 +54,30 @@ class AuthCsrfFlowTest extends TestCase
         Notification::assertSentTo($user, VerifyEmailLinkNotification::class);
     }
 
+    public function test_registration_can_fall_back_to_a_handle_based_on_the_name(): void
+    {
+        Notification::fake();
+
+        $xsrfToken = $this->bootstrapXsrfToken();
+
+        $this->withHeader('X-XSRF-TOKEN', $xsrfToken)
+            ->postJson('/api/auth/register', [
+                'name' => 'Ada Lovelace',
+                'handle' => null,
+                'email' => 'ada-name-only@example.com',
+                'public_bio' => 'Council data researcher.',
+                'password' => 'Password12345',
+                'password_confirmation' => 'Password12345',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('user.handle', 'ada-lovelace');
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'ada-name-only@example.com',
+            'handle' => 'ada-lovelace',
+        ]);
+    }
+
     public function test_registration_rejects_invalid_handles_with_helpful_feedback(): void
     {
         $xsrfToken = $this->bootstrapXsrfToken();

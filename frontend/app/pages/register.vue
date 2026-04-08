@@ -49,7 +49,7 @@ async function submitRegister(): Promise<void> {
 
   handle.value = normaliseHandle(handle.value)
 
-  if (!isValidHandle(handle.value)) {
+  if (handle.value && !isValidHandle(handle.value)) {
     fieldErrors.value = {
       handle: ['Use only letters, numbers, dots, hyphens, and underscores.']
     }
@@ -61,7 +61,7 @@ async function submitRegister(): Promise<void> {
   try {
     const response = await apiPost<RegisterResponse>('/auth/register', {
       name: name.value,
-      handle: handle.value,
+      handle: handle.value || null,
       email: email.value,
       public_bio: publicBio.value || null,
       password: password.value,
@@ -86,7 +86,7 @@ async function submitRegister(): Promise<void> {
         <p class="eyebrow">Create account</p>
         <h1 class="hero__title">Join KnowMyCouncil</h1>
         <p class="hero__lede">
-          Register with a public handle, verify your email, and use the default email-based sign-in checks.
+          Start with your full name, choose a public handle if you want one, verify your email, and use the default email-based sign-in checks.
         </p>
       </div>
 
@@ -95,7 +95,7 @@ async function submitRegister(): Promise<void> {
 
       <form class="auth-form auth-form--stacked" @submit.prevent="submitRegister">
         <label class="field">
-          <span class="field__label">Public name</span>
+          <span class="field__label">Full name</span>
           <input v-model="name" class="field__input" type="text" autocomplete="name" required>
           <span v-if="firstFieldError(fieldErrors, 'name')" class="field__error">{{ firstFieldError(fieldErrors, 'name') }}</span>
           <span class="field__hint">This is the name shown on your profile.</span>
@@ -110,14 +110,13 @@ async function submitRegister(): Promise<void> {
             autocomplete="username"
             inputmode="text"
             maxlength="32"
-            required
-            placeholder="example-user"
+            placeholder="optional, e.g. ada-lovelace"
             :aria-invalid="Boolean(firstFieldError(fieldErrors, 'handle'))"
-            :title="'Use only letters, numbers, dots, hyphens, and underscores.'"
-            @blur="handle = normaliseHandle(handle)"
+            :title="'Use only letters, numbers, dots, hyphens, and underscores. If you leave this blank, we will use a handle based on your name.'"
+            @blur="handle = handle ? normaliseHandle(handle) : ''"
           >
           <span v-if="firstFieldError(fieldErrors, 'handle')" class="field__error">{{ firstFieldError(fieldErrors, 'handle') }}</span>
-          <span class="field__hint">Letters, numbers, hyphens, underscores and dots are allowed. We normalise it to lower-case.</span>
+          <span class="field__hint">Safest is to use a handle rather than your real name publicly. Letters, numbers, hyphens, underscores and dots are allowed. If you leave this blank, we’ll use a handle based on your name.</span>
         </label>
 
         <label class="field field--full">
